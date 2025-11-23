@@ -41,7 +41,7 @@ export default function DataRightsPage() {
         <div className="container mx-auto py-12 px-4 max-w-4xl animate-fade-in-up">
             <div className="glass rounded-2xl p-6 md:p-8 border border-slate-100 animate-bounce-in">
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-full bg-gradient-to-br from-green-100 to-blue-100 animate-pulse">
+                    <div className="p-3 rounded-full bg-linear-to-br from-green-100 to-blue-100 animate-pulse">
                         <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
@@ -70,7 +70,7 @@ export default function DataRightsPage() {
                         </div>
                         GDPR Rights (EU Residents)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-blue-400 to-blue-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -149,7 +149,7 @@ export default function DataRightsPage() {
                         </div>
                         CCPA Rights (California Residents)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-orange-400 to-orange-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -206,7 +206,7 @@ export default function DataRightsPage() {
                         </div>
                         Consent Management
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-teal-400 to-teal-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
@@ -283,7 +283,7 @@ export default function DataRightsPage() {
                         </div>
                         Request History & Status
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-gray-400 to-gray-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
@@ -341,7 +341,7 @@ export default function DataRightsPage() {
                         </div>
                         Need Help?
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
