@@ -31,7 +31,7 @@ export default function Navbar() {
 
     return (
         <nav className='sticky top-0 z-50' role="navigation" aria-label="Primary">
-            <div className="py-3 md:py-4 glass shadow-sm overflow-visible relative z-[70]">
+            <div className="py-3 md:py-4 glass shadow-sm overflow-visible relative z-70">
                 <div className="container mx-auto px-4 flex justify-between items-center">
                     <div className="logo">
                         <Link href="/" className="text-2xl font-bold" style={{ color: 'var(--brand-900)' }}>
@@ -108,7 +108,7 @@ export default function Navbar() {
                 {/* Mobile menu */}
                 <div
                     id="mobile-menu"
-                    className={`md:hidden fixed w-[100vw] rounded-b-2xl mt-4 glass border-t border-gray-100 shadow-xl/20 z-50
+                    className={`md:hidden fixed w-screen rounded-b-2xl mt-4 glass border-t border-gray-100 shadow-xl/20 z-50
                         transition-transform duration-500 ease-in-out
                         ${isMenuOpen ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-10 opacity-0 pointer-events-none"}`}
                     style={{ willChange: "transform, opacity" }}
