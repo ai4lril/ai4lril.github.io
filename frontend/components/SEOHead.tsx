@@ -56,7 +56,7 @@ export default function SEOHead({
 
             {/* Additional Meta Tags */}
             <meta name="author" content="Alvyn Abranches" />
-            <meta name="publisher" content="Language Data Collection Project" />
+            <meta name="publisher" content="ILHRF" />
             <meta name="language" content="English" />
             <meta name="revisit-after" content="7 days" />
 
@@ -88,12 +88,12 @@ export function generatePageStructuredData(
         "url": `https://ai4lril.github.io${url}`,
         "publisher": {
             "@type": "Organization",
-            "name": "Language Data Collection Project",
+            "name": "ILHRF",
             "url": "https://ai4lril.github.io"
         },
         "isPartOf": {
             "@type": "WebSite",
-            "name": "Language Data Collection",
+            "name": "ILHRF",
             "url": "https://ai4lril.github.io"
         }
     };

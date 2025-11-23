@@ -6,7 +6,6 @@
 
 generator client {
   provider = "prisma-client-js"
-  output   = "../generated/prisma"
 }
 
 datasource db {
@@ -28,6 +27,7 @@ model User {
   birth_date               DateTime
   gender                   String
   religion                 String?
+  mother                   String?
   first_language           String
   second_language          String?
   third_language           String?
@@ -38,5 +38,292 @@ model User {
   updated_at               DateTime  @updatedAt
   deleted_at               DateTime?
 
+  // Relations
+  nerAnnotations           NerAnnotation[]
+  nerResults              NerResult[]
+  posResults              PosResult[]
+  translationResults      TranslationResult[]
+  sentimentResults        SentimentResult[]
+  emotionResults          EmotionResult[]
+  userActivities          UserActivity[]
+  contributions           Contribution[]
+  contributionsReviewed   Contribution[]        @relation("ContributionReviewer")
+  securityEvents          SecurityEvent[]
+  securityEventsResolved  SecurityEvent[]       @relation("SecurityResolver")
+  auditLogs               AuditLog[]
+
   @@map("users")
+}
+
+model Sentence {
+  id            String   @id @default(cuid())
+  text          String
+  languageCode  String   @map("language_code")
+  isActive      Boolean  @default(true) @map("is_active")
+  difficulty    String?  // easy, medium, hard
+  taskType      String   @map("task_type") // 'ner', 'translation', etc.
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sourceMappings TranslationMapping[] @relation("SourceSentence")
+  targetMappings TranslationMapping[] @relation("TargetSentence")
+  nerAnnotations NerAnnotation[]
+  nerResults NerResult[]
+  posResults PosResult[]
+  translationResults TranslationResult[]
+  sentimentResults SentimentResult[]
+  emotionResults EmotionResult[]
+  speechRecordings SpeechRecording[]
+  questionSubmissions QuestionSubmission[]
+
+  @@map("sentences")
+}
+
+model TranslationMapping {
+  id            String   @id @default(cuid())
+  srcSentenceId String   @map("src_sentence_id")
+  tgtSentenceId String   @map("tgt_sentence_id")
+  userId        String?  @map("user_id")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  srcSentence   Sentence @relation("SourceSentence", fields: [srcSentenceId], references: [id])
+  tgtSentence   Sentence @relation("TargetSentence", fields: [tgtSentenceId], references: [id])
+
+  @@unique([srcSentenceId, tgtSentenceId, userId])
+  @@map("translation_mappings")
+}
+
+model SpeechRecording {
+  id            String   @id @default(cuid())
+  sentenceId    String   @map("sentence_id")
+  userId        String?  @map("user_id")
+  audioFile     String   @map("audio_file") // File path or URL to audio file
+  audioFormat   String   @map("audio_format") // e.g., 'wav', 'webm', 'mp3'
+  duration      Float?   // Duration in seconds
+  fileSize      Int?     @map("file_size") // File size in bytes
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence @relation(fields: [sentenceId], references: [id])
+
+  @@map("speech_recordings")
+}
+
+model QuestionSubmission {
+  id            String   @id @default(cuid())
+  sentenceId    String   @map("sentence_id") // Reference to the question sentence
+  userId        String?  @map("user_id")
+  submittedText String   @map("submitted_text") // The actual question text submitted by user
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence @relation(fields: [sentenceId], references: [id])
+
+  @@map("question_submissions")
+}
+
+model NerResult {
+  id            String   @id @default(cuid())
+  sentenceId    String   @map("sentence_id")
+  userId        String?  @map("user_id")
+  entities      Json     // Store NER entities as JSON
+  confidence    Float?   // Overall confidence score
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence @relation(fields: [sentenceId], references: [id])
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@map("ner_results")
+}
+
+model PosResult {
+  id            String   @id @default(cuid())
+  sentenceId    String   @map("sentence_id")
+  userId        String?  @map("user_id")
+  tokens        Json     // Store POS tokens as JSON
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence @relation(fields: [sentenceId], references: [id])
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@map("pos_results")
+}
+
+model TranslationResult {
+  id                String   @id @default(cuid())
+  sentenceId        String   @map("sentence_id")
+  userId            String?  @map("user_id")
+  sourceLanguage    String   @map("source_language")
+  targetLanguage    String   @map("target_language")
+  originalText      String   @map("original_text")
+  translatedText    String   @map("translated_text")
+  confidence        Float?
+  isValidated       Boolean  @default(false) @map("is_validated")
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence          Sentence @relation(fields: [sentenceId], references: [id])
+  user              User?    @relation(fields: [userId], references: [id])
+
+  @@map("translation_results")
+}
+
+model SentimentResult {
+  id            String   @id @default(cuid())
+  sentenceId    String?  @map("sentence_id")
+  userId        String?  @map("user_id")
+  text          String   // Text that was analyzed
+  sentiment     String   // positive, negative, neutral
+  confidence    Float
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence? @relation(fields: [sentenceId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@map("sentiment_results")
+}
+
+model EmotionResult {
+  id            String   @id @default(cuid())
+  sentenceId    String?  @map("sentence_id")
+  userId        String?  @map("user_id")
+  text          String   // Text that was analyzed
+  emotion       String   // joy, sadness, anger, fear, surprise, disgust
+  confidence    Float
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence      Sentence? @relation(fields: [sentenceId], references: [id])
+  user          User?     @relation(fields: [userId], references: [id])
+
+  @@map("emotion_results")
+}
+
+model SystemMetric {
+  id            String   @id @default(cuid())
+  metricType    String   @map("metric_type") // 'response_time', 'error_rate', 'connections', 'cache_hit_rate', 'memory', 'disk'
+  value         Float
+  unit          String?  // 'ms', '%', 'MB', 'GB', etc.
+  timestamp     DateTime @default(now())
+  metadata      Json?    // Additional context data
+
+  @@map("system_metrics")
+}
+
+model UserActivity {
+  id            String   @id @default(cuid())
+  userId        String?  @map("user_id")
+  action        String   // 'login', 'logout', 'contribution', 'validation', etc.
+  resource      String?  // What was acted upon
+  metadata      Json?    // Additional context
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  timestamp     DateTime @default(now())
+
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@map("user_activities")
+}
+
+model Contribution {
+  id            String   @id @default(cuid())
+  userId        String   @map("user_id")
+  type          String   // 'audio', 'text', 'translation', 'annotation', 'validation'
+  content       String   // The actual content or reference
+  language      String
+  status        String   @default("pending") // 'pending', 'approved', 'rejected', 'validated'
+  metadata      Json?    // Duration, quality scores, etc.
+  reviewedBy    String?  @map("reviewed_by")
+  reviewedAt    DateTime? @map("reviewed_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user          User     @relation(fields: [userId], references: [id])
+  reviewer      User?    @relation("ContributionReviewer", fields: [reviewedBy], references: [id])
+
+  @@map("contributions")
+}
+
+model SecurityEvent {
+  id            String   @id @default(cuid())
+  eventType     String   @map("event_type") // 'login_attempt', 'failed_login', 'suspicious_activity', etc.
+  severity      String   @default("low") // 'low', 'medium', 'high', 'critical'
+  userId        String?  @map("user_id")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  description   String
+  metadata      Json?
+  resolved      Boolean  @default(false)
+  resolvedAt    DateTime? @map("resolved_at")
+  resolvedBy    String?  @map("resolved_by")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id])
+  resolver      User?    @relation("SecurityResolver", fields: [resolvedBy], references: [id])
+
+  @@map("security_events")
+}
+
+model AuditLog {
+  id            String   @id @default(cuid())
+  userId        String?  @map("user_id")
+  action        String   // What was done
+  resource      String   // What was affected
+  resourceId    String?  @map("resource_id")
+  oldValues     Json?    @map("old_values")
+  newValues     Json?    @map("new_values")
+  ipAddress     String?  @map("ip_address")
+  userAgent     String?  @map("user_agent")
+  timestamp     DateTime @default(now())
+
+  // Relations
+  user          User?    @relation(fields: [userId], references: [id])
+
+  @@map("audit_logs")
+}
+
+model NerAnnotation {
+  id           String   @id @default(cuid())
+  sentenceId   String   @map("sentence_id")
+  userId       String?  @map("user_id")
+  annotations  Json     // Store the token-level annotations
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  sentence     Sentence @relation(fields: [sentenceId], references: [id])
+  user         User?    @relation(fields: [userId], references: [id])
+
+  @@map("ner_annotations")
 }

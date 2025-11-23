@@ -1,0 +1,120 @@
+config:
+  target: 'http://localhost:5566'
+  phases:
+    - duration: 60
+      arrivalRate: 10
+      name: 'Warm up phase'
+    - duration: 120
+      arrivalRate: 20
+      name: 'Load testing phase'
+    - duration: 60
+      arrivalRate: 50
+      name: 'Stress testing phase'
+    - duration: 30
+      arrivalRate: 5
+      name: 'Cooldown phase'
+  defaults:
+    headers:
+      Content-Type: 'application/json'
+  processor: './test/performance/processor.js'
+
+scenarios:
+  - name: 'NLP API Load Test'
+    weight: 70
+    flow:
+      - get:
+          url: '/api'
+          expect:
+            - statusCode: 200
+      - post:
+          url: '/api/sentiment'
+          json:
+            text: 'This is a sample text for sentiment analysis testing with random content {{ $randomString() }}'
+          expect:
+            - statusCode: 200
+          capture:
+            json: '$.sentiment'
+            as: 'sentiment_result'
+      - post:
+          url: '/api/emotion'
+          json:
+            text: 'I am feeling {{ $randomEmotion() }} about this test'
+          expect:
+            - statusCode: 200
+      - post:
+          url: '/api/ner'
+          json:
+            text: '{{ $randomSentence() }}'
+            language: 'en'
+          expect:
+            - statusCode: 200
+      - post:
+          url: '/api/pos'
+          json:
+            text: '{{ $randomSentence() }}'
+          expect:
+            - statusCode: 200
+      - post:
+          url: '/api/translate'
+          json:
+            text: '{{ $randomSentence() }}'
+            target_language: 'es'
+            source_language: 'en'
+          expect:
+            - statusCode: 200
+      - get:
+          url: '/api/ner-sentences?languageCode=en'
+          expect:
+            - statusCode: 200
+      - think: 1000
+
+  - name: 'Data Retrieval Test'
+    weight: 20
+    flow:
+      - get:
+          url: '/api/ner-sentences'
+          expect:
+            - statusCode: 200
+      - get:
+          url: '/api/translation-sentences'
+          expect:
+            - statusCode: 200
+      - think: 500
+
+  - name: 'Error Handling Test'
+    weight: 10
+    flow:
+      - post:
+          url: '/api/sentiment'
+          json:
+            text: ''
+          expect:
+            - statusCode: 400
+      - post:
+          url: '/api/translate'
+          json:
+            text: 'Hello world'
+            target_language: 'invalid'
+          expect:
+            - statusCode: 400
+      - get:
+          url: '/api/ner-sentences?languageCode=nonexistent'
+          expect:
+            - statusCode: 200
+      - think: 2000
+
+# Performance thresholds
+ensure:
+  - p95.response_time < 1000
+  - rps.mean > 10
+
+# Reporting
+reporting:
+  - module: 'artillery-plugin-metrics-by-endpoint'
+  - module: 'artillery-plugin-response-times'
+  - module: 'final-stats'
+    options:
+      percentiles:
+        - 50
+        - 95
+        - 99

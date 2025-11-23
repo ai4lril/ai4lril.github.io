@@ -128,6 +128,12 @@ export default function ContactForm() {
             return;
         }
 
+        const formData = new FormData(e.target as HTMLFormElement);
+        if (formData.get('website')?.toString().trim()) {
+            setErrors({ general: "Spam detected. Please try submitting again without filling hidden fields." });
+            return;
+        }
+
         const validationErrors = validate();
         if (Object.keys(validationErrors).length > 0) {
             setErrors(validationErrors);
@@ -171,7 +177,7 @@ export default function ContactForm() {
     return (
         <>
             {success && (
-                <div className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in-up">
+                <div role="alert" className="mb-8 p-4 bg-green-50 border border-green-200 rounded-lg animate-fade-in-up">
                     <div className="flex items-center">
                         <svg className="w-5 h-5 text-green-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -182,7 +188,7 @@ export default function ContactForm() {
             )}
 
             {errors.general && (
-                <div className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg animate-fade-in-up">
+                <div role="alert" className="mb-8 p-4 bg-red-50 border border-red-200 rounded-lg animate-fade-in-up">
                     <div className="flex items-center">
                         <svg className="w-5 h-5 text-red-600 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -204,12 +210,14 @@ export default function ContactForm() {
                             value={name}
                             onChange={(e) => setName(e.target.value)}
                             onBlur={() => handleBlur("name")}
-                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("name") ? "border-red-300" : "border-slate-300"
+                            className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("name") ? "border-red-300" : "border-slate-300"
                                 }`}
                             placeholder="Your full name"
+                            aria-invalid={showError("name")}
+                            aria-describedby={showError("name") ? "name-error" : undefined}
                         />
                         {showError("name") && (
-                            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                            <p id="name-error" className="mt-1 text-sm text-red-600" role="alert">{errors.name}</p>
                         )}
                     </div>
 
@@ -223,12 +231,14 @@ export default function ContactForm() {
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
                             onBlur={() => handleBlur("email")}
-                            className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("email") ? "border-red-300" : "border-slate-300"
+                            className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("email") ? "border-red-300" : "border-slate-300"
                                 }`}
                             placeholder="your.email@example.com"
+                            aria-invalid={showError("email")}
+                            aria-describedby={showError("email") ? "email-error" : undefined}
                         />
                         {showError("email") && (
-                            <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                            <p id="email-error" className="mt-1 text-sm text-red-600" role="alert">{errors.email}</p>
                         )}
                     </div>
                 </div>
@@ -237,19 +247,32 @@ export default function ContactForm() {
                     <label htmlFor="message" className="block text-sm font-medium text-slate-700 mb-2">
                         Message *
                     </label>
+                    <p className="text-slate-500 text-sm mb-2">Describe your query or feedback in detail. We appreciate detailed messages to better assist you.</p>
                     <textarea
                         id="message"
                         value={message}
                         onChange={(e) => setMessage(e.target.value)}
                         onBlur={() => handleBlur("message")}
                         rows={6}
-                        className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical ${showError("message") ? "border-red-300" : "border-slate-300"
+                        className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical ${showError("message") ? "border-red-300" : "border-slate-300"
                             }`}
                         placeholder="Tell us about your project, collaboration idea, or how we can help..."
+                        aria-invalid={showError("message")}
+                        aria-describedby={showError("message") ? "message-error" : undefined}
                     />
                     {showError("message") && (
-                        <p className="mt-1 text-sm text-red-600">{errors.message}</p>
+                        <p id="message-error" className="mt-1 text-sm text-red-600" role="alert">{errors.message}</p>
                     )}
+                </div>
+
+                <div style={{ position: 'absolute', left: '-9999px' }}>
+                    <input
+                        type="text"
+                        name="website"
+                        tabIndex={-1}
+                        aria-hidden="true"
+                        autoComplete="off"
+                    />
                 </div>
 
                 <div className="flex justify-end">

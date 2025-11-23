@@ -1,6 +1,6 @@
 {
-  "name": "Language Data Collection",
-  "short_name": "Language Data",
+  "name": "ILHRF",
+  "short_name": "ILHRF",
   "description": "Open-source platform supporting 23 languages for AI training data collection",
   "start_url": "/",
   "display": "standalone",

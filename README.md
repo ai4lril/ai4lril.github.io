@@ -1,175 +1,195 @@
-# Voice Data Collection
-A voice data collection application with a Next.js frontend and NestJS backend.
+# Voice Data Collection Platform
 
-## Project Structure
+A comprehensive platform for collecting and processing voice data with support for multiple Indian languages, featuring a modern web interface and powerful NLP processing capabilities.
+
+## 🏗️ Architecture
 
 ```
 voice-data-collection/
-├── frontend/          # Next.js application
-├── backend/           # NestJS API server
-├── package.json       # Root npm scripts
-└── README.md         # This file
+├── frontend/          # Next.js React application
+│   ├── app/          # Next.js 15 App Router pages
+│   ├── components/   # React components
+│   ├── lib/          # Utilities and configurations
+│   ├── Dockerfile    # Frontend Docker configuration
+│   └── package.json  # Frontend dependencies
+├── backend/          # NestJS API server
+│   ├── src/          # NestJS source code
+│   ├── prisma/       # Database schema and migrations
+│   ├── Dockerfile.dev # Backend development Docker config
+│   └── package.json  # Backend dependencies
+├── compose.yml       # Complete Docker Compose stack
+└── dev-setup.sh      # One-command development setup
 ```
 
-## Quick Start
+## 🚀 Quick Start
 
-### Option 1: Use Root NPM Scripts (Recommended)
+### Prerequisites
 
-First, install all dependencies:
+- Docker & Docker Compose
+- Node.js 18+ (for local development)
+- pnpm package manager
+
+### Development Setup
+
+1. **Clone the repository**
+
 ```bash
-npm run install:all
+git clone <repository-url>
+cd voice-data-collection
 ```
 
-Then choose how to start the applications:
+2. **Run the development setup**
 
 ```bash
-# Start both frontend and backend in development mode
-npm run dev
-
-# Start only frontend (Next.js on port 3000)
-npm run dev:frontend
-
-# Start only backend (NestJS on port 3001)
-npm run dev:backend
-
-# Start backend with Docker (PostgreSQL + NestJS)
-npm run dev:docker
-
-# Start both in production mode
-npm run start
-
-# Build both applications
-npm run build
-
-# Run tests for both applications
-npm run test
-
-# Lint both applications
-npm run lint
+./dev-setup.sh
 ```
 
-### Option 2: Manual Start
+This will:
 
-#### Frontend
+- ✅ Set up the backend environment
+- ✅ Install backend dependencies
+- ✅ Generate Prisma client
+- ✅ Start the complete stack (frontend, backend, database) with Docker Compose
+
+## 📊 Services
+
+Once running, you'll have access to:
+
+- **Frontend**: `http://localhost:5577`
+- **Backend API**: `http://localhost:5566/api`
+- **YugaByteDB**: `localhost:5433`
+- **Database Admin**: `http://localhost:7000` (YugaByteDB UI)
+- **Database Admin**: `http://localhost:9000` (YugaByteDB tserver UI)
+
+## 🛠️ Development Workflow
+
+### Backend Development
+
+```bash
+cd backend
+pnpm run start:dev  # Local development
+```
+
+### Frontend Development
 
 ```bash
 cd frontend
-npm install
-npm run dev
+npm run dev  # Local development
 ```
 
-The frontend will be available at `http://localhost:3000`
-
-#### Backend
+### Database Management
 
 ```bash
 cd backend
-npm install
-npm run start:dev
+pnpm prisma studio    # Database GUI
+pnpm prisma migrate   # Run migrations
 ```
 
-The backend API will be available at `http://localhost:3001`
+## 📁 Project Structure
 
-## Docker Setup
+### Frontend (`/frontend`)
 
-**Docker is NOT started automatically.** It's only used for the PostgreSQL database.
+- **Framework**: Next.js 15 with React 19
+- **Styling**: Tailwind CSS
+- **State**: React hooks
+- **Routing**: Next.js App Router
 
-### Docker Usage:
+### Backend (`/backend`)
 
-```bash
-# Start PostgreSQL in Docker + Backend locally
-npm run dev:docker
+- **Framework**: NestJS
+- **Database**: YugaByteDB (PostgreSQL-compatible)
+- **ORM**: Prisma
+- **Authentication**: JWT with Passport.js
+- **API**: RESTful endpoints
 
-# Manual Docker commands:
-cd backend
+## 🔧 Configuration
 
-# Start only PostgreSQL in Docker
-docker-compose up -d
+### Environment Variables
 
-# Stop PostgreSQL
-docker-compose down
+Backend environment variables are configured in `compose.yml`:
 
-# View PostgreSQL logs
-docker-compose logs postgres
-
-# Check running containers
-docker ps
+```yaml
+environment:
+  DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb:5433/voice_data_collection?schema=public"
+  JWT_SECRET: "your-super-secret-jwt-key-change-this-in-production"
+  PORT: 3001
+  NODE_ENV: development
 ```
 
-### What Runs Where:
-- **Frontend**: Runs locally on port 3000
-- **Backend**: Runs locally on port 3001  
-- **PostgreSQL**: Runs in Docker container on port 5432
+## 🗄️ Database
 
-## Error Handling & Debugging
+### YugaByteDB Setup (Default)
 
-### When Running Both Servers (`npm run dev`):
-Both servers output to the same terminal, making it hard to distinguish errors.
+- **Port**: 5433 (YSQL), 9042 (YCQL), 6379 (YEDIS)
+- **Database**: voice_data_collection
+- **User**: yugabyte
+- **Password**: yugabyte
 
-### For Better Error Visibility:
+### PostgreSQL Setup (Alternative)
 
-#### Option 1: Run Servers Separately (Recommended for Debugging)
-```bash
-# Terminal 1 - Frontend
-npm run dev:frontend
+To use PostgreSQL instead, comment out the `yugabytedb` service in `compose.yml` and uncomment the `postgres` service.
 
-# Terminal 2 - Backend
-npm run dev:backend
-```
+### Prisma Schema
 
-#### Option 2: Check Individual Logs
-```bash
-# Frontend errors will show in the frontend terminal
-# Backend errors will show in the backend terminal
-# Database errors will show in Docker logs
-docker-compose -f backend/docker-compose.yml logs postgres
-```
+Located at `backend/prisma/schema.prisma` with full user model including:
 
-## Available NPM Scripts
+- Authentication fields
+- Language preferences (up to 5 languages)
+- Geographic information
+- Profile data
 
-### Development
-- `npm run dev` - Start both frontend and backend in development mode
-- `npm run dev:frontend` - Start only frontend
-- `npm run dev:backend` - Start only backend
-- `npm run dev:docker` - Start backend with Docker (PostgreSQL + NestJS)
+## 🔐 Authentication
 
-### Production
-- `npm run start` - Start both applications in production mode
-- `npm run start:frontend` - Start only frontend in production
-- `npm run start:backend` - Start only backend in production
+- **JWT-based authentication**
+- **Signup/Login endpoints**
+- **Protected NLP processing routes**
+- **User profile management**
 
-### Build
-- `npm run build` - Build both applications
-- `npm run build:frontend` - Build only frontend
-- `npm run build:backend` - Build only backend
+## 🧠 NLP Features
 
-### Utilities
-- `npm run install:all` - Install dependencies for all applications
-- `npm run test` - Run tests for both applications
-- `npm run lint` - Lint both applications
-- `npm run clean` - Clean build artifacts
+- **Named Entity Recognition (NER)**
+- **Part-of-Speech Tagging (POS)**
+- **Text Translation**
+- **Sentiment Analysis**
+- **Emotion Detection**
+- **Translation Review System**
 
-## Development
+## 🌐 Supported Languages
 
-Each folder is independent and can be used outside of this workspace:
+The platform supports 23+ Indian languages including:
 
-- **Frontend**: Standard Next.js application with TypeScript and Tailwind CSS
-- **Backend**: NestJS application with Prisma ORM and PostgreSQL
+- Assamese, Bengali, Gujarati, Hindi
+- Kannada, Malayalam, Marathi, Punjabi
+- Tamil, Telugu, Urdu, English
+- And many more regional languages
 
-## Technologies Used
+## 🐳 Docker Development
 
-### Frontend
-- Next.js 15
-- React 19
-- TypeScript
-- Tailwind CSS
+The `compose.yml` provides:
 
-### Backend
-- NestJS
-- Prisma ORM
-- PostgreSQL (Docker)
-- TypeScript
+- ✅ **Hot reloading** for backend code changes
+- ✅ **Volume mounting** for live development
+- ✅ **Health checks** for service dependencies
+- ✅ **Development optimization** with proper caching
 
-## License
+## 📚 Documentation
 
-Private project - not licensed for public use. 
+- **Backend API**: See `backend/README.md`
+- **Frontend**: See `frontend/README.md`
+- **Database**: See `backend/prisma/schema.prisma`
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Run tests
+5. Submit a pull request
+
+## 📄 License
+
+This project is open-source and available under the MIT License.
+
+---
+
+**Built with ❤️ for linguistic diversity and AI research**

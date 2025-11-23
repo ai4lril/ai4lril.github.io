@@ -1,91 +1,105 @@
 # Voice Data Collection Backend
 
-A NestJS API server for the voice data collection application.
-
-## Description
-
-This is the backend API for the voice data collection platform. It provides RESTful endpoints for managing voice recordings, user authentication, and data analytics.
+A NestJS backend API for voice data collection with NLP processing capabilities.
 
 ## Features
 
-- RESTful API endpoints
-- User authentication and authorization
-- Voice recording management
-- Data analytics and reporting
-- Prisma ORM with PostgreSQL
-- Docker support
+- User authentication (signup/login) with JWT
+- YugaByteDB integration
+- NLP endpoints for NER, POS tagging, translation, sentiment analysis, and emotion detection
+- CORS enabled for frontend integration
 
-## Project setup
+## Setup
 
+### Quick Development Setup
+
+1. **Run the development setup script** (recommended):
+```bash
+# From the root directory
+./dev-setup.sh
+```
+
+This will:
+- Create the `backend/.env.development` file
+- Install backend dependencies
+- Generate Prisma client
+- Start the complete development environment (frontend, backend, database) with Docker Compose
+
+### Manual Setup
+
+1. **Install dependencies**:
 ```bash
 cd backend
-npm install
+pnpm install
 ```
 
-## Database Setup
+2. **Environment variables are configured in compose.yml**:
+```env
+# Database
+DATABASE_URL="postgresql://yugabyte:yugabyte@yugabytedb:5433/voice_data_collection?schema=public"
 
-1. Make sure you have PostgreSQL installed and running
-2. Copy `.env.example` to `.env` and configure your database connection
-3. Run database migrations:
-   ```bash
-   npx prisma migrate dev
-   ```
+# JWT
+JWT_SECRET="your-super-secret-jwt-key-change-this-in-production"
 
-## Compile and run the project
+# Application
+PORT=3001
+NODE_ENV=development
+```
 
+3. **Generate Prisma client**:
 ```bash
-# development
-npm run start
-
-# watch mode
-npm run start:dev
-
-# production mode
-npm run start:prod
+cd backend
+pnpm prisma generate
 ```
 
-## Run tests
-
+4. **Start development environment**:
 ```bash
-# unit tests
-npm run test
-
-# e2e tests
-npm run test:e2e
-
-# test coverage
-npm run test:cov
+# From the root directory
+docker-compose -f compose.yml up --build
 ```
 
-## Docker
+### Development Features
 
-To run the application with Docker:
+- ✅ **Hot Reloading**: Code changes automatically restart the server
+- ✅ **Volume Mounting**: Source code is mounted for live development
+- ✅ **Health Checks**: Services wait for dependencies to be ready
+- ✅ **Environment Isolation**: Development-specific configuration
+- ✅ **Database Persistence**: YugaByteDB data persists between restarts
 
-```bash
-docker-compose up
-```
+## API Endpoints
 
-## API Documentation
+### Authentication
+- `POST /api/auth/signup` - User registration
+- `POST /api/auth/login` - User login
+- `POST /api/auth/me` - Get current user profile (requires authentication)
 
-The API documentation will be available at `http://localhost:3001/api` when the server is running.
+### NLP Processing (requires authentication)
+- `POST /api/ner` - Named Entity Recognition
+- `POST /api/pos` - Part-of-Speech Tagging
+- `POST /api/translate` - Text Translation
+- `POST /api/translate-review` - Review Translation Quality
+- `POST /api/sentiment` - Sentiment Analysis
+- `POST /api/emotion` - Emotion Detection
+
+## User Schema
+
+The user model includes the following fields:
+- first_name, last_name, display_name
+- username, password, email, phone_number
+- current_residence_pincode, birth_place_pincode, birth_date
+- gender, religion, mother
+- first_language through fifth_language (optional)
+- profile_picture_url (optional)
 
 ## Development
 
-This is a NestJS application with TypeScript, Prisma ORM, and PostgreSQL.
+```bash
+# Start in development mode
+pnpm run start:dev
 
-### Available Scripts
+# Build for production
+pnpm run build
 
-- `npm run start` - Start the application
-- `npm run start:dev` - Start in development mode with hot reload
-- `npm run start:debug` - Start in debug mode
-- `npm run start:prod` - Start in production mode
-- `npm run build` - Build the application
-- `npm run test` - Run unit tests
-- `npm run test:e2e` - Run end-to-end tests
-- `npm run test:cov` - Run tests with coverage
-- `npm run lint` - Run ESLint
-- `npm run format` - Format code with Prettier
-
-## License
-
-Private project - not licensed for public use.
+# Run tests
+pnpm run test
+```

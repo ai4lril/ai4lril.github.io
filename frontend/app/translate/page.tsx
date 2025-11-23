@@ -1,35 +1,64 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { sourceTexts } from "./data";
 import { codeToLabel, LANGUAGES } from "@/lib/languages";
 import { getPreferredLanguage, getPreferredTargetLanguage, setPreferredTargetLanguage } from "@/lib/langPreference";
 
+interface TranslationSentence {
+    id: string;
+    text: string;
+    languageCode: string;
+    isActive: boolean;
+    difficulty?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export default function TranslatePage() {
     const [lang, setLang] = useState<string | null>(null);
-    const [pool, setPool] = useState(sourceTexts);
+    const [pool, setPool] = useState<TranslationSentence[]>([]);
     const [index, setIndex] = useState(0);
     const [target, setTarget] = useState<string>("eng_latn"); // Will be updated from storage or keep default
     const [translation, setTranslation] = useState<string>("");
     const [error, setError] = useState<string>("");
+    const [loading, setLoading] = useState<boolean>(true);
+
+    // Fetch translation sentences from backend
+    const fetchSentences = async (languageCode?: string) => {
+        try {
+            setLoading(true);
+            const url = languageCode
+                ? `/api/translation-sentences?languageCode=${languageCode}`
+                : '/api/translation-sentences';
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch translation sentences');
+            }
+            const sentences = await response.json();
+            setPool(sentences);
+            setIndex(0);
+            setTranslation("");
+            setError("");
+        } catch (error) {
+            console.error('Error fetching translation sentences:', error);
+            setError('Failed to load translation sentences');
+            setPool([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
-        const initial = saved ? sourceTexts.filter(s => s.langCode === saved) : sourceTexts;
-        setPool(initial.length > 0 ? initial : sourceTexts);
-        setIndex(0);
+        fetchSentences(saved || undefined);
     }, []);
 
     useEffect(() => {
         function onLangChanged(e: Event) {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-            const next = code ? sourceTexts.filter(s => s.langCode === code) : sourceTexts;
-            setPool(next.length > 0 ? next : sourceTexts);
-            setIndex(0);
-            setTranslation("");
-            setError("");
+            fetchSentences(code);
         }
 
         function onTargetChanged(e: Event) {
@@ -64,7 +93,7 @@ export default function TranslatePage() {
 
     // Reset to default if target equals source (avoid same language translation)
     useEffect(() => {
-        if (current?.langCode && target === current.langCode) {
+        if (current?.languageCode && target === current.languageCode) {
             setTarget("eng_latn");
             try {
                 setPreferredTargetLanguage("eng_latn");
@@ -72,7 +101,7 @@ export default function TranslatePage() {
             } catch { }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [current?.langCode]);
+    }, [current?.languageCode]);
 
     const nextItem = () => {
         const next = (index + 1) % pool.length;
@@ -81,31 +110,53 @@ export default function TranslatePage() {
         setError("");
     };
 
-    const submit = (e: React.FormEvent) => {
+    const submit = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!target) { setError("Select a target language."); return; }
         if (!translation.trim()) { setError("Enter a translation."); return; }
-        // Only log in development environment
-        if (process.env.NODE_ENV === 'development') {
-            console.log("Translate submit", {
-                sourceId: current?.id,
-                sourceLang: current?.langCode,
-                sourceText: current?.text,
-                targetLang: target,
-                translation,
+        if (!current) { setError("No source text available."); return; }
+
+        try {
+            setError(""); // Clear any previous errors
+
+            // Submit translation to backend
+            const response = await fetch('/api/translation-submission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    sentenceId: current.id,
+                    translation: translation.trim(),
+                    targetLang: target,
+                    sourceLang: current.languageCode,
+                    // userId: undefined // Will be added when authentication is implemented
+                }),
             });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit translation');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                alert("Translation submitted successfully!");
+                nextItem();
+            } else {
+                throw new Error(result.message || 'Submission failed');
+            }
+        } catch (error) {
+            console.error('Error submitting translation:', error);
+            setError(error instanceof Error ? error.message : 'Failed to submit translation');
         }
-        // Show success message instead of alert
-        setError(""); // Clear any previous errors
-        alert("Translation submitted successfully!");
-        nextItem();
     };
 
     // Get all available languages except the current source language
     const targetOptions = LANGUAGES.filter(language => {
         // Only exclude if we have a valid current item with a language code
-        if (current?.langCode) {
-            return language.code !== current.langCode;
+        if (current?.languageCode) {
+            return language.code !== current.languageCode;
         }
         // If no current item, show all languages
         return true;
@@ -136,8 +187,17 @@ export default function TranslatePage() {
                             </span>
                         </h2>
 
-                        <div className="w-full p-4 rounded-md border border-slate-200 bg-white text-slate-800 mb-4">
-                            {current?.text}
+                        <div className="w-full p-4 rounded-md border border-slate-200 bg-white text-slate-800 mb-4 min-h-[80px] flex items-center">
+                            {loading ? (
+                                <div className="flex items-center space-x-2 text-slate-500">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-500"></div>
+                                    <span>Loading translation sentences...</span>
+                                </div>
+                            ) : pool.length === 0 ? (
+                                <span className="text-slate-500">No translation sentences available for the selected language.</span>
+                            ) : (
+                                current?.text || "No text available"
+                            )}
                         </div>
 
                         <form onSubmit={submit} className="space-y-3">
@@ -158,7 +218,7 @@ export default function TranslatePage() {
                                         setTarget(val);
                                         setPreferredTargetLanguage(val);
                                     }}
-                                    className={`w-full px-4 py-3 border-2 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.langCode
+                                    className={`w-full px-4 py-3 border-2 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.languageCode
                                         ? 'border-red-300 bg-red-50'
                                         : 'border-gray-200 hover:border-gray-300'
                                         }`}
@@ -175,7 +235,7 @@ export default function TranslatePage() {
                                 </select>
 
                                 {/* Error message */}
-                                {(!target || target === current?.langCode) && (
+                                {(!target || target === current?.languageCode) && (
                                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -197,14 +257,14 @@ export default function TranslatePage() {
                             <div className="flex gap-3 justify-center">
                                 <button
                                     type="submit"
-                                    disabled={!target || target === current?.langCode || !translation.trim()}
-                                    className={`group px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${(!target || target === current?.langCode || !translation.trim())
+                                    disabled={loading || pool.length === 0 || !target || target === current?.languageCode || !translation.trim()}
+                                    className={`group px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${(loading || pool.length === 0 || !target || target === current?.languageCode || !translation.trim())
                                         ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
                                         : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-400 hover:border-blue-500 hover:scale-105 active:scale-95'
                                         } flex items-center gap-2`}
                                 >
                                     <span>Submit & Next</span>
-                                    {(!target || target === current?.langCode || !translation.trim()) ? null : (
+                                    {(loading || pool.length === 0 || !target || target === current?.languageCode || !translation.trim()) ? null : (
                                         <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                         </svg>

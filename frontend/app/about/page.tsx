@@ -5,10 +5,11 @@ import type { Metadata } from "next";
 import Breadcrumb from '@/components/Breadcrumb';
 
 export const metadata: Metadata = {
-    title: "About | Supporting 23 Languages",
-    description: "Learn about the Language Data Collection project supporting 23 languages from Assamese to Urdu and English. Our mission to preserve linguistic diversity through open-source technology and AI development.",
+    title: "About | ILHRF - Indian Linguistic Heritage Research Foundation",
+    description: "Learn about ILHRF, supporting 23 Indian languages and English. Our mission to preserve linguistic diversity through open-source technology and AI development.",
     keywords: [
-        "about language data collection",
+        "about ILHRF",
+        "Indian Linguistic Heritage Research Foundation",
         "23 languages",
         "linguistic research",
         "Indian languages preservation",
@@ -24,7 +25,7 @@ export const metadata: Metadata = {
         "Dravidian languages"
     ],
     openGraph: {
-        title: "About Language Data Collection | 23 Languages Supported",
+        title: "About ILHRF | Indian Linguistic Heritage Research Foundation",
         description: "Discover our mission to preserve linguistic diversity through open-source technology. Supporting 23 languages from Assamese to Urdu and English for AI and NLP research.",
         type: "website",
         images: [
@@ -32,13 +33,13 @@ export const metadata: Metadata = {
                 url: "/og-about.jpg",
                 width: 1200,
                 height: 630,
-                alt: "About Language Data Collection - Supporting 23 Languages",
+                alt: "About ILHRF - Supporting 23 Languages",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "About Language Data Collection | 23 Languages",
+        title: "About ILHRF | 23 Languages",
         description: "Learn about our mission to preserve 23 languages through open-source technology and AI development.",
         images: ["/og-about.jpg"],
     },
@@ -58,17 +59,17 @@ export default function AboutPage() {
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                         </svg>
                     </div>
-                    <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">About us</h1>
+                    <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-slate-800">About ILHRF</h1>
                 </div>
                 <p className="mt-3 text-slate-600 text-lg leading-relaxed animate-fade-in-up animate-delay-200">
-                    We build practical tools to collect, annotate, and curate language data for underrepresented Indian languages and scripts. Our mission is to empower communities and researchers with ethical, accessible, and extensible workflows—aligned with the spirit of community projects like Common Voice, but focused on Indian languages.
+                    The Indian Linguistic Heritage Research Foundation (ILHRF) is dedicated to preserving and promoting the rich linguistic diversity of India through open-source technology and community-driven research. We build practical tools to collect, annotate, and curate language data for underrepresented Indian languages and scripts. Our mission is to empower communities and researchers with ethical, accessible, and extensible workflows—aligned with the spirit of community projects like Common Voice, but focused on Indian languages.
                 </p>
                 <div className="mt-6 flex justify-center">
                     <Image src="/globe.svg" alt="Illustration of global languages and scripts" width={120} height={120} />
                 </div>
                 <div className="mt-6 grid grid-cols-2 sm:grid-cols-4 gap-3 text-center animate-fade-in-up animate-delay-400">
                     <div className="group rounded-xl border border-slate-200 bg-white/95 hover:bg-white py-4 px-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
-                        <div className="text-2xl font-extrabold text-indigo-700 mb-1 group-hover:scale-110 transition-transform duration-300">3</div>
+                        <div className="text-2xl font-extrabold text-indigo-700 mb-1 group-hover:scale-110 transition-transform duration-300">23</div>
                         <div className="text-sm text-slate-600 font-medium">Languages</div>
                         <div className="mt-2 h-1 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
@@ -114,28 +115,28 @@ export default function AboutPage() {
                         <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
-                <p className="mt-2 text-slate-600">We support multiple data types to build robust, inclusive language resources.</p>
+                <p className="mt-2 text-slate-600">ILHRF supports multiple data types to build robust, inclusive language resources for Indian linguistic heritage.</p>
 
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="card rounded-2xl p-4 transition hover:shadow-lg hover:-translate-y-0.5">
                         <Image src="/window.svg" alt="Scripted speech icon" width={28} height={28} className="mb-2 opacity-80" />
                         <h3 className="font-medium text-slate-800">Scripted Speech</h3>
-                        <p className="mt-1 text-sm text-slate-600">Contributors read prompts aloud to gather clear pronunciation across scripts and dialects.</p>
+                        <p className="mt-1 text-sm text-slate-600">Contributors read prompts aloud to gather clear pronunciation across scripts and dialects, preserving linguistic heritage.</p>
                     </div>
                     <div className="card rounded-2xl p-4 transition hover:shadow-lg hover:-translate-y-0.5">
                         <Image src="/vercel.svg" alt="Spontaneous speech icon" width={28} height={28} className="mb-2 opacity-80" />
                         <h3 className="font-medium text-slate-800">Spontaneous Speech</h3>
-                        <p className="mt-1 text-sm text-slate-600">Upcoming: natural responses to prompts for conversational diversity and realistic acoustic conditions.</p>
+                        <p className="mt-1 text-sm text-slate-600">Upcoming: natural responses to prompts for richer accents and styles, capturing authentic cultural expression.</p>
                     </div>
                     <div className="card rounded-2xl p-4 transition hover:shadow-lg hover:-translate-y-0.5">
                         <Image src="/file.svg" alt="Transcription icon" width={28} height={28} className="mb-2 opacity-80" />
                         <h3 className="font-medium text-slate-800">Transcriptions</h3>
-                        <p className="mt-1 text-sm text-slate-600">Text transcriptions of audio clips help train ASR models and enable search.</p>
+                        <p className="mt-1 text-sm text-slate-600">Text transcriptions of audio clips help train ASR models and enable search, documenting oral traditions.</p>
                     </div>
                     <div className="card rounded-2xl p-4 transition hover:shadow-lg hover:-translate-y-0.5">
                         {/* <Image src="/next.svg" alt="Token classification icon" width={28} height={28} className="mb-2 opacity-80" /> */}
                         <h3 className="font-medium text-slate-800">Token Classification (POS & NER)</h3>
-                        <p className="mt-1 text-sm text-slate-600">Word-by-word UPOS tags and span-level BIO tags to support downstream NLP tasks.</p>
+                        <p className="mt-1 text-sm text-slate-600">Word-by-word UPOS tags and span-level BIO tags to support downstream NLP tasks, advancing computational linguistics for Indian heritage.</p>
                     </div>
                 </div>
             </section>
@@ -154,19 +155,19 @@ export default function AboutPage() {
                 <ol className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
                     <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
                         <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">1</span> Contribute</div>
-                        <p className="mt-1">Record speech, transcribe, or annotate tokens. Choose your language and script via the language switcher.</p>
+                        <p className="mt-1">Record speech, transcribe, or annotate tokens. Choose your language and script via the language switcher to preserve your linguistic heritage.</p>
                     </li>
                     <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
                         <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">2</span> Validate</div>
-                        <p className="mt-1">Peers review submissions for clarity and correctness using simple yes/no checks.</p>
+                        <p className="mt-1">Peers review submissions for clarity and correctness using simple yes/no checks, ensuring quality for research.</p>
                     </li>
                     <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
                         <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">3</span> Token Classification</div>
-                        <p className="mt-1">Assign UPOS tags or BIO entity labels, with script-aware tokenization and span support.</p>
+                        <p className="mt-1">Assign UPOS tags or BIO entity labels, with script-aware tokenization and span support for accurate linguistic analysis.</p>
                     </li>
                     <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
                         <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">4</span> Release</div>
-                        <p className="mt-1">Aggregated, anonymized datasets will be made available for research with clear licenses.</p>
+                        <p className="mt-1">Aggregated, anonymized datasets will be made available for research with clear licenses, supporting global linguistic studies.</p>
                     </li>
                 </ol>
             </section>
@@ -179,7 +180,7 @@ export default function AboutPage() {
                         <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
-                <p className="mt-2 text-slate-600">We center low‑resourced languages and zero‑resourced scripts, with community review to ensure quality and respect.</p>
+                <p className="mt-2 text-slate-600">ILHRF centers low‑resourced languages and zero‑resourced scripts, with community review to ensure quality and respect for cultural heritage.</p>
                 <div className="mt-4 flex justify-center">
                     <Image src="/globe.svg" alt="Community impact illustration" width={96} height={96} />
                 </div>
@@ -217,19 +218,19 @@ export default function AboutPage() {
                 <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="card rounded-2xl p-4 border border-slate-200">
                         <div className="font-semibold text-slate-800">Spontaneous Speech</div>
-                        <p className="mt-1 text-sm text-slate-700">Launch natural prompt responses for richer accents and styles.</p>
+                        <p className="mt-1 text-sm text-slate-700">Launch natural prompt responses for richer accents and styles to capture authentic linguistic heritage.</p>
                     </div>
                     <div className="card rounded-2xl p-4 border border-slate-200">
                         <div className="font-semibold text-slate-800">Mobile-first recordings</div>
-                        <p className="mt-1 text-sm text-slate-700">Improve UI for low bandwidth and small screens.</p>
+                        <p className="mt-1 text-sm text-slate-700">Improve UI for low bandwidth and small screens to reach more community contributors.</p>
                     </div>
                     <div className="card rounded-2xl p-4 border border-slate-200">
                         <div className="font-semibold text-slate-800">Quality signals</div>
-                        <p className="mt-1 text-sm text-slate-700">Rater agreement, confidence, and lightweight spam checks.</p>
+                        <p className="mt-1 text-sm text-slate-700">Rater agreement, confidence, and lightweight spam checks for reliable research data.</p>
                     </div>
                     <div className="card rounded-2xl p-4 border border-slate-200">
                         <div className="font-semibold text-slate-800">Research access</div>
-                        <p className="mt-1 text-sm text-slate-700">APIs and periodic dataset releases with documentation.</p>
+                        <p className="mt-1 text-sm text-slate-700">APIs and periodic dataset releases with documentation to support global linguistic studies.</p>
                     </div>
                 </div>
             </section>
@@ -244,7 +245,7 @@ export default function AboutPage() {
                                 <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
                             </span>
                         </h2>
-                        <p className="mt-2 text-slate-600">Interested in collaborating or contributing datasets? Reach out and join our efforts.</p>
+                        <p className="mt-2 text-slate-600">Interested in collaborating or contributing datasets to preserve Indian linguistic heritage? Reach out and join our efforts.</p>
                         <div className="mt-3">
                             <Image src="/vercel.svg" alt="Get involved illustration" width={64} height={64} />
                         </div>
@@ -297,7 +298,7 @@ export default function AboutPage() {
                                     <h2 className="text-3xl font-bold text-slate-800 mb-2">
                                         Meet Our Contributors
                                     </h2>
-                                    <p className="text-slate-600 text-lg">Passionate researchers and developers dedicated to language preservation</p>
+                                    <p className="text-slate-600 text-lg">Dedicated researchers and developers committed to preserving India's linguistic heritage</p>
                                 </div>
                             </div>
                         </div>
@@ -409,7 +410,7 @@ export default function AboutPage() {
                                 </svg>
                             </div>
                             <h3 className="text-lg font-semibold text-slate-800 mb-2">Join Our Team</h3>
-                            <p className="text-slate-600 text-sm mb-4">Interested in contributing to language preservation? We&apos;d love to hear from you.</p>
+                            <p className="text-slate-600 text-sm mb-4">Interested in contributing to the preservation of Indian linguistic heritage? We'd love to hear from you.</p>
                             <Link
                                 href="/contact"
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
@@ -450,7 +451,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Scripted speech, spontaneous speech, transcriptions, token-level annotations (POS, NER), and translations. We focus on Indian languages and scripts.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Scripted speech, spontaneous speech, transcriptions, token-level annotations (POS, NER), and translations. ILHRF focuses on Indian languages and scripts to preserve linguistic heritage.</p>
                     </details>
                     <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
                         <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-emerald-900 transition-colors duration-300">
@@ -466,7 +467,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">We avoid collecting directly identifying information. See our <Link className="text-indigo-600 hover:underline font-medium" href="/privacy">Privacy Policy</Link> for details.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">We avoid collecting directly identifying information. See our <Link className="text-indigo-600 hover:underline font-medium" href="/privacy">Privacy Policy</Link> for details on how ILHRF protects contributors' data.</p>
                     </details>
                     <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
                         <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-amber-900 transition-colors duration-300">
@@ -482,7 +483,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Yes. Use the <Link className="text-indigo-600 hover:underline font-medium" href="/contact">contact page</Link> to propose new languages or scripts and we&apos;ll coordinate onboarding.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Yes. Use the <Link className="text-indigo-600 hover:underline font-medium" href="/contact">contact page</Link> to propose new languages or scripts and we'll coordinate onboarding for ILHRF.</p>
                     </details>
                     <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
                         <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-purple-900 transition-colors duration-300">
@@ -498,7 +499,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Annotations help train and evaluate NLP models for Indian languages and scripts. Aggregated data may be released for research with clear licenses.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Annotations help train and evaluate NLP models for Indian languages and scripts. Aggregated data may be released for research with clear licenses through ILHRF initiatives.</p>
                     </details>
                 </div>
             </section>

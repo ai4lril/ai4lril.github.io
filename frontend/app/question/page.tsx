@@ -5,32 +5,107 @@ import TextBox from "@/components/TextBox";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
 
+interface QuestionSentence {
+    id: string;
+    text: string;
+    languageCode: string;
+    isActive: boolean;
+    difficulty?: string;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export default function Question() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [lang, setLang] = useState<string | null>(null);
+    const [questionSentences, setQuestionSentences] = useState<QuestionSentence[]>([]);
+    const [currentSentenceIndex, setCurrentSentenceIndex] = useState(0);
+    const [loading, setLoading] = useState(true);
+
+    // Fetch question sentences from backend
+    const fetchQuestionSentences = async (languageCode?: string) => {
+        try {
+            setLoading(true);
+            const url = languageCode
+                ? `/api/question-sentences?languageCode=${languageCode}`
+                : '/api/question-sentences';
+
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch question sentences');
+            }
+
+            const fetchedSentences = await response.json();
+            setQuestionSentences(fetchedSentences);
+            setCurrentSentenceIndex(0);
+        } catch (error) {
+            console.error('Error fetching question sentences:', error);
+            setQuestionSentences([]);
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
+        fetchQuestionSentences(saved || undefined);
+
         function onLangChanged(e: Event) {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
+            fetchQuestionSentences(code);
         }
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
-    }, [lang]);
+    }, []);
 
-    const handleSubmit = (question: string) => {
-        setIsSubmitting(true);
-        // Here you would normally send the data to your backend
-        setTimeout(() => {
+    const handleSubmit = async (question: string) => {
+        if (!question.trim()) {
+            alert("Please enter a question");
+            return;
+        }
+
+        try {
+            setIsSubmitting(true);
+
+            // Submit to backend
+            const response = await fetch('/api/question-submission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    questionText: question.trim(),
+                    languageCode: lang || 'eng_latn',
+                    // userId: undefined // Add when authentication is implemented
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit question');
+            }
+
+            const result = await response.json();
+
+            if (result.success) {
+                setSubmitted(true);
+                // Reset after showing success message
+                setTimeout(() => setSubmitted(false), 3000);
+                // Optionally move to next sentence if available
+                if (questionSentences.length > 1) {
+                    setCurrentSentenceIndex((prev) => (prev + 1) % questionSentences.length);
+                }
+            } else {
+                throw new Error(result.message || 'Submission failed');
+            }
+        } catch (error) {
+            console.error('Error submitting question:', error);
+            alert(`Failed to submit question: ${error instanceof Error ? error.message : 'Unknown error'}`);
+        } finally {
             setIsSubmitting(false);
-            setSubmitted(true);
-            // Reset after showing success message
-            setTimeout(() => setSubmitted(false), 3000);
-        }, 1000);
-        console.log(question);
+        }
     };
 
     return (
@@ -43,6 +118,22 @@ export default function Question() {
             <p className="text-center text-gray-600 mb-4 text-sm md:text-base animate-fade-in-up animate-delay-200">
                 Submit questions for others to answer. Good questions help us collect valuable voice data.
             </p>
+
+            {loading && (
+                <div className="text-center mb-4">
+                    <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-indigo-600 mx-auto"></div>
+                    <p className="text-sm text-gray-500 mt-2">Loading question examples...</p>
+                </div>
+            )}
+
+            {!loading && questionSentences.length > 0 && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                    <h3 className="text-sm font-medium text-blue-800 mb-2">Example Questions:</h3>
+                    <p className="text-sm text-blue-700 italic">
+                        "{questionSentences[currentSentenceIndex]?.text}"
+                    </p>
+                </div>
+            )}
 
             <div className="w-full relative">
                 <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
@@ -70,16 +161,24 @@ export default function Question() {
 
                         <button
                             onClick={() => document.forms[0].requestSubmit()}
-                            disabled={isSubmitting || submitted}
-                            className={`group w-full px-6 py-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 mt-4 ${isSubmitting
-                                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                                    : submitted
-                                        ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                        : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                            disabled={isSubmitting || submitted || loading}
+                            className={`group w-full px-6 py-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 mt-4 ${isSubmitting || loading
+                                ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                                : submitted
+                                    ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                    : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
                                 }`}
                         >
                             <span className="flex items-center justify-center gap-3">
-                                {isSubmitting ? (
+                                {loading ? (
+                                    <>
+                                        <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
+                                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                        </svg>
+                                        Loading...
+                                    </>
+                                ) : isSubmitting ? (
                                     <>
                                         <svg className="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
                                             <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>

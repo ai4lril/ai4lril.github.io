@@ -1,0 +1,178 @@
+# Default values for voice-data-backend
+replicaCount: 3
+
+image:
+  repository: voice-data-backend
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+# Service configuration
+service:
+  type: ClusterIP
+  port: 3001
+  targetPort: 3001
+  annotations: {}
+
+# Application configuration
+app:
+  name: voice-data-backend
+  port: 3001
+  logLevel: info
+
+# Database configuration
+database:
+  host: ""
+  port: 5433
+  name: voice_data_collection
+  user: voice_user
+  password: ""
+  ssl: true
+
+# Cache configuration
+cache:
+  host: ""
+  port: 6379
+  password: ""
+
+# Security configuration
+security:
+  jwtSecret: ""
+  bcryptRounds: 12
+  corsOrigins: ["http://localhost:3000"]
+  rateLimit:
+    windowMs: 900000  # 15 minutes
+    max: 100  # limit each IP to 100 requests per windowMs
+
+# Monitoring configuration
+monitoring:
+  enabled: true
+  prometheus:
+    enabled: true
+    port: 9090
+    path: "/metrics"
+  healthCheck:
+    enabled: true
+    path: "/health"
+    initialDelaySeconds: 30
+    periodSeconds: 10
+
+# Resource limits
+resources:
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+  requests:
+    cpu: 500m
+    memory: 512Mi
+
+# Node selector
+nodeSelector: {}
+
+# Tolerations
+tolerations: []
+
+# Affinity
+affinity: {}
+
+# Ingress configuration
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts:
+    - host: voice-data-backend.local
+      paths:
+        - path: /
+          pathType: Prefix
+  tls: []
+
+# ConfigMap for environment variables
+configMap:
+  LOG_LEVEL: "info"
+  NODE_ENV: "production"
+  PORT: "3001"
+  JWT_SECRET: ""
+  DATABASE_SSL: "true"
+  CACHE_TTL: "3600"
+
+# Secrets for sensitive data
+secrets:
+  databasePassword: ""
+  jwtSecret: ""
+  cachePassword: ""
+
+# Horizontal Pod Autoscaler
+autoscaling:
+  enabled: true
+  minReplicas: 2
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  targetMemoryUtilizationPercentage: 80
+
+# Pod disruption budget
+podDisruptionBudget:
+  enabled: true
+  minAvailable: 1
+
+# Network policies
+networkPolicy:
+  enabled: true
+  ingress:
+    - from:
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: voice-data-frontend
+        - podSelector:
+            matchLabels:
+              app.kubernetes.io/name: voice-data-backend
+      ports:
+        - protocol: TCP
+          port: 3001
+
+# Security context
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+  fsGroup: 101
+  readOnlyRootFilesystem: true
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+
+podSecurityContext:
+  runAsNonRoot: true
+  runAsUser: 101
+  runAsGroup: 101
+
+# Volumes for persistent data
+volumes:
+  - name: logs
+    emptyDir: {}
+  - name: cache
+    emptyDir: {}
+
+volumeMounts:
+  - name: logs
+    mountPath: /app/logs
+  - name: cache
+    mountPath: /tmp/cache
+
+# Environment variables
+env:
+  - name: DATABASE_URL
+    valueFrom:
+      secretKeyRef:
+        name: voice-data-backend-secrets
+        key: database-url
+  - name: REDIS_URL
+    valueFrom:
+      secretKeyRef:
+        name: voice-data-backend-secrets
+        key: redis-url
+  - name: JWT_SECRET
+    valueFrom:
+      secretKeyRef:
+        name: voice-data-backend-secrets
+        key: jwt-secret

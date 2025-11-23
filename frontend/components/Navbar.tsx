@@ -35,7 +35,13 @@ export default function Navbar() {
                 <div className="container mx-auto px-4 flex justify-between items-center">
                     <div className="logo">
                         <Link href="/" className="text-2xl font-bold" style={{ color: 'var(--brand-900)' }}>
-                            Language Data Collection
+                            {/* Indian Low-Resourced Language Human Rights Foundation */}
+                            {/* Indian Linguistic Heritage Research Foundation */}
+                            ILHRF 
+                            {/* <br />
+                            <span className="text-sm text-gray-500">
+                                Open-source platform for collecting, validating, and curating high-quality language data for Indian languages.
+                            </span> */}
                         </Link>
                     </div>
 

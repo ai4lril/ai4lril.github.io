@@ -1,0 +1,22 @@
+apiVersion: v2
+name: voice-data-backend
+description: Backend service for Voice Data Collection platform
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+keywords:
+  - voice-data
+  - nlp
+  - backend
+  - nestjs
+maintainers:
+  - name: Voice Data Collection Team
+dependencies:
+  - name: postgresql
+    version: "12.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: postgresql.enabled
+  - name: redis
+    version: "17.x.x"
+    repository: "https://charts.bitnami.com/bitnami"
+    condition: redis.enabled

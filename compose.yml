@@ -1,0 +1,120 @@
+services:
+  # PostgreSQL database (alternative - uncomment if you prefer PostgreSQL)
+  postgres:
+    image: postgres:15
+    container_name: voice-data-postgres
+    environment:
+      POSTGRES_DB: voice_data_collection
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Dragonfly Cache (High-performance Redis alternative)
+  dragonfly:
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    container_name: voice-data-dragonfly
+    command: ["--port=6379", "--cache_mode=yes", "--maxmemory=4GB"]
+    ports:
+      - "6378:6379" # Dragonfly on port 6378 to avoid conflict with YEDIS
+    volumes:
+      - dragonfly_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "-p", "6379", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 4GB
+        reservations:
+          memory: 2GB
+
+  # YugaByteDB (default database)
+  yugabytedb:
+    image: yugabytedb/yugabyte:latest
+    container_name: voice-data-yugabyte
+    environment:
+      YSQL_DB: voice_data_collection
+      YSQL_USER: yugabyte
+      YSQL_PASSWORD: yugabyte
+    ports:
+      - "5433:5433" # YSQL port
+      - "9042:9042" # YCQL port
+      - "6379:6379" # YEDIS port
+      - "7001:7000" # Master HTTP
+      - "9000:9000" # tserver HTTP
+    volumes:
+      - yugabyte_data:/opt/yugabyte/data
+    restart: unless-stopped
+    command:
+      ["bin/yugabyted", "start", "--background=false", "--listen=0.0.0.0"]
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: voice-data-backend
+    environment:
+      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/voice_data_collection?schema=public"
+      REDIS_URL: "redis://dragonfly:6379"
+      CACHE_URL: "redis://dragonfly:6379"
+      JWT_SECRET: "your-super-secret-jwt-key-change-this-in-production"
+      PORT: 3001
+      NODE_ENV: development
+    ports:
+      - "5566:3001"
+    depends_on:
+      - postgres
+      - dragonfly
+    restart: unless-stopped
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    working_dir: /app
+    command: ["pnpm", "run", "start:dev"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/api"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: voice-data-frontend
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: "http://localhost:5566/api"
+    ports:
+      - "5577:3000"
+    depends_on:
+      - backend
+    restart: unless-stopped
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    working_dir: /app
+    command: ["npm", "run", "dev"]
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  postgres_data:
+  yugabyte_data:
+  dragonfly_data:

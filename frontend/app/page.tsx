@@ -58,7 +58,7 @@ export default function Home() {
                     __html: JSON.stringify({
                         "@context": "https://schema.org",
                         "@type": "Organization",
-                        "name": "Language Data Collection",
+                        "name": "ILHRF",
                         "url": "https://ai4lril.github.io",
                         "logo": "https://ai4lril.github.io/logo.png",
                         "description": "Open-source platform supporting Low-Resourced Indian languages for collecting, validating, and curating high-quality language data for AI and NLP research",

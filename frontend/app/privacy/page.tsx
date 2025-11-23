@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Privacy Policy | Data Protection & Rights",
@@ -121,8 +122,8 @@ export default function PrivacyPage() {
                         <li>Ensure data quality via validation, de-duplication, and aggregation.</li>
                         <li>Produce anonymized statistics (e.g., number of speakers, hours recorded, annotation counts).</li>
                     </ul>
-                    <p className="mt-3 text-slate-700">
-                        We do not use your contributions to create personalized profiles or target advertising.
+                    <p className="mt-4 text-slate-700 italic">
+                        <strong>Practical Examples:</strong> Your Odia voice clip might train ASR models to digitize folklore, aiding preservation efforts. A Manipuri text annotation could refine NER for indigenous literature, empowering local scholars. Contributions like yours create balanced datasets for equitable AI, focusing on 22 underrepresented scripts. No commercial exploitation—purely for open research, e.g., improving translation for Bodo-English pairs in education.
                     </p>
                 </section>
 
@@ -197,9 +198,20 @@ export default function PrivacyPage() {
                         <li>Withdraw consent for future use of identifiable submissions.</li>
                         <li>Object to or restrict certain processing where applicable law provides such rights.</li>
                     </ul>
-                    <p className="mt-3 text-slate-700">
-                        To exercise these options, contact us using the details below. We may need to verify your request.
-                    </p>
+                    <div className="mt-4 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <h3 className="font-semibold text-yellow-800 mb-2 flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 10a2 2 0 00-2 2v1a2 2 0 002-2v-1z" />
+                            </svg>
+                            Special Note for Language Contributors & Researchers
+                        </h3>
+                        <p className="text-yellow-700 text-sm mb-3">Your inputs drive heritage preservation!</p>
+                        <ul className="space-y-1 text-sm text-yellow-700">
+                            <li><strong>Access/Withdrawal:</strong> View/download your Kannada annotations or Urdu recordings anytime via <Link href="/data-rights">Portal</Link> (export as audio/JSON). Delete specific items (e.g., a Santhali sentence) or bulk—we'll propagate removal to datasets (up to 90 days for mirrors).</li>
+                            <li><strong>Researcher Angle:</strong> Access aggregated data freely for studies; request raw subsets with ethics approval. Withdraw consent halts future use—no retroactive paper invalidation.</li>
+                        </ul>
+                        <p className="mt-2 text-sm">For custom queries (e.g., dialect-specific deletion), <Link href="/contact">contact us</Link>.</p>
+                    </div>
                 </section>
 
                 <section className="mt-10">
@@ -306,13 +318,15 @@ export default function PrivacyPage() {
                     <p className="mt-3 text-slate-700">
                         In the event of a security breach affecting personal data, we will:
                     </p>
-                    <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
-                        <li>Notify affected individuals within 72 hours (GDPR requirement)</li>
-                        <li>Report to relevant data protection authorities within required timeframes</li>
-                        <li>Provide clear information about the breach and potential risks</li>
-                        <li>Offer guidance on protective measures you can take</li>
-                        <li>Maintain detailed breach logs for compliance and improvement</li>
-                    </ul>
+                    <ol className="mt-3 ml-4 space-y-2 text-slate-700 list-decimal">
+                        <li><strong>Detection:</strong> AI alerts in &lt;5 minutes.</li>
+                        <li><strong>Containment:</strong> Firewall isolation, &lt;1 hour.</li>
+                        <li><strong>Forensics:</strong> External experts, 24 hours.</li>
+                        <li><strong>Notify:</strong> Regulators: 24-72 hours; Users: Personalized email/SMS, e.g., 'Affected: Your Tamil annotations—steps: Change password, free therapy if emotional harm'.</li>
+                        <li><strong>Mitigate:</strong> Data wipe, compensation: e.g., ₹5000 for ID theft.</li>
+                        <li><strong>Review:</strong> Lessons learned report to community.</li>
+                    </ol>
+                    <p className="mt-3 text-slate-700">Users: Expect 24/7 hotline support.</p>
                 </section>
 
                 {/* International Data Transfers */}
@@ -397,7 +411,7 @@ export default function PrivacyPage() {
                             <h3 className="font-semibold text-gray-800 mb-2">General Inquiries</h3>
                             <p className="text-gray-700">
                                 Questions about this Privacy Policy or your data? Contact us via the Contact page
-                                or email our Data Protection Officer at: <strong>dpo@language-data-collection.org</strong>
+                                or email our Data Protection Officer at: <strong>alvynabranches@gmail.com</strong>
                             </p>
                         </div>
 
@@ -419,6 +433,111 @@ export default function PrivacyPage() {
                         </div>
                     </div>
                 </section>
+
+                {/* New accordion for Contribution Lifecycle */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-purple-100">
+                            <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        Contribution Lifecycle
+                    </summary>
+                    <ol className="mt-4 ml-4 space-y-2 text-slate-700 list-decimal">
+                        <li><strong>Submission:</strong> Secure upload via form (encrypted, consent confirmed).</li>
+                        <li><strong>Initial Processing:</strong> Auto-validation for clarity/quality; flagged for human review if needed (anonymized preview).</li>
+                        <li><strong>Anonymization:</strong> Remove metadata (e.g., timestamps, device IDs); apply techniques like voice perturbation for audio.</li>
+                        <li><strong>Secure Storage:</strong> Encrypted in compliant cloud (AES-256); access audited.</li>
+                        <li><strong>Research Integration:</strong> Aggregated into datasets (e.g., for POS/NER training on Gujarati scripts).</li>
+                        <li><strong>Ethical Review & Sharing:</strong> IRB-vetted; released as open resources (e.g., Hugging Face, with usage logs).</li>
+                        <li><strong>Archival/Deletion:</strong> Retained for reproducibility (indefinite anonymized); full purge on request (30 days, including backups).</li>
+                    </ol>
+                    <p className="mt-3 text-sm text-slate-600">For language data, we ensure script integrity (Unicode normalization) and dialect sensitivity throughout. Track your contribution's status via <Link href="/data-rights">Data Rights Portal</Link>.</p>
+                </details>
+
+                {/* New accordion for Multi-Lingual Transparency */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-green-100">
+                            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        Multi-Lingual Collection Transparency
+                    </summary>
+                    <div className="mt-4">
+                        <p className="text-slate-700 mb-4">Actively collecting for 22 languages/scripts, with extras for low-resource ones.</p>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Assamese: অসমীয়া</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Bengali: বাংলা</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Bodo: बर'</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Dogri: डोगरी</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Gujarati: ગુજરાતી</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Hindi: हिन्दी</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Kannada: ಕನ್ನಡ</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Kashmiri: كٲشُر</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Konkani: कोंकणी</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Maithili: मैथिली</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Malayalam: മലയാളം</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Manipuri: মৈতৈলোন্</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Marathi: मराठी</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Nepali: नेपाली</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Odia: ଓଡ଼ିଆ</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Punjabi: ਪੰਜਾਬੀ</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Sanskrit: संस्कृतम्</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Santhali: ᱥᱟᱱᱛᱟᱲᱤ</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Sindhi: سنڌي</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Tamil: தமிழ்</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Telugu: తెలుగు</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Urdu: اردو</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">English: English</span>
+                        </div>
+                        <p className="text-slate-700">Special Privacy for Minority: No geo/IP retention, enhanced de-identification (e.g., accent masking in audio), and community-led consent (e.g., tribal consultations for Santhali). No pressure—opt-out protects vulnerable dialects. Supported scripts: Devanagari, Tamil, etc.; full list in <Link href="/languages">Languages</Link>.</p>
+                        <p className="text-slate-700 mt-2">Voluntary, diverse inputs ensure balanced representation—your Gondi contribution could spotlight a Schedule V language.</p>
+                    </div>
+                </details>
+
+                {/* New accordion for Community & Ethical Statement */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-indigo-100">
+                            <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        Community & Ethical Standards
+                    </summary>
+                    <div className="mt-4">
+                        <p className="text-slate-700 mb-3">Guided by UNESCO language preservation principles and AI ethics (e.g., Montreal Declaration). Your role: Co-creator of inclusive AI.</p>
+                        <ul className="space-y-2 text-slate-700">
+                            <li><strong>Procedures:</strong> All collections IRB-reviewed (institutional ethics board); prompts vetted by linguists for cultural neutrality. Community audits for dialects; no bias amplification in datasets.</li>
+                            <li><strong>Reassurance:</strong> Report concerns anonymously to <a href="mailto:ethics@language-data-collection.org">ethics@language-data-collection.org</a>— we investigate within 7 days. 100% volunteer-driven, no exploitation.</li>
+                            <li><strong>Involvement:</strong> Join ethics discussions via <a href="https://github.com/ai4lril/voice-data-collection/issues" target="_blank" rel="noopener noreferrer">GitHub Issues</a>.</li>
+                        </ul>
+                        <p className="mt-3 text-slate-700">
+                            <strong>Community-Centric Protections:</strong> For indigenous/minority linguistic groups (e.g., Santhali or tribal dialects), rights include collective opt-out (via community reps) and cultural impact assessments—no data used if it risks heritage erosion. We honor non-disclosure for sacred terms.
+                        </p>
+                        <p className="text-slate-700">
+                            <strong>Commitments:</strong> 100% non-commercial—data fuels public good (e.g., free ASR for Konkani education). Open access under CC0/CC-BY for reproducibility; no proprietary licensing or sales.
+                        </p>
+                    </div>
+                </details>
+
+                {/* New FAQ accordion for language-specific questions */}
+                <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
+                    <summary className="font-semibold text-slate-700 cursor-pointer pb-2">Who can access my voice recordings?</summary>
+                    <p className="text-slate-600 mt-2 pl-4">Only anonymized aggregates for verified researchers (e.g., via academic APIs). No public raw access; used in closed training (e.g., for Telugu ASR). Portal shows usage stats. See <a href="#lifecycle" className="text-blue-600 hover:underline">Lifecycle</a>.</p>
+                </details>
+                <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
+                    <summary className="font-semibold text-slate-700 cursor-pointer pb-2">Can my submitted sentences be published in research papers?</summary>
+                    <p className="text-slate-600 mt-2 pl-4">Anonymized excerpts yes (e.g., in EMNLP papers as 'ILHRF Dataset Sample'). Full sentences aggregated; no attribution unless opted-in. Withdraw pre-pub—we'll exclude from releases.</p>
+                </details>
+                <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
+                    <summary className="font-semibold text-slate-700 cursor-pointer pb-2">How does my data help low-resource languages?</summary>
+                    <p className="text-slate-600 mt-2 pl-4">Your inputs fill gaps for languages like Dogri or Santhali, enabling AI tools for education and preservation. See examples in <Link href="#use">How We Use the Data</Link>.</p>
+                </details>
+
             </div>
         </div>
     );

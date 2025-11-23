@@ -22,10 +22,9 @@ export default function LoginPage() {
         setLoading(true);
 
         try {
-            // Simulate authentication delay for better UX
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            setLoading(true);
 
-            // Basic validation for static site demonstration
+            // Basic validation
             if (!email || !password) {
                 throw new Error("Please fill in all required fields");
             }
@@ -35,23 +34,64 @@ export default function LoginPage() {
             }
 
             if (isSignIn) {
-                // Simulate sign in for static site
-                // In a real application, this would validate against a backend
-                if (email === "demo@example.com" && password === "demo123") {
-                    setSuccess("Sign in successful! Redirecting...");
-                    setTimeout(() => {
-                        router.push("/speak");
-                    }, 1500);
-                } else {
-                    throw new Error("Invalid email or password. Try demo@example.com / demo123");
+                // Call backend login API
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        email,
+                        password,
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Login failed');
                 }
+
+                // Store JWT token
+                localStorage.setItem('token', data.token);
+
+                setSuccess("Login successful! Redirecting...");
+                setTimeout(() => {
+                    router.push("/speak");
+                }, 1500);
             } else {
-                // Sign up functionality - simulate for static site
+                // Call backend signup API
                 if (!name) {
                     throw new Error("Please provide your name");
                 }
 
-                // Simulate successful registration
+                const response = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        first_name: name.split(' ')[0],
+                        last_name: name.split(' ').slice(1).join(' ') || '',
+                        display_name: name,
+                        username: email.split('@')[0], // Simple username generation
+                        email,
+                        password,
+                        phone_number: '', // Could add phone field to form
+                        current_residence_pincode: '',
+                        birth_place_pincode: '',
+                        birth_date: new Date().toISOString().split('T')[0], // Default to today
+                        gender: 'prefer-not-to-say', // Default gender
+                        first_language: 'en', // Default language
+                    }),
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    throw new Error(data.message || 'Signup failed');
+                }
+
                 setSuccess("Account created successfully! You can now sign in.");
                 setTimeout(() => {
                     setIsSignIn(true);
