@@ -55,16 +55,16 @@ export default function TranslatePage() {
     }, []);
 
     useEffect(() => {
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
             fetchSentences(code);
-        }
+        };
 
-        function onTargetChanged(e: Event) {
+        const onTargetChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setTarget(code);
-        }
+        };
 
         window.addEventListener('language-changed', onLangChanged as EventListener);
         window.addEventListener('translate-target-changed', onTargetChanged as EventListener);
@@ -172,7 +172,7 @@ export default function TranslatePage() {
             {error && <div className="text-center text-red-600 text-sm mb-3">{error}</div>}
 
             <div className="w-full relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Source + translation card */}
@@ -183,7 +183,7 @@ export default function TranslatePage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Source text
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                             </span>
                         </h2>
 
@@ -251,7 +251,7 @@ export default function TranslatePage() {
                                     placeholder="Type the translation here..."
                                     value={translation}
                                     onChange={(e) => setTranslation(e.target.value)}
-                                    aria-invalid={!translation.trim() ? true : undefined}
+                                    aria-invalid={translation.trim() ? undefined : true}
                                 />
                             </div>
                             <div className="flex gap-3 justify-center">
@@ -260,7 +260,7 @@ export default function TranslatePage() {
                                     disabled={loading || pool.length === 0 || !target || target === current?.languageCode || !translation.trim()}
                                     className={`group px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${(loading || pool.length === 0 || !target || target === current?.languageCode || !translation.trim())
                                         ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-400 hover:border-blue-500 hover:scale-105 active:scale-95'
+                                        : 'bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white border-blue-400 hover:border-blue-500 hover:scale-105 active:scale-95'
                                         } flex items-center gap-2`}
                                 >
                                     <span>Submit & Next</span>
@@ -287,7 +287,7 @@ export default function TranslatePage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Translation tips
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-amber-500 to-orange-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-amber-500 to-orange-500"></span>
                             </span>
                         </h2>
 
