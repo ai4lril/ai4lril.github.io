@@ -1,8 +1,9 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
     title: "Cookie Policy | Data Collection & Usage",
-    description: "Learn about how Language Data Collection uses cookies and similar technologies to enhance your experience while respecting your privacy choices.",
+    description: "Learn about how ILHRF uses cookies and similar technologies to enhance your experience while respecting your privacy choices.",
     keywords: [
         "cookie policy",
         "privacy settings",
@@ -14,7 +15,7 @@ export const metadata: Metadata = {
         "marketing cookies"
     ],
     openGraph: {
-        title: "Cookie Policy | Language Data Collection",
+        title: "Cookie Policy | ILHRF",
         description: "Understand our cookie usage and your privacy controls.",
         type: "website",
         images: [
@@ -22,13 +23,13 @@ export const metadata: Metadata = {
                 url: "/og-cookies.jpg",
                 width: 1200,
                 height: 630,
-                alt: "Cookie Policy - Language Data Collection",
+                alt: "Cookie Policy - ILHRF",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Cookie Policy | Language Data Collection",
+        title: "Cookie Policy | ILHRF",
         description: "Learn about our cookie practices and privacy controls.",
         images: ["/og-cookies.jpg"],
     },
@@ -39,7 +40,7 @@ export default function CookiesPage() {
         <div className="container mx-auto py-12 px-4 max-w-4xl animate-fade-in-up">
             <div className="glass rounded-2xl p-6 md:p-8 border border-slate-100 animate-bounce-in">
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-full bg-gradient-to-br from-yellow-100 to-orange-100 animate-pulse">
+                    <div className="p-3 rounded-full bg-linear-to-br from-yellow-100 to-orange-100 animate-pulse">
                         <svg className="w-8 h-8 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                         </svg>
@@ -164,7 +165,7 @@ export default function CookiesPage() {
                         </div>
                         Essential Cookies (Always Enabled)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-green-400 to-green-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-green-400 to-green-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
@@ -201,7 +202,7 @@ export default function CookiesPage() {
                         </div>
                         Analytics Cookies (Optional)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-blue-400 to-blue-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -239,7 +240,7 @@ export default function CookiesPage() {
                         </div>
                         Functional Cookies (Optional)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-purple-400 to-purple-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
@@ -278,7 +279,7 @@ export default function CookiesPage() {
                         </div>
                         Managing Your Cookie Preferences
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-orange-400 to-orange-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
@@ -328,7 +329,7 @@ export default function CookiesPage() {
                             </div>
                             Third-Party Services & Cookies
                         </summary>
-                        <div className="mt-3 h-1 w-20 bg-gradient-to-r from-red-400 to-red-600 rounded-full"></div>
+                        <div className="mt-3 h-1 w-20 bg-linear-to-r from-red-400 to-red-600 rounded-full"></div>
 
                         <div className="mt-4 space-y-4">
                             <p className="text-slate-700">
@@ -354,7 +355,7 @@ export default function CookiesPage() {
                                         <tr className="border-b border-red-100">
                                             <td className="px-3 py-2 font-semibold">Security services</td>
                                             <td className="px-3 py-2">Fraud prevention and threat monitoring</td>
-                                            <td className="px-3 py-2">Set anti-abuse tokens (expire < 24h)</td>
+                                            <td className="px-3 py-2">Set anti-abuse tokens (expire after 24h)</td>
                                         </tr>
                                         <tr className="border-b border-red-100">
                                             <td className="px-3 py-2 font-semibold">Error monitoring (Sentry)</td>
@@ -390,7 +391,7 @@ export default function CookiesPage() {
                             </div>
                             Cookie Retention & Deletion
                         </summary>
-                        <div className="mt-3 h-1 w-20 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></div>
+                        <div className="mt-3 h-1 w-20 bg-linear-to-r from-teal-400 to-teal-600 rounded-full"></div>
 
                         <div className="mt-4 space-y-4">
                             <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
@@ -429,7 +430,7 @@ export default function CookiesPage() {
                         </div>
                         Updates to This Cookie Policy
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-gray-400 to-gray-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-gray-400 to-gray-600 rounded-full"></div>
 
                     <p className="mt-3 text-slate-700">
                         We may update this Cookie Policy from time to time to reflect changes in our practices or
@@ -454,7 +455,7 @@ export default function CookiesPage() {
                         </div>
                         Contact Us About Cookies
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <p className="text-slate-700">
