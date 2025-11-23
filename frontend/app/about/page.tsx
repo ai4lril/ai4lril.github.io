@@ -52,9 +52,9 @@ export default function AboutPage() {
             <Breadcrumb items={[{ label: 'About', href: '/about' }]} />
             {/* Hero / Mission */}
             <header className="relative glass rounded-2xl p-6 md:p-8 border border-slate-100 animate-bounce-in xl:mr-[280px]" id="mission">
-                <div className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-50/40 to-indigo-50/20 rounded-2xl blur-xl"></div>
+                <div className="absolute inset-0 -z-10 bg-linear-to-b from-blue-50/40 to-indigo-50/20 rounded-2xl blur-xl"></div>
                 <div className="flex items-center gap-3 mb-4">
-                    <div className="p-3 rounded-full bg-gradient-to-br from-indigo-100 to-blue-100 animate-pulse">
+                    <div className="p-3 rounded-full bg-linear-to-br from-indigo-100 to-blue-100 animate-pulse">
                         <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0-9v9" />
                         </svg>
@@ -71,22 +71,22 @@ export default function AboutPage() {
                     <div className="group rounded-xl border border-slate-200 bg-white/95 hover:bg-white py-4 px-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-2xl font-extrabold text-indigo-700 mb-1 group-hover:scale-110 transition-transform duration-300">23</div>
                         <div className="text-sm text-slate-600 font-medium">Languages</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-indigo-400 to-indigo-600 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl border border-slate-200 bg-white/95 hover:bg-white py-4 px-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-2xl font-extrabold text-emerald-700 mb-1 group-hover:scale-110 transition-transform duration-300">6</div>
                         <div className="text-sm text-slate-600 font-medium">Scripts</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-emerald-400 to-teal-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl border border-slate-200 bg-white/95 hover:bg-white py-4 px-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-2xl font-extrabold text-amber-700 mb-1 group-hover:scale-110 transition-transform duration-300">1000+</div>
                         <div className="text-sm text-slate-600 font-medium">Tokens annotated</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-amber-400 to-orange-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl border border-slate-200 bg-white/95 hover:bg-white py-4 px-3 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-2xl font-extrabold text-purple-700 mb-1 group-hover:scale-110 transition-transform duration-300">Community-first</div>
                         <div className="text-sm text-slate-600 font-medium">Ethical collection</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-purple-400 to-pink-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                 </div>
             </header>
@@ -173,7 +173,7 @@ export default function AboutPage() {
                             {c.photoUrl ? (
                                 <Image src={c.photoUrl} alt={c.name} width={80} height={80} className="w-20 h-20 rounded-2xl object-cover shadow-md ring-2 ring-white" />
                             ) : (
-                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
+                                <div className="w-20 h-20 rounded-2xl bg-linear-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
                                     {c.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                                 </div>
                             )}
@@ -205,7 +205,7 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-slate-800">
                     <span className="inline-block relative pb-1">
                         What we collect
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
                 <p className="mt-2 text-slate-600">ILHRF supports multiple data types to build robust, inclusive language resources for Indian linguistic heritage.</p>
@@ -242,10 +242,10 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-slate-800">
                     <span className="inline-block relative pb-1">
                         How it works
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
-                <div className="mt-6 relative pl-8 before:content-[''] before:absolute before:top-4 before:bottom-4 before:left-3 before:w-0.5 before:bg-gradient-to-b from-indigo-400 via-purple-400 to-pink-400">
+                <div className="mt-6 relative pl-8 before:content-[''] before:absolute before:top-4 before:bottom-4 before:left-3 before:w-0.5 before:bg-linear-to-b from-indigo-400 via-purple-400 to-pink-400">
                     {[
                         {
                             title: 'Contribute',
@@ -281,7 +281,7 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-slate-800">
                     <span className="inline-block relative pb-1">
                         Community impact
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
                 <p className="mt-2 text-slate-600">ILHRF centers low‑resourced languages and zero‑resourced scripts, with community review to ensure quality and respect for cultural heritage.</p>
@@ -313,7 +313,7 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-slate-800">
                     <span className="inline-block relative pb-1">
                         Roadmap
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
                 <div className="mt-2 flex justify-center">
@@ -346,7 +346,7 @@ export default function AboutPage() {
                         <h2 className="text-xl font-semibold text-slate-800">
                             <span className="inline-block relative pb-1">
                                 Get involved
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                             </span>
                         </h2>
                         <p className="mt-2 text-slate-600">Interested in collaborating or contributing datasets to preserve Indian linguistic heritage? Reach out and join our efforts.</p>
@@ -354,7 +354,7 @@ export default function AboutPage() {
                             <Image src="/vercel.svg" alt="Get involved illustration" width={64} height={64} />
                         </div>
                         <div className="mt-4 flex flex-wrap gap-3 animate-fade-in-up animate-delay-300">
-                            <Link href="/contact" className="group inline-flex bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 items-center gap-2">
+                            <Link href="/contact" className="group inline-flex bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white text-sm font-semibold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95 items-center gap-2">
                                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 4.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                 </svg>
@@ -393,7 +393,7 @@ export default function AboutPage() {
 
                         <div className="relative z-10">
                             <div className="flex items-center gap-4 mb-6">
-                                <div className="p-4 rounded-2xl bg-gradient-to-br from-indigo-100 to-purple-100 shadow-lg">
+                                <div className="p-4 rounded-2xl bg-linear-to-br from-indigo-100 to-purple-100 shadow-lg">
                                     <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
                                     </svg>
@@ -417,7 +417,7 @@ export default function AboutPage() {
                                         {c.photoUrl ? (
                                             <Image alt={c.name} src={c.photoUrl} width={64} height={64} className="w-16 h-16 rounded-2xl object-cover shadow-md" />
                                         ) : (
-                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
+                                            <div className="w-16 h-16 rounded-2xl bg-linear-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
                                                 {c.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                                             </div>
                                         )}
@@ -463,7 +463,7 @@ export default function AboutPage() {
                     {/* Call to Action */}
                     <div className="mt-12 text-center">
                         <div className="glass rounded-2xl p-8 border border-slate-100 max-w-md mx-auto">
-                            <div className="p-4 rounded-full bg-gradient-to-br from-indigo-100 to-purple-100 w-fit mx-auto mb-4">
+                            <div className="p-4 rounded-full bg-linear-to-br from-indigo-100 to-purple-100 w-fit mx-auto mb-4">
                                 <svg className="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                 </svg>
@@ -472,7 +472,7 @@ export default function AboutPage() {
                             <p className="text-slate-600 text-sm mb-4">Interested in contributing to the preservation of Indian linguistic heritage? We'd love to hear from you.</p>
                             <Link
                                 href="/contact"
-                                className="inline-flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
+                                className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
                             >
                                 <span>Get in Touch</span>
                                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -489,7 +489,7 @@ export default function AboutPage() {
                 <h2 className="text-xl font-semibold text-slate-800">
                     <span className="inline-block relative pb-1">
                         Frequently asked questions
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
                 <div className="mt-2">
