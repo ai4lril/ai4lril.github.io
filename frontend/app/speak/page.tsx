@@ -151,11 +151,11 @@ export default function Speak() {
         setLang(saved);
         fetchSpeechSentences(saved || undefined);
 
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
             fetchSpeechSentences(code);
-        }
+        };
 
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => {
@@ -179,7 +179,7 @@ export default function Speak() {
                 </div>
                 <div className="w-full relative">
                     {/* Always show the gradient border, even if the card is short */}
-                    <div className="absolute left-0 top-0 h-full w-[5px] sm:w-[6px] rounded-l-2xl bg-gradient-to-b from-blue-500 via-indigo-500 to-purple-500 shadow-lg z-10"></div>
+                    <div className="absolute left-0 top-0 h-full w-[5px] sm:w-[6px] rounded-l-2xl bg-linear-to-b from-blue-500 via-indigo-500 to-purple-500 shadow-lg z-10"></div>
                     <div className="flex-1 min-h-[40vh] max-h-fit sm:px-8 p-8 xs:px-4
                       flex flex-col items-center justify-around 
                       glass rounded-r-2xl shadow-2xl relative z-20 border border-gray-100 ml-[5px] sm:ml-[5px]">

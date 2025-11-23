@@ -37,7 +37,7 @@ export default function Navbar() {
                         <Link href="/" className="text-2xl font-bold" style={{ color: 'var(--brand-900)' }}>
                             {/* Indian Low-Resourced Language Human Rights Foundation */}
                             {/* Indian Linguistic Heritage Research Foundation */}
-                            ILHRF 
+                            ILHRF
                             {/* <br />
                             <span className="text-sm text-gray-500">
                                 Open-source platform for collecting, validating, and curating high-quality language data for Indian languages.

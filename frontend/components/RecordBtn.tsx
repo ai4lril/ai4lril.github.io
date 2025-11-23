@@ -93,9 +93,8 @@ export default function RecordBtn({ onAudioRecorded }: RecordBtnProps) {
 
             {/* Status text */}
             <div className="absolute -bottom-8 left-1/2 transform -translate-x-1/2">
-                <span className={`text-sm font-medium transition-colors duration-300 ${
-                    isRecording ? 'text-red-600' : 'text-blue-600'
-                }`}>
+                <span className={`text-sm font-medium transition-colors duration-300 ${isRecording ? 'text-red-600' : 'text-blue-600'
+                    }`}>
                     {isRecording ? 'Recording...' : 'Click to record'}
                 </span>
             </div>

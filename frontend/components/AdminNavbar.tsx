@@ -212,7 +212,7 @@ export default function AdminNavbar() {
             </div>
 
             {/* Desktop spacer */}
-            <div className="hidden lg:block w-80 flex-shrink-0" />
+            <div className="hidden lg:block w-80 shrink-0" />
         </>
     );
 }

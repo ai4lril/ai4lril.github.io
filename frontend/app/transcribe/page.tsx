@@ -14,10 +14,10 @@ export default function TranscribePage() {
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, []);
@@ -48,7 +48,7 @@ export default function TranscribePage() {
                 Listen to the audio and type exactly what you hear. Your transcription helps us build better voice technology.
             </p>
             <div className="w-full relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full card-wide">
                     {/* Audio Player Section */}
                     <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
@@ -88,8 +88,8 @@ export default function TranscribePage() {
                                     isSubmitting
                                         ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                                         : submitted
-                                            ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                            : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                                            ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                            : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
                                 }`}
                             >
                                 <span className="flex items-center justify-center gap-2">

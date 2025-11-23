@@ -20,10 +20,10 @@ export default function LangSwitcher() {
 
     // Outside click close (pointerdown for better mobile/safari support)
     useEffect(() => {
-        function onDocClick(e: Event) {
+        const onDocClick = (e: Event) => {
             if (!wrapperRef.current) return;
             if (!wrapperRef.current.contains(e.target as Node)) setIsOpen(false);
-        }
+        };
         document.addEventListener('pointerdown', onDocClick as EventListener);
         return () => document.removeEventListener('pointerdown', onDocClick as EventListener);
     }, []);
@@ -46,7 +46,7 @@ export default function LangSwitcher() {
     };
 
     return (
-        <div ref={wrapperRef} className="relative inline-block text-left z-[100]">
+        <div ref={wrapperRef} className="relative inline-block text-left z-100">
             <button
                 className="group flex items-center justify-between gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white/95 hover:bg-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
                 onClick={() => setIsOpen(!isOpen)}
@@ -75,7 +75,7 @@ export default function LangSwitcher() {
             </button>
 
             {isOpen && (
-                <div className="absolute z-[100] mt-2 w-56 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl right-0 animate-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-100 mt-2 w-56 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl right-0 animate-in slide-in-from-top-2 duration-200">
                     <div className="p-2">
                         <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2 py-1">Select Language</div>
                     </div>

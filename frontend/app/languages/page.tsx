@@ -64,25 +64,25 @@ export const metadata: Metadata = {
 
 export default function LanguagesPage() {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+        <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50">
             {/* Background decorative elements */}
             <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-indigo-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-cyan-100/15 to-blue-100/15 rounded-full blur-3xl"></div>
+                <div className="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-blue-200/20 to-purple-200/20 rounded-full blur-3xl"></div>
+                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-linear-to-tr from-indigo-200/20 to-pink-200/20 rounded-full blur-3xl"></div>
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-linear-to-r from-cyan-100/15 to-blue-100/15 rounded-full blur-3xl"></div>
             </div>
 
             <div className="relative container mx-auto py-12 px-4">
                 <Breadcrumb items={[{ label: 'Languages', href: '/languages' }]} />
                 {/* Header Section */}
                 <div className="text-center mb-12 animate-fade-in-up">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-6 animate-bounce-in">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-linear-to-r from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-6 animate-bounce-in">
                         <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2m-9 0h10m-9 0V1m10 3V1m0 3l1 1v16a2 2 0 01-2 2H6a2 2 0 01-2-2V5l1-1z" />
                         </svg>
                     </div>
 
-                    <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4 animate-slide-in-from-top">
+                    <h1 className="text-3xl md:text-4xl font-bold bg-linear-to-r from-gray-900 via-blue-800 to-purple-800 bg-clip-text text-transparent mb-4 animate-slide-in-from-top">
                         Indian Languages
                     </h1>
                     <p className="text-gray-600 text-lg max-w-2xl mx-auto animate-fade-in-up delay-200">
@@ -132,8 +132,8 @@ export default function LanguagesPage() {
                                         </code>
                                     </div>
                                 </div>
-                                <div className="flex-shrink-0">
-                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200">
+                                <div className="shrink-0">
+                                    <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-linear-to-r from-blue-100 to-purple-100 text-blue-800 border border-blue-200">
                                         {lang.scripts.length} Script{lang.scripts.length !== 1 ? 's' : ''}
                                     </span>
                                 </div>
@@ -156,7 +156,7 @@ export default function LanguagesPage() {
                                     {lang.scripts.map((script) => (
                                         <span
                                             key={script}
-                                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-gradient-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200"
+                                            className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-linear-to-r from-indigo-50 to-purple-50 text-indigo-700 border border-indigo-200"
                                         >
                                             {script}
                                         </span>
@@ -168,7 +168,7 @@ export default function LanguagesPage() {
                             <div className="flex gap-3">
                                 <Link
                                     href="/speak"
-                                    className="flex-1 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl text-center text-sm"
+                                    className="flex-1 bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-3 px-4 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl text-center text-sm"
                                 >
                                     Contribute Voice
                                 </Link>
@@ -195,7 +195,7 @@ export default function LanguagesPage() {
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link
                                 href="/speak"
-                                className="bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
+                                className="bg-linear-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white font-semibold py-3 px-8 rounded-2xl transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg hover:shadow-xl"
                             >
                                 Start Contributing
                             </Link>

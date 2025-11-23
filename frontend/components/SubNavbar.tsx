@@ -14,7 +14,7 @@ export default function SubNavbar({ modes, rightSlot }: { modes: Mode[]; rightSl
     if (!isVisible) return null;
 
     return (
-        <div className="relative border-t border-gray-200/70 bg-white/60 backdrop-blur z-[30] overflow-visible">
+        <div className="relative border-t border-gray-200/70 bg-white/60 backdrop-blur z-30 overflow-visible">
             <div className="container mx-auto relative">
                 <ul className="flex flex-wrap w-full justify-center gap-3 py-2.5">
                     {modes.map(m => {

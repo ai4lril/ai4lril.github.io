@@ -56,10 +56,10 @@ export default function Answer() {
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => {
             if (audioUrl) {
@@ -83,7 +83,7 @@ export default function Answer() {
                 <div className="text-center mb-2">
                     <span className="inline-block text-xs px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium animate-bounce-in">{codeToLabel(lang)}</span>
                 </div>
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="flex-1 min-h-[40vh] max-h-fit p-6 sm:p-8
                       flex flex-col items-center justify-around 
                       glass rounded-md md:rounded-lg shadow-md relative z-20 border border-gray-100">
@@ -91,7 +91,7 @@ export default function Answer() {
                     <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-blue-100/50 rounded-full opacity-70 hidden sm:block"></div>
                     <div className="flex flex-col items-center">
                         <h2 className="text-lg font-bold mb-4 tracking-tight">Answer the question below</h2>
-                        <span className=" block w-[100px] h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className=" block w-[100px] h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </div>
                     <DialogBox />
                     <div className="mt-6">

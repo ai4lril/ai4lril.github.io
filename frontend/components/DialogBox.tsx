@@ -21,10 +21,10 @@ export default function DialogBox({ currentSentence, loading = false }: DialogBo
         const saved = getPreferredLanguage();
         setLang(saved);
 
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-        }
+        };
 
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => {
@@ -44,7 +44,7 @@ export default function DialogBox({ currentSentence, loading = false }: DialogBo
 
 
         <p
-            className="text-center font-semibold break-words pt-3"
+            className="text-center font-semibold wrap-break-word pt-3"
             style={{
                 fontSize: 'clamp(1rem, 2vw, 1.25rem)',
                 lineHeight: '1.4',

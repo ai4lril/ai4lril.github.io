@@ -24,7 +24,7 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
     };
 
     return (
-        <div className="sm:mt-10 bg-gradient-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 sm:bg-white/90 sm:rounded-full rounded-xl w-full max-w-2xl mx-auto px-4 py-4 sm:shadow-xl border border-indigo-100/50 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300 hover:shadow-2xl">
+        <div className="sm:mt-10 bg-linear-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 sm:bg-white/90 sm:rounded-full rounded-xl w-full max-w-2xl mx-auto px-4 py-4 sm:shadow-xl border border-indigo-100/50 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300 hover:shadow-2xl">
             {/* Skip Button */}
             <button
                 onClick={onSkip}
@@ -86,7 +86,7 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
                     disabled={disabled || !audioSrc}
                     className={`group w-[40vw] sm:w-auto min-w-[110px] px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl border-2 ${
                         audioSrc
-                            ? 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-300 hover:scale-105 active:scale-95'
+                            ? 'bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-300 hover:scale-105 active:scale-95'
                             : 'bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed opacity-60'
                     }`}
                 >

@@ -36,7 +36,7 @@ export default function PosPage() {
     }, []);
 
     useEffect(() => {
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
             const nextPool = code ? shuffle(posSentences.filter(s => s.langCode === code)) : shuffle(posSentences);
@@ -46,7 +46,7 @@ export default function PosPage() {
             setTags({});
             setMissing(new Set());
             setErrorMsg("");
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, []);
@@ -101,7 +101,7 @@ export default function PosPage() {
             )}
 
             <div className="w-full relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Sentence + tagging card */}
@@ -112,7 +112,7 @@ export default function PosPage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Sentence
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                             </span>
                         </h2>
 
@@ -157,7 +157,7 @@ export default function PosPage() {
                                 </div>
 
                                 <div className="mt-4 flex gap-3 justify-center">
-                                    <button type="submit" className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg px-6 py-3 font-semibold shadow-lg hover:shadow-xl border-2 border-blue-400 hover:border-blue-500 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
+                                    <button type="submit" className="group bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white rounded-lg px-6 py-3 font-semibold shadow-lg hover:shadow-xl border-2 border-blue-400 hover:border-blue-500 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
                                         <span>Submit & Next</span>
                                         <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
@@ -181,7 +181,7 @@ export default function PosPage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Tagging Guidelines
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-amber-500 to-orange-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-amber-500 to-orange-500"></span>
                             </span>
                         </h2>
 

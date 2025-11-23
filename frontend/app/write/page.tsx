@@ -16,10 +16,10 @@ export default function AddSentence() {
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, []);
@@ -116,8 +116,8 @@ export default function AddSentence() {
                         className={`group w-full px-6 py-4 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${isSubmitting || !isFormValid
                                 ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                                 : submitted
-                                    ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                    : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                                    ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                    : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
                             }`}
                     >
                         <span className="flex items-center justify-center gap-3">

@@ -9,11 +9,11 @@ interface SEOHeadProps {
 }
 
 export default function SEOHead({
-  keywords = [],
-  canonical,
-  ogImage,
-  noindex = false,
-  structuredData
+    keywords = [],
+    canonical,
+    ogImage,
+    noindex = false,
+    structuredData
 }: SEOHeadProps) {
     const defaultKeywords = [
         "language data collection",

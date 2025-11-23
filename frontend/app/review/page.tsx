@@ -14,10 +14,10 @@ export default function Review() {
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, [lang]);
@@ -48,7 +48,7 @@ export default function Review() {
                 Listen to the audio and review the provided transcription. Make corrections if needed, then submit your review.
             </p>
             <div className="w-full relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
                     {/* Audio Player Section */}
                     <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
@@ -88,8 +88,8 @@ export default function Review() {
                                     isSubmitting
                                         ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                                         : submitted
-                                            ? "bg-gradient-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                            : "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                                            ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                            : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
                                 }`}
                             >
                                 <span className="flex items-center justify-center gap-2">
@@ -131,7 +131,7 @@ export default function Review() {
                             </button>
                             <button
                                 type="button"
-                                className="group flex-1 bg-gradient-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 rounded-lg border-2 border-amber-400 hover:border-amber-500 font-semibold transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+                                className="group flex-1 bg-linear-to-r from-amber-500 to-orange-600 hover:from-amber-600 hover:to-orange-700 text-white shadow-lg hover:shadow-xl px-6 py-3 rounded-lg border-2 border-amber-400 hover:border-amber-500 font-semibold transition-all duration-300 hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5 transition-transform group-hover:scale-110" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536M9 13l6.586-6.586a2 2 0 112.828 2.828L11.828 15.828a2 2 0 01-2.828 0L9 13zm-6 6h6v-2a2 2 0 012-2h2a2 2 0 012 2v2h6" />

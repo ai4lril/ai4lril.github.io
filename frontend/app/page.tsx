@@ -87,7 +87,7 @@ export default function Home() {
                         and support AI development across Indo-Aryan, Dravidian, Sino-Tibetan, and Austroasiatic language families.
                     </p>
                     <div className="mt-8 flex flex-wrap gap-3">
-                        <Link href="/speak" className="group bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95">
+                        <Link href="/speak" className="group bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 focus:outline-none focus:ring-2 focus:ring-blue-300 text-white px-6 py-3 rounded-full font-semibold shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 active:scale-95">
                             <span className="flex items-center gap-2">
                                 Contribute
                                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -121,28 +121,28 @@ export default function Home() {
                                     <svg className="w-4 h-4 text-indigo-600" viewBox="0 0 24 24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4S14.21 4 12 4 8 5.79 8 8s1.79 4 4 4Zm0 2c-2.67 0-8 1.34-8 4v1h16v-1c0-2.66-5.33-4-8-4Z" /></svg>
                                     Contribute
                                 </div>
-                                <div className="mt-2 h-2 rounded bg-gradient-to-r from-indigo-400 to-indigo-600 w-3/4" />
+                                <div className="mt-2 h-2 rounded bg-linear-to-r from-indigo-400 to-indigo-600 w-3/4" />
                             </div>
                             <div className="rounded-xl p-4 bg-white/90 border border-slate-200">
                                 <div className="text-sm text-slate-600 flex items-center gap-2">
                                     <svg className="w-4 h-4 text-emerald-600" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z" /></svg>
                                     Validate
                                 </div>
-                                <div className="mt-2 h-2 rounded bg-gradient-to-r from-emerald-400 to-teal-500 w-2/3" />
+                                <div className="mt-2 h-2 rounded bg-linear-to-r from-emerald-400 to-teal-500 w-2/3" />
                             </div>
                             <div className="rounded-xl p-4 bg-white/90 border border-slate-200">
                                 <div className="text-sm text-slate-600 flex items-center gap-2">
                                     <svg className="w-4 h-4 text-amber-600" viewBox="0 0 24 24" fill="currentColor"><path d="M3 5h18v2H3V5Zm0 6h12v2H3v-2Zm0 6h18v2H3v-2Z" /></svg>
                                     Transcribe
                                 </div>
-                                <div className="mt-2 h-2 rounded bg-gradient-to-r from-amber-400 to-orange-500 w-1/2" />
+                                <div className="mt-2 h-2 rounded bg-linear-to-r from-amber-400 to-orange-500 w-1/2" />
                             </div>
                             <div className="rounded-xl p-4 bg-white/90 border border-slate-200">
                                 <div className="text-sm text-slate-600 flex items-center gap-2">
                                     <svg className="w-4 h-4 text-fuchsia-600" viewBox="0 0 24 24" fill="currentColor"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25ZM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34a.9959.9959 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83Z" /></svg>
                                     Review
                                 </div>
-                                <div className="mt-2 h-2 rounded bg-gradient-to-r from-fuchsia-400 to-pink-500 w-2/5" />
+                                <div className="mt-2 h-2 rounded bg-linear-to-r from-fuchsia-400 to-pink-500 w-2/5" />
                             </div>
                         </div>
                         <div className="mt-6">
@@ -150,31 +150,31 @@ export default function Home() {
                             <p className="text-slate-500 text-sm mt-1">Purpose-built for Indian languages and scripts with accessible flows and quality checks.</p>
                         </div>
                     </div>
-                    <div className="absolute -z-10 inset-0 -translate-x-6 -translate-y-6 rounded-3xl blur-2xl opacity-30 bg-gradient-to-tr from-indigo-400 to-fuchsia-400" />
+                    <div className="absolute -z-10 inset-0 -translate-x-6 -translate-y-6 rounded-3xl blur-2xl opacity-30 bg-linear-to-tr from-indigo-400 to-fuchsia-400" />
                 </div>
             </section>
 
-            <section className="w-full bg-gradient-to-r from-indigo-50/80 via-white/70 to-purple-50/80 border-t border-b border-slate-200/70 backdrop-blur-sm">
+            <section className="w-full bg-linear-to-r from-indigo-50/80 via-white/70 to-purple-50/80 border-t border-b border-slate-200/70 backdrop-blur-sm">
                 <div className="container mx-auto py-8 grid grid-cols-2 sm:grid-cols-4 gap-4 sm:gap-6 text-center">
                     <div className="group rounded-xl bg-white/90 hover:bg-white border border-slate-200 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-3xl font-extrabold text-indigo-700 mb-1 group-hover:scale-110 transition-transform duration-300">3</div>
                         <div className="text-sm text-slate-600 font-medium">Languages</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-indigo-400 to-indigo-600 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl bg-white/90 hover:bg-white border border-slate-200 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-3xl font-extrabold text-emerald-700 mb-1 group-hover:scale-110 transition-transform duration-300">6</div>
                         <div className="text-sm text-slate-600 font-medium">Scripts</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-emerald-400 to-teal-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl bg-white/90 hover:bg-white border border-slate-200 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-3xl font-extrabold text-amber-700 mb-1 group-hover:scale-110 transition-transform duration-300">100+</div>
                         <div className="text-sm text-slate-600 font-medium">Speakers</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-amber-400 to-orange-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-amber-400 to-orange-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                     <div className="group rounded-xl bg-white/90 hover:bg-white border border-slate-200 p-4 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 hover:-translate-y-1">
                         <div className="text-3xl font-extrabold text-fuchsia-700 mb-1 group-hover:scale-110 transition-transform duration-300">1h</div>
                         <div className="text-sm text-slate-600 font-medium">Recorded</div>
-                        <div className="mt-2 h-1 bg-gradient-to-r from-fuchsia-400 to-pink-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
+                        <div className="mt-2 h-1 bg-linear-to-r from-fuchsia-400 to-pink-500 rounded-full opacity-60 group-hover:opacity-100 transition-opacity"></div>
                     </div>
                 </div>
             </section>
@@ -183,7 +183,7 @@ export default function Home() {
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">Founder</h2>
                 <div className="mt-6 card rounded-2xl p-6">
                     <div className="flex items-start gap-4">
-                        <div className="size-12 rounded-full bg-gradient-to-tr from-blue-200 to-indigo-200 border border-white" />
+                        <div className="size-12 rounded-full bg-linear-to-tr from-blue-200 to-indigo-200 border border-white" />
                         <div>
                             <div className="flex flex-wrap items-center gap-2">
                                 <h3 className="text-lg font-semibold text-slate-800">Alvyn Abranches</h3>
@@ -205,12 +205,12 @@ export default function Home() {
             <section className="container mx-auto py-12 md:py-16" id="highlights">
                 <h2 className="text-2xl sm:text-3xl font-bold text-slate-800">
                     <span className="inline-block relative pb-1">Highlights
-                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
+                        <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
                 <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Link href="/about#mission" className="group rounded-2xl p-6 glass border border-slate-200 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] will-change-transform relative overflow-hidden animate-fade-in-up">
-                        <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute inset-0 bg-linear-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-3 relative z-10">
                             <div className="p-2 rounded-full bg-indigo-100 group-hover:bg-indigo-200 transition-colors duration-300 animate-bounce-in">
                                 <svg className="w-5 h-5 text-indigo-600 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor">
@@ -228,7 +228,7 @@ export default function Home() {
                         </div>
                     </Link>
                     <Link href="/about#story" className="group rounded-2xl p-6 glass border border-slate-200 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] will-change-transform relative overflow-hidden animate-fade-in-up animate-delay-200">
-                        <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute inset-0 bg-linear-to-br from-emerald-500/5 to-teal-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-3 relative z-10">
                             <div className="p-2 rounded-full bg-emerald-100 group-hover:bg-emerald-200 transition-colors duration-300 animate-bounce-in animate-delay-200">
                                 <svg className="w-5 h-5 text-emerald-600 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor">
@@ -246,7 +246,7 @@ export default function Home() {
                         </div>
                     </Link>
                     <Link href="/about#focus" className="group rounded-2xl p-6 glass border border-slate-200 transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover:scale-[1.02] will-change-transform relative overflow-hidden animate-fade-in-up animate-delay-400">
-                        <div className="absolute inset-0 bg-gradient-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                        <div className="absolute inset-0 bg-linear-to-br from-amber-500/5 to-orange-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
                         <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-3 relative z-10">
                             <div className="p-2 rounded-full bg-amber-100 group-hover:bg-amber-200 transition-colors duration-300 animate-bounce-in animate-delay-400">
                                 <svg className="w-5 h-5 text-amber-600 group-hover:scale-110 transition-transform duration-300" viewBox="0 0 24 24" fill="currentColor">

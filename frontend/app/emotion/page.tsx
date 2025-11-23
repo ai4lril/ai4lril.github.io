@@ -34,7 +34,7 @@ export default function EmotionPage() {
     }, []);
 
     useEffect(() => {
-        function onLangChanged(e: Event) {
+        const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
             const filtered = affectSentences.filter(s => s.langCode === code);
@@ -44,7 +44,7 @@ export default function EmotionPage() {
             setCurrent(shuffled[0]);
             setEmotion('');
             setError('');
-        }
+        };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, []);
@@ -138,7 +138,7 @@ export default function EmotionPage() {
             {error && <div className="text-center text-red-600 text-sm mb-3">{error}</div>}
 
             <div className="w-full relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-purple-50/30 to-violet-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
+                <div className="absolute inset-0 bg-linear-to-b from-purple-50/30 to-violet-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Source + emotion selection card */}
@@ -149,7 +149,7 @@ export default function EmotionPage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Source sentence
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-purple-500 to-violet-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-purple-500 to-violet-500"></span>
                             </span>
                         </h2>
 
@@ -219,7 +219,7 @@ export default function EmotionPage() {
                                     disabled={loading || !emotion}
                                     className={`group px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${(!emotion || loading)
                                         ? 'bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed'
-                                        : 'bg-gradient-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-purple-400 hover:border-purple-500 hover:scale-105 active:scale-95'
+                                        : 'bg-linear-to-r from-purple-600 to-violet-600 hover:from-purple-700 hover:to-violet-700 text-white border-purple-400 hover:border-purple-500 hover:scale-105 active:scale-95'
                                         } flex items-center gap-2`}
                                 >
                                     <span>Submit & Next</span>
@@ -246,7 +246,7 @@ export default function EmotionPage() {
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">
                             <span className="inline-block relative pb-1">
                                 Emotion guidelines
-                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-purple-500 to-violet-500"></span>
+                                <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-linear-to-r from-purple-500 to-violet-500"></span>
                             </span>
                         </h2>
 
