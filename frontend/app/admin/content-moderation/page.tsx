@@ -234,7 +234,7 @@ export default function ContentModerationPage() {
                                     {/* Header */}
                                     <div className="flex items-start justify-between mb-4">
                                         <div className="flex items-center">
-                                            <div className="flex-shrink-0">
+                                            <div className="shrink-0">
                                                 {contribution.type === 'audio' ? (
                                                     <Volume2 className="h-5 w-5 text-blue-500" />
                                                 ) : contribution.type === 'text' ? (
