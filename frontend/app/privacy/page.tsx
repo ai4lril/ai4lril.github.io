@@ -36,11 +36,17 @@ export const metadata: Metadata = {
 };
 
 export default function PrivacyPage() {
+    const rightsComparison = [
+        { label: "Access / Know", gdpr: "Article 15", ccpa: "§1798.110" },
+        { label: "Delete", gdpr: "Article 17", ccpa: "§1798.105" },
+        { label: "Data portability", gdpr: "Article 20", ccpa: "§1798.130" },
+        { label: "Opt-out / Restrict", gdpr: "Article 21", ccpa: "Do Not Sell / Share" },
+    ];
     return (
         <div className="container mx-auto py-12 px-4 max-w-3xl animate-fade-in-up">
             <div className="glass rounded-2xl p-6 md:p-8 border border-slate-100 animate-bounce-in">
                 <div className="flex items-center gap-4 mb-6">
-                    <div className="p-3 rounded-full bg-gradient-to-br from-blue-100 to-indigo-100 animate-pulse">
+                    <div className="p-3 rounded-full bg-linear-to-br from-blue-100 to-indigo-100 animate-pulse">
                         <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
@@ -125,7 +131,7 @@ export default function PrivacyPage() {
                         </ul>
                         <div className="mt-3 flex flex-wrap gap-4 text-sm font-medium">
                             <Link href="/privacy-easy" className="text-indigo-700 hover:underline">Read the easy version</Link>
-                            <a href="/privacy-audio.mp3" className="text-indigo-700 hover:underline">Listen to 10‑min audio</a>
+                            <Link href="/privacy-audio.mp3" className="text-indigo-700 hover:underline">Listen to 10‑min audio</Link>
                         </div>
                     </div>
 
@@ -141,26 +147,21 @@ export default function PrivacyPage() {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr className="border-b">
-                                        <td className="px-3 py-2">Access / Know</td>
-                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 15</Link></td>
-                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.110</Link></td>
-                                    </tr>
-                                    <tr className="border-b">
-                                        <td className="px-3 py-2">Delete</td>
-                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 17</Link></td>
-                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.105</Link></td>
-                                    </tr>
-                                    <tr className="border-b">
-                                        <td className="px-3 py-2">Data portability</td>
-                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 20</Link></td>
-                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.130</Link></td>
-                                    </tr>
-                                    <tr>
-                                        <td className="px-3 py-2">Opt-out / Restrict</td>
-                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 21</Link></td>
-                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">Do Not Sell / Share</Link></td>
-                                    </tr>
+                                    {rightsComparison.map((item) => (
+                                        <tr key={item.label} className="border-b">
+                                            <td className="px-3 py-2">{item.label}</td>
+                                            <td className="px-3 py-2">
+                                                <Link href="#gdpr" className="text-indigo-600 hover:underline">
+                                                    {item.gdpr}
+                                                </Link>
+                                            </td>
+                                            <td className="px-3 py-2">
+                                                <Link href="#ccpa" className="text-indigo-600 hover:underline">
+                                                    {item.ccpa}
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                             </table>
                         </div>
@@ -179,7 +180,7 @@ export default function PrivacyPage() {
                             What we collect
                         </summary>
                         <div className="mt-3">
-                            <div className="h-1 w-20 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
+                            <div className="h-1 w-20 bg-linear-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
                             <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
                                 <li>
                                     <span className="font-medium">Voice data (optional).</span> Audio recordings you submit during tasks like
@@ -213,7 +214,7 @@ export default function PrivacyPage() {
                             How we use the data
                         </summary>
                         <div className="mt-3">
-                            <div className="h-1 w-20 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
+                            <div className="h-1 w-20 bg-linear-to-r from-emerald-400 to-teal-500 rounded-full"></div>
                             <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
                                 <li>Build and evaluate open, research-grade datasets for Indian languages and scripts.</li>
                                 <li>Develop, test, and improve language technologies (e.g., ASR, POS, NER, transcription tools).</li>
@@ -349,7 +350,7 @@ export default function PrivacyPage() {
                         </div>
                         GDPR Compliance (EU Residents)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-blue-400 to-blue-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-blue-400 to-blue-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
@@ -382,7 +383,7 @@ export default function PrivacyPage() {
                         </div>
                         CCPA Compliance (California Residents)
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-orange-400 to-orange-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-orange-400 to-orange-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
@@ -413,7 +414,7 @@ export default function PrivacyPage() {
                         </div>
                         Data Breach Notification
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-red-400 to-red-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-red-400 to-red-600 rounded-full"></div>
 
                     <p className="mt-3 text-slate-700">
                         In the event of a security breach affecting personal data, we will:
@@ -439,7 +440,7 @@ export default function PrivacyPage() {
                         </div>
                         International Data Transfers & Safeguards
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-purple-400 to-purple-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-purple-400 to-purple-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <p className="text-slate-700">
@@ -474,7 +475,7 @@ export default function PrivacyPage() {
                         </div>
                         Data Subject Rights Portal
                     </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></div>
+                    <div className="mt-3 h-1 w-20 bg-linear-to-r from-teal-400 to-teal-600 rounded-full"></div>
 
                     <div className="mt-4 space-y-4">
                         <p className="text-slate-700">
