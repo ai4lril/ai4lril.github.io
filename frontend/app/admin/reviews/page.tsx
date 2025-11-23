@@ -206,7 +206,7 @@ export default function ReviewsPage() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="p-5">
                                 <div className="flex items-center">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         <div className="text-2xl">📊</div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -226,7 +226,7 @@ export default function ReviewsPage() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="p-5">
                                 <div className="flex items-center">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         <div className="text-2xl">✅</div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -246,7 +246,7 @@ export default function ReviewsPage() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="p-5">
                                 <div className="flex items-center">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         <div className="text-2xl">⏳</div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -266,7 +266,7 @@ export default function ReviewsPage() {
                         <div className="bg-white overflow-hidden shadow rounded-lg">
                             <div className="p-5">
                                 <div className="flex items-center">
-                                    <div className="flex-shrink-0">
+                                    <div className="shrink-0">
                                         <div className="text-2xl">⭐</div>
                                     </div>
                                     <div className="ml-5 w-0 flex-1">
@@ -292,7 +292,7 @@ export default function ReviewsPage() {
                                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
                                     {stats?.topReviewers.map((reviewer, index) => (
                                         <div key={reviewer.email} className="flex items-center p-4 bg-gray-50 rounded-lg">
-                                            <div className="flex-shrink-0">
+                                            <div className="shrink-0">
                                                 <div className="h-10 w-10 bg-indigo-500 rounded-full flex items-center justify-center">
                                                     <span className="text-white font-medium">
                                                         {reviewer.name.charAt(0).toUpperCase()}

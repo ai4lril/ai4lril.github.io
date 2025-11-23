@@ -254,7 +254,7 @@ export default function AdminDashboard() {
             <div className="p-6">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                        <div className="flex-shrink-0">
+                        <div className="shrink-0">
                             <Icon className="h-8 w-8 text-gray-400" />
                         </div>
                         <div className="ml-5 w-0 flex-1">
@@ -526,7 +526,7 @@ export default function AdminDashboard() {
                                     <div className="px-6 py-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0">
+                                                <div className="shrink-0">
                                                     <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
                                                         <Users className="w-4 h-4 text-green-600" />
                                                     </div>
@@ -546,7 +546,7 @@ export default function AdminDashboard() {
                                     <div className="px-6 py-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0">
+                                                <div className="shrink-0">
                                                     <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
                                                         <FileText className="w-4 h-4 text-blue-600" />
                                                     </div>
@@ -566,7 +566,7 @@ export default function AdminDashboard() {
                                     <div className="px-6 py-4">
                                         <div className="flex items-center justify-between">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0">
+                                                <div className="shrink-0">
                                                     <div className="w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center">
                                                         <Activity className="w-4 h-4 text-purple-600" />
                                                     </div>

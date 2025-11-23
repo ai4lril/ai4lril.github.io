@@ -1,9 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { adminAuth } from '@/lib/adminAuth';
 import AdminLayout from '@/components/AdminLayout';
-import { Line, Bar, Doughnut } from 'react-chartjs-2';
+import { Line, Bar } from 'react-chartjs-2';
 import {
   Server,
   Database,
@@ -15,11 +14,7 @@ import {
   CheckCircle,
   XCircle,
   TrendingUp,
-  TrendingDown,
   RefreshCw,
-  Settings,
-  Shield,
-  Clock
 } from 'lucide-react';
 
 interface SystemMetrics {
@@ -356,7 +351,7 @@ export default function SystemMonitoringPage() {
                 <div className="p-5">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {component === 'database' && <Database className="h-6 w-6 text-gray-400" />}
                         {component === 'cache' && <Zap className="h-6 w-6 text-gray-400" />}
                         {component === 'api' && <Activity className="h-6 w-6 text-gray-400" />}
@@ -440,10 +435,9 @@ export default function SystemMonitoringPage() {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      (metrics?.memory.percentage || 0) > 80 ? 'bg-red-600' :
+                    className={`h-2 rounded-full ${(metrics?.memory.percentage || 0) > 80 ? 'bg-red-600' :
                       (metrics?.memory.percentage || 0) > 60 ? 'bg-yellow-600' : 'bg-green-600'
-                    }`}
+                      }`}
                     style={{ width: `${metrics?.memory.percentage}%` }}
                   ></div>
                 </div>
@@ -477,10 +471,9 @@ export default function SystemMonitoringPage() {
                 </div>
                 <div className="w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className={`h-2 rounded-full ${
-                      (metrics?.disk.percentage || 0) > 85 ? 'bg-red-600' :
+                    className={`h-2 rounded-full ${(metrics?.disk.percentage || 0) > 85 ? 'bg-red-600' :
                       (metrics?.disk.percentage || 0) > 70 ? 'bg-yellow-600' : 'bg-green-600'
-                    }`}
+                      }`}
                     style={{ width: `${metrics?.disk.percentage}%` }}
                   ></div>
                 </div>
@@ -539,9 +532,8 @@ export default function SystemMonitoringPage() {
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-gray-600">Slow Queries</span>
-                  <span className={`text-sm font-medium ${
-                    (metrics?.database.slowQueries || 0) > 5 ? 'text-red-600' : 'text-green-600'
-                  }`}>
+                  <span className={`text-sm font-medium ${(metrics?.database.slowQueries || 0) > 5 ? 'text-red-600' : 'text-green-600'
+                    }`}>
                     {metrics?.database.slowQueries}
                   </span>
                 </div>

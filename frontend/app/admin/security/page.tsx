@@ -270,7 +270,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <Shield className="h-6 w-6 text-gray-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -290,7 +290,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <AlertTriangle className="h-6 w-6 text-red-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -310,7 +310,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <UserX className="h-6 w-6 text-orange-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -330,7 +330,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <Lock className="h-6 w-6 text-green-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -350,7 +350,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <Globe className="h-6 w-6 text-blue-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -370,7 +370,7 @@ export default function SecurityPage() {
             <div className="bg-white overflow-hidden shadow rounded-lg">
               <div className="p-5">
                 <div className="flex items-center">
-                  <div className="flex-shrink-0">
+                  <div className="shrink-0">
                     <AlertTriangle className="h-6 w-6 text-yellow-400" />
                   </div>
                   <div className="ml-5 w-0 flex-1">
@@ -398,7 +398,7 @@ export default function SecurityPage() {
                 <div key={incident.id} className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {getSeverityIcon(incident.severity)}
                       </div>
                       <div className="ml-3">
@@ -504,7 +504,7 @@ export default function SecurityPage() {
                 <li key={event.id} className="px-4 py-4 sm:px-6 hover:bg-gray-50">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         {getEventTypeIcon(event.type)}
                       </div>
                       <div className="ml-4">
@@ -554,7 +554,7 @@ export default function SecurityPage() {
                 <div key={log.id} className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0">
+                      <div className="shrink-0">
                         <FileText className="h-5 w-5 text-gray-400" />
                       </div>
                       <div className="ml-3">

@@ -9,25 +9,17 @@ import {
   Users,
   Database,
   Shield,
-  AlertTriangle,
-  Server,
-  Key,
   FileText,
   Download,
-  Upload,
   Trash2,
   Power,
   RefreshCw,
   CheckCircle,
-  XCircle,
-  Eye,
   Lock,
   Unlock,
   UserPlus,
-  UserMinus,
   Archive,
   HardDrive,
-  Cloud
 } from 'lucide-react';
 
 interface SystemConfig {
@@ -485,7 +477,7 @@ export default function SuperAdminPage() {
                 <div key={admin.id} className="px-6 py-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center">
-                      <div className="flex-shrink-0 h-10 w-10">
+                      <div className="shrink-0 h-10 w-10">
                         <div className="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center">
                           <span className="text-sm font-medium text-gray-700">
                             {admin.name.split(' ').map(n => n[0]).join('')}
@@ -495,9 +487,8 @@ export default function SuperAdminPage() {
                       <div className="ml-4">
                         <div className="flex items-center">
                           <h4 className="text-sm font-medium text-gray-900">{admin.name}</h4>
-                          <span className={`ml-2 inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                            admin.role === 'super_admin' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                          }`}>
+                          <span className={`ml-2 inline-flex px-2 py-1 text-xs font-medium rounded-full ${admin.role === 'super_admin' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
+                            }`}>
                             {admin.role.replace('_', ' ').toUpperCase()}
                           </span>
                           {!admin.isActive && (
@@ -516,9 +507,8 @@ export default function SuperAdminPage() {
                       <div className="flex items-center space-x-2">
                         <button
                           onClick={() => toggleAdminStatus(admin.id)}
-                          className={`p-1 rounded-full ${
-                            admin.isActive ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-50'
-                          }`}
+                          className={`p-1 rounded-full ${admin.isActive ? 'text-green-600 hover:bg-green-50' : 'text-gray-400 hover:bg-gray-50'
+                            }`}
                         >
                           {admin.isActive ? <Lock className="h-4 w-4" /> : <Unlock className="h-4 w-4" />}
                         </button>
