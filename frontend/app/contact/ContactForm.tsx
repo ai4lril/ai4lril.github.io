@@ -76,6 +76,12 @@ function canSubmitForm(): boolean {
     return true;
 }
 
+type FormValues = {
+    name: string;
+    email: string;
+    message: string;
+};
+
 export default function ContactForm() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
@@ -85,25 +91,32 @@ export default function ContactForm() {
     const [submitting, setSubmitting] = useState(false);
     const [success, setSuccess] = useState<string | null>(null);
 
-    const validate = () => {
+    const getValues = (overrides?: Partial<FormValues>): FormValues => ({
+        name: overrides?.name ?? name,
+        email: overrides?.email ?? email,
+        message: overrides?.message ?? message,
+    });
+
+    const validate = (overrides?: Partial<FormValues>) => {
+        const current = getValues(overrides);
         const next: Record<string, string> = {};
 
         // Check for suspicious patterns before sanitization
-        if (containsSuspiciousPatterns(name) || containsSuspiciousPatterns(email) || containsSuspiciousPatterns(message)) {
+        if (containsSuspiciousPatterns(current.name) || containsSuspiciousPatterns(current.email) || containsSuspiciousPatterns(current.message)) {
             next.general = "Your input contains potentially harmful content. Please review and try again.";
             return next;
         }
 
         // Check for dangerous Unicode characters
-        if (containsDangerousUnicode(name) || containsDangerousUnicode(email) || containsDangerousUnicode(message)) {
+        if (containsDangerousUnicode(current.name) || containsDangerousUnicode(current.email) || containsDangerousUnicode(current.message)) {
             next.general = "Your input contains unsupported characters. Please use standard text only.";
             return next;
         }
 
         // Sanitize inputs before validation
-        const sanitizedName = sanitizeInput(name);
-        const sanitizedEmail = sanitizeInput(email);
-        const sanitizedMessage = sanitizeInput(message);
+        const sanitizedName = sanitizeInput(current.name);
+        const sanitizedEmail = sanitizeInput(current.email);
+        const sanitizedMessage = sanitizeInput(current.message);
 
         if (!sanitizedName || sanitizedName.length < 2) next.name = "Please enter a valid name (at least 2 characters).";
         if (!sanitizedEmail) next.email = "Please enter your email.";
@@ -113,10 +126,25 @@ export default function ContactForm() {
         return next;
     };
 
-    const handleBlur = (field: string) => {
+    const handleBlur = (field: keyof FormValues) => {
         setTouched((prev) => ({ ...prev, [field]: true }));
         const validationErrors = validate();
         setErrors((prev) => ({ ...prev, [field]: validationErrors[field] || "" }));
+    };
+
+    const handleInputChange = (field: keyof FormValues, value: string) => {
+        if (field === "name") setName(value);
+        if (field === "email") setEmail(value);
+        if (field === "message") setMessage(value);
+
+        if (errors.general) {
+            setErrors((prev) => ({ ...prev, general: "" }));
+        }
+
+        if (touched[field]) {
+            const validationErrors = validate({ [field]: value });
+            setErrors((prev) => ({ ...prev, [field]: validationErrors[field] || "" }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -208,12 +236,12 @@ export default function ContactForm() {
                             type="text"
                             id="name"
                             value={name}
-                            onChange={(e) => setName(e.target.value)}
+                            onChange={(e) => handleInputChange("name", e.target.value)}
                             onBlur={() => handleBlur("name")}
                             className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("name") ? "border-red-300" : "border-slate-300"
                                 }`}
-                            placeholder="Your full name"
-                            aria-invalid={showError("name")}
+                            placeholder="Full name (e.g., Meera Nair)"
+                            aria-invalid={showError("name") ? true : false}
                             aria-describedby={showError("name") ? "name-error" : undefined}
                         />
                         {showError("name") && (
@@ -229,12 +257,12 @@ export default function ContactForm() {
                             type="email"
                             id="email"
                             value={email}
-                            onChange={(e) => setEmail(e.target.value)}
+                            onChange={(e) => handleInputChange("email", e.target.value)}
                             onBlur={() => handleBlur("email")}
                             className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors ${showError("email") ? "border-red-300" : "border-slate-300"
                                 }`}
-                            placeholder="your.email@example.com"
-                            aria-invalid={showError("email")}
+                            placeholder="you@example.com"
+                            aria-invalid={showError("email") ? true : false}
                             aria-describedby={showError("email") ? "email-error" : undefined}
                         />
                         {showError("email") && (
@@ -251,13 +279,13 @@ export default function ContactForm() {
                     <textarea
                         id="message"
                         value={message}
-                        onChange={(e) => setMessage(e.target.value)}
+                        onChange={(e) => handleInputChange("message", e.target.value)}
                         onBlur={() => handleBlur("message")}
                         rows={6}
                         className={`w-full px-4 py-4 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors resize-vertical ${showError("message") ? "border-red-300" : "border-slate-300"
                             }`}
-                        placeholder="Tell us about your project, collaboration idea, or how we can help..."
-                        aria-invalid={showError("message")}
+                        placeholder="Share context: goals, language, timeline, links (10+ characters)"
+                        aria-invalid={showError("message") ? true : false}
                         aria-describedby={showError("message") ? "message-error" : undefined}
                     />
                     {showError("message") && (

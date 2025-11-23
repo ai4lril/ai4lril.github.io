@@ -75,6 +75,85 @@ export default function CookiesPage() {
                     </div>
                 </section>
 
+                <section className="mt-10">
+                    <h2 className="text-xl font-semibold text-slate-800">Cookie matrix</h2>
+                    <p className="text-sm text-slate-600 mt-1">Quick view of each cookie type, why we use it, how long it lasts, and how to opt out.</p>
+                    <div className="mt-4 overflow-x-auto rounded-2xl border border-slate-200">
+                        <table className="w-full text-sm text-left text-slate-700">
+                            <thead className="bg-slate-100 text-slate-600 uppercase text-xs">
+                                <tr>
+                                    <th className="px-3 py-3">Category</th>
+                                    <th className="px-3 py-3">Purpose</th>
+                                    <th className="px-3 py-3">Typical retention</th>
+                                    <th className="px-3 py-3">Opt-out</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr className="border-b">
+                                    <td className="px-3 py-3 font-semibold text-slate-900">Essential</td>
+                                    <td className="px-3 py-3">Session security, CSRF, load balancing</td>
+                                    <td className="px-3 py-3">Session or up to 1 year</td>
+                                    <td className="px-3 py-3 text-slate-500">Required</td>
+                                </tr>
+                                <tr className="border-b">
+                                    <td className="px-3 py-3 font-semibold text-slate-900">Functional</td>
+                                    <td className="px-3 py-3">Remember preferences, accessibility choices</td>
+                                    <td className="px-3 py-3">Up to 12 months</td>
+                                    <td className="px-3 py-3">
+                                        <Link href="/privacy-settings" className="text-indigo-600 hover:underline">Toggle in settings</Link>
+                                    </td>
+                                </tr>
+                                <tr className="border-b">
+                                    <td className="px-3 py-3 font-semibold text-slate-900">Analytics</td>
+                                    <td className="px-3 py-3">Anonymous usage metrics and error tracking</td>
+                                    <td className="px-3 py-3">14–24 months (anonymized)</td>
+                                    <td className="px-3 py-3">
+                                        <Link href="/privacy-settings" className="text-indigo-600 hover:underline">Opt out via portal</Link>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td className="px-3 py-3 font-semibold text-slate-900">Marketing</td>
+                                    <td className="px-3 py-3">Not used (no advertising cookies)</td>
+                                    <td className="px-3 py-3">N/A</td>
+                                    <td className="px-3 py-3 text-slate-500">No marketing cookies set</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section className="mt-10">
+                    <h2 className="text-xl font-semibold text-slate-800">Live status snapshot</h2>
+                    <p className="text-sm text-slate-600">These toggles mirror what you can control in <Link className="text-indigo-600 hover:underline" href="/privacy-settings">Privacy & Accessibility Settings</Link>.</p>
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+                        {[
+                            { label: "Essential", status: "Locked on", description: "Needed for login/security", locked: true },
+                            { label: "Analytics", status: "Currently Enabled", description: "Anonymous usage metrics", locked: false },
+                            { label: "Functional", status: "Enabled", description: "Language, accessibility, form drafts", locked: false },
+                        ].map((item) => (
+                            <div key={item.label} className="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">{item.label}</p>
+                                        <p className="text-xs text-slate-500">{item.description}</p>
+                                    </div>
+                                    <span className={`px-3 py-1 rounded-full text-xs font-semibold ${item.locked ? 'bg-slate-200 text-slate-600' : 'bg-emerald-100 text-emerald-700'}`}>
+                                        {item.status}
+                                    </span>
+                                </div>
+                                {!item.locked && (
+                                    <div className="mt-3">
+                                        <Link href="/privacy-settings" className="text-indigo-600 hover:underline text-sm">Change preference</Link>
+                                    </div>
+                                )}
+                                {item.locked && (
+                                    <p className="mt-3 text-xs text-slate-500">Essential cookies are required for core security.</p>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
                 {/* Cookie Categories */}
                 <section className="mt-10 animate-fade-in-up animate-delay-200">
                     <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
@@ -240,84 +319,104 @@ export default function CookiesPage() {
 
                 {/* Third-Party Cookies */}
                 <section className="mt-10 animate-fade-in-up animate-delay-600">
-                    <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-red-100">
-                            <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                            </svg>
+                    <details open className="rounded-2xl border border-red-200 bg-white/95 p-4">
+                        <summary className="flex items-center gap-3 text-xl font-semibold text-slate-800 cursor-pointer">
+                            <div className="p-2 rounded-full bg-red-100">
+                                <svg className="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                                </svg>
+                            </div>
+                            Third-Party Services & Cookies
+                        </summary>
+                        <div className="mt-3 h-1 w-20 bg-gradient-to-r from-red-400 to-red-600 rounded-full"></div>
+
+                        <div className="mt-4 space-y-4">
+                            <p className="text-slate-700">
+                                We may use third-party services that set their own cookies. These services are carefully
+                                selected and contracted to ensure they meet our privacy and security standards.
+                            </p>
+
+                            <div className="overflow-x-auto rounded-xl border border-red-100 bg-red-50/60">
+                                <table className="w-full text-sm text-left text-red-800">
+                                    <thead className="text-xs uppercase text-red-600">
+                                        <tr>
+                                            <th className="px-3 py-2">Service</th>
+                                            <th className="px-3 py-2">Function</th>
+                                            <th className="px-3 py-2">Cookie impact</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr className="border-b border-red-100">
+                                            <td className="px-3 py-2 font-semibold">Hosting (Cloudflare/GCP)</td>
+                                            <td className="px-3 py-2">Secure infrastructure & DDoS protection</td>
+                                            <td className="px-3 py-2">Essential only; no tracking</td>
+                                        </tr>
+                                        <tr className="border-b border-red-100">
+                                            <td className="px-3 py-2 font-semibold">Security services</td>
+                                            <td className="px-3 py-2">Fraud prevention and threat monitoring</td>
+                                            <td className="px-3 py-2">Set anti-abuse tokens (expire < 24h)</td>
+                                        </tr>
+                                        <tr className="border-b border-red-100">
+                                            <td className="px-3 py-2 font-semibold">Error monitoring (Sentry)</td>
+                                            <td className="px-3 py-2">Performance metrics & crash reports</td>
+                                            <td className="px-3 py-2">Analytics cookies (toggle in settings)</td>
+                                        </tr>
+                                        <tr>
+                                            <td className="px-3 py-2 font-semibold">CDN</td>
+                                            <td className="px-3 py-2">Content delivery optimization</td>
+                                            <td className="px-3 py-2">No user-level data stored</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <p className="text-slate-700">
+                                All third-party services are bound by data processing agreements that require them to
+                                maintain the same level of privacy protection as we do. We do not allow third parties to
+                                use cookies for advertising or cross-site tracking purposes.
+                            </p>
                         </div>
-                        Third-Party Services & Cookies
-                    </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-red-400 to-red-600 rounded-full"></div>
-
-                    <div className="mt-4 space-y-4">
-                        <p className="text-slate-700">
-                            We may use third-party services that set their own cookies. These services are carefully
-                            selected and contracted to ensure they meet our privacy and security standards.
-                        </p>
-
-                        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                            <h3 className="font-semibold text-red-800 mb-2">Authorized Third Parties</h3>
-                            <ul className="list-disc ml-6 space-y-2 text-red-700">
-                                <li>
-                                    <strong>Hosting Providers:</strong> Secure cloud infrastructure (no tracking cookies)
-                                </li>
-                                <li>
-                                    <strong>Security Services:</strong> Fraud prevention and threat monitoring
-                                </li>
-                                <li>
-                                    <strong>Error Monitoring:</strong> Application performance and error tracking
-                                </li>
-                                <li>
-                                    <strong>CDN Services:</strong> Content delivery optimization (no user tracking)
-                                </li>
-                            </ul>
-                        </div>
-
-                        <p className="text-slate-700">
-                            All third-party services are bound by data processing agreements that require them to
-                            maintain the same level of privacy protection as we do. We do not allow third parties to
-                            use cookies for advertising or cross-site tracking purposes.
-                        </p>
-                    </div>
+                    </details>
                 </section>
 
                 {/* Cookie Retention */}
                 <section className="mt-10 animate-fade-in-up animate-delay-700">
-                    <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-teal-100">
-                            <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                            </svg>
-                        </div>
-                        Cookie Retention & Deletion
-                    </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></div>
+                    <details open className="rounded-2xl border border-teal-200 bg-white/95 p-4">
+                        <summary className="flex items-center gap-3 text-xl font-semibold text-slate-800 cursor-pointer">
+                            <div className="p-2 rounded-full bg-teal-100">
+                                <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                            </div>
+                            Cookie Retention & Deletion
+                        </summary>
+                        <div className="mt-3 h-1 w-20 bg-gradient-to-r from-teal-400 to-teal-600 rounded-full"></div>
 
-                    <div className="mt-4 space-y-4">
-                        <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
-                            <h3 className="font-semibold text-teal-800 mb-2">Retention Periods</h3>
-                            <ul className="list-disc ml-6 space-y-2 text-teal-700">
-                                <li>
-                                    <strong>Essential Cookies:</strong> Session duration or up to 1 year (security requirements)
-                                </li>
-                                <li>
-                                    <strong>Analytics Cookies:</strong> Up to 2 years (anonymized and aggregated)
-                                </li>
-                                <li>
-                                    <strong>Functional Cookies:</strong> Up to 1 year (user preferences)
-                                </li>
-                                <li>
-                                    <strong>Marketing Cookies:</strong> Up to 1 year (with explicit consent)
-                                </li>
-                            </ul>
-                        </div>
+                        <div className="mt-4 space-y-4">
+                            <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
+                                <h3 className="font-semibold text-teal-800 mb-2">Retention Periods</h3>
+                                <ul className="list-disc ml-6 space-y-2 text-teal-700">
+                                    <li>
+                                        <strong>Essential Cookies:</strong> Session duration or up to 1 year (security requirements)
+                                    </li>
+                                    <li>
+                                        <strong>Analytics Cookies:</strong> Up to 2 years (anonymized and aggregated)
+                                    </li>
+                                    <li>
+                                        <strong>Functional Cookies:</strong> Up to 1 year (user preferences)
+                                    </li>
+                                    <li>
+                                        <strong>Marketing Cookies:</strong> Up to 1 year (with explicit consent)
+                                    </li>
+                                </ul>
+                            </div>
 
-                        <p className="text-slate-700">
-                            Cookies are automatically deleted when they expire or when you clear your browser data.
-                            You can also request manual deletion of your data through our Data Subject Rights Portal.
-                        </p>
-                    </div>
+                            <p className="text-slate-700">
+                                Cookies are automatically deleted when they expire or when you clear your browser data.
+                                You can also request manual deletion of your data through our Data Subject Rights Portal.
+                            </p>
+                        </div>
+                    </details>
                 </section>
 
                 {/* Updates to Policy */}

@@ -55,6 +55,31 @@ export default function ContactPage() {
                 <p className="mt-2 text-slate-600 text-lg animate-fade-in-up animate-delay-200">Questions, collaborations, or feedback? We&apos;d love to hear from you.</p>
             </div>
 
+            <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10" aria-label="Alternate contact channels">
+                <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-wide text-slate-500">Email</p>
+                    <p className="text-lg font-semibold text-slate-800 mt-1">support@language-data-collection.org</p>
+                    <p className="text-sm text-slate-600 mt-2">Best for detailed queries, proposals, and documentation.</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-wide text-slate-500">WhatsApp / Signal</p>
+                    <a
+                        className="text-lg font-semibold text-blue-700 mt-1 inline-block"
+                        href="https://wa.me/918668221206?text=Hi%20ILHRF!%20I%20have%20a%20quick%20question."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        +91 86682 21206
+                    </a>
+                    <p className="text-sm text-slate-600 mt-2">Real-time updates or urgent support (text only).</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                    <p className="text-xs uppercase tracking-wide text-slate-500">Business hours (IST)</p>
+                    <p className="text-lg font-semibold text-slate-800 mt-1">Mon–Fri, 10:00–18:00</p>
+                    <p className="text-sm text-slate-600 mt-2">Weekend coverage for emergencies via WhatsApp/Signal.</p>
+                </div>
+            </section>
+
             <ContactForm />
 
             <div className="mt-12 space-y-4">
@@ -65,7 +90,7 @@ export default function ContactPage() {
                     <a
                         href="mailto:alvynabranches&#46;gmail&#46;com"
                         className="text-blue-600 hover:underline font-medium"
-                        aria-label="Email contact at ai4lril github io"
+                        aria-label="Email contact at alvynabranches gmail com"
                     >
                         alvynabranches&#46;gmail&#46;com
                     </a>
@@ -87,10 +112,15 @@ export default function ContactPage() {
                 <p className="text-slate-600">We&apos;re a passionate group of linguists, developers, and researchers dedicated to preserving and advancing Indian languages through AI.</p>
             </div>
 
-            <div className="bg-blue-50 p-6 rounded-lg border border-blue-200">
-                <h3 className="text-xl font-bold text-blue-800 mb-2">Collaboration Opportunities</h3>
-                <p className="text-blue-700">Are you a researcher, institution, or organization interested in partnering on language data projects? We&apos;d love to hear your ideas! Whether it&apos;s joint research, dataset sharing, or technical collaborations, let&apos;s work together to support linguistic diversity.</p>
-            </div>
+            <section className="bg-blue-50 p-6 rounded-lg border border-blue-200 mt-10" aria-labelledby="partner-heading">
+                <h3 id="partner-heading" className="text-xl font-bold text-blue-800 mb-2">Partner with us</h3>
+                <ul className="list-disc ml-6 space-y-2 text-blue-700 text-sm">
+                    <li>Universities & labs – co-develop corpora, share benchmarks, co-author papers.</li>
+                    <li>Community collectives – onboard new dialects, co-design consent processes.</li>
+                    <li>Civic organizations – deploy speech tools for accessibility and preservation.</li>
+                </ul>
+                <p className="text-blue-700 mt-4">Email <a className="underline font-medium" href="mailto:partnerships@language-data-collection.org">partnerships@language-data-collection.org</a> with “Partner” in the subject or mention it in the form above.</p>
+            </section>
 
             <div className="text-center py-8">
                 <h3 className="text-xl font-semibold text-slate-800 mb-4">Connect With Us</h3>

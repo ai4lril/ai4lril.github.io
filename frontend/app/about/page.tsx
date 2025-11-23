@@ -91,6 +91,99 @@ export default function AboutPage() {
                 </div>
             </header>
 
+            {/* Mission snapshot / quick facts */}
+            <section className="mt-8 glass rounded-2xl p-6 md:p-8 border border-slate-100 xl:mr-[280px]" aria-labelledby="mission-snapshot">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-full bg-emerald-100">
+                        <svg className="w-5 h-5 text-emerald-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                    </div>
+                    <h2 id="mission-snapshot" className="text-xl font-semibold text-slate-800">Mission Snapshot</h2>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-700">
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50/60 p-4">
+                        <p className="uppercase tracking-wide text-xs text-emerald-600 font-semibold mb-1">Why</p>
+                        <p className="font-medium text-slate-800">Protect Indian linguistic diversity through open datasets and ethical research tooling.</p>
+                    </div>
+                    <div className="rounded-xl border border-blue-100 bg-blue-50/60 p-4">
+                        <p className="uppercase tracking-wide text-xs text-blue-600 font-semibold mb-1">Who benefits</p>
+                        <p className="font-medium text-slate-800">Community speakers, educators, accessibility advocates, and AI researchers worldwide.</p>
+                    </div>
+                    <div className="rounded-xl border border-purple-100 bg-purple-50/60 p-4">
+                        <p className="uppercase tracking-wide text-xs text-purple-600 font-semibold mb-1">How we work</p>
+                        <p className="font-medium text-slate-800">Community-first governance, transparent licensing, multilingual tooling, and open collaboration.</p>
+                    </div>
+                </div>
+            </section>
+
+            {/* Research annex */}
+            <section className="mt-12 glass rounded-2xl p-6 md:p-8 border border-slate-100 xl:mr-[280px]" id="research-annex" aria-labelledby="research-annex-heading">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-full bg-slate-100">
+                        <svg className="w-5 h-5 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <h2 id="research-annex-heading" className="text-xl font-semibold text-slate-800">Research annex (plain language)</h2>
+                </div>
+                <p className="text-sm text-slate-600 mb-4">We group technical interests into three human-readable streams so you can see where your contribution helps.</p>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-slate-700">
+                    <div className="rounded-xl border border-indigo-100 bg-indigo-50/70 p-4">
+                        <h3 className="font-semibold text-indigo-700 mb-2">Speech & audio</h3>
+                        <ul className="list-disc ml-4 space-y-1">
+                            <li>Spontaneous/scripted ASR</li>
+                            <li>Dialectal pronunciation mapping</li>
+                            <li>Acoustic archives of oral histories</li>
+                        </ul>
+                    </div>
+                    <div className="rounded-xl border border-emerald-100 bg-emerald-50/70 p-4">
+                        <h3 className="font-semibold text-emerald-700 mb-2">Text & semantics</h3>
+                        <ul className="list-disc ml-4 space-y-1">
+                            <li>Token labeling (POS/NER)</li>
+                            <li>Code-mixing + transliteration</li>
+                            <li>Emotion & sentiment corpora</li>
+                        </ul>
+                    </div>
+                    <div className="rounded-xl border border-amber-100 bg-amber-50/70 p-4">
+                        <h3 className="font-semibold text-amber-700 mb-2">Access & ethics</h3>
+                        <ul className="list-disc ml-4 space-y-1">
+                            <li>Fair licensing & governance</li>
+                            <li>Responsible data release tooling</li>
+                            <li>Assistive & community tech pilots</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            {/* Community faces */}
+            <section className="mt-8 glass rounded-2xl p-6 md:p-8 border border-slate-100 xl:mr-[280px]" id="community-faces" aria-labelledby="community-faces-heading">
+                <div className="flex items-center gap-3 mb-4">
+                    <div className="p-2 rounded-full bg-pink-100">
+                        <svg className="w-5 h-5 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0" />
+                        </svg>
+                    </div>
+                    <h2 id="community-faces-heading" className="text-xl font-semibold text-slate-800">Faces of ILHRF</h2>
+                </div>
+                <p className="text-sm text-slate-600 mb-4">Real contributors, moderators, and researchers championing Indian languages.</p>
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+                    {contributors.slice(0, 6).map((c) => (
+                        <figure key={`gallery-${c.name}`} className="flex flex-col items-center text-center">
+                            {c.photoUrl ? (
+                                <Image src={c.photoUrl} alt={c.name} width={80} height={80} className="w-20 h-20 rounded-2xl object-cover shadow-md ring-2 ring-white" />
+                            ) : (
+                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
+                                    {c.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
+                                </div>
+                            )}
+                            <figcaption className="mt-2 text-sm font-medium text-slate-800">{c.name}</figcaption>
+                            <p className="text-xs text-slate-500">{c.role}</p>
+                        </figure>
+                    ))}
+                </div>
+            </section>
+
             {/* Sticky in-page TOC for desktop */}
             <aside className="hidden xl:block absolute right-0 top-32 w-[260px]">
                 <nav className="glass rounded-xl border border-slate-100 p-3 shadow-sm min-w-[200px]">
@@ -152,24 +245,35 @@ export default function AboutPage() {
                         <span className="absolute -bottom-0.5 left-0 w-full h-[2px] bg-gradient-to-r from-indigo-500 to-purple-500"></span>
                     </span>
                 </h2>
-                <ol className="mt-3 grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-slate-700">
-                    <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
-                        <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">1</span> Contribute</div>
-                        <p className="mt-1">Record speech, transcribe, or annotate tokens. Choose your language and script via the language switcher to preserve your linguistic heritage.</p>
-                    </li>
-                    <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
-                        <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">2</span> Validate</div>
-                        <p className="mt-1">Peers review submissions for clarity and correctness using simple yes/no checks, ensuring quality for research.</p>
-                    </li>
-                    <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
-                        <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">3</span> Token Classification</div>
-                        <p className="mt-1">Assign UPOS tags or BIO entity labels, with script-aware tokenization and span support for accurate linguistic analysis.</p>
-                    </li>
-                    <li className="card rounded-2xl p-4 border border-slate-200 transition hover:shadow-lg">
-                        <div className="font-semibold text-slate-800 flex items-center gap-2"><span className="inline-flex items-center justify-center w-5 h-5 text-xs rounded-full bg-indigo-100 text-indigo-700">4</span> Release</div>
-                        <p className="mt-1">Aggregated, anonymized datasets will be made available for research with clear licenses, supporting global linguistic studies.</p>
-                    </li>
-                </ol>
+                <div className="mt-6 relative pl-8 before:content-[''] before:absolute before:top-4 before:bottom-4 before:left-3 before:w-0.5 before:bg-gradient-to-b from-indigo-400 via-purple-400 to-pink-400">
+                    {[
+                        {
+                            title: 'Contribute',
+                            description: 'Record speech, transcribe, or annotate tokens. Use the language switcher to keep your dialect front and center.',
+                        },
+                        {
+                            title: 'Validate',
+                            description: 'Community reviewers check clarity and correctness with lightweight checklists to keep research-grade quality.',
+                        },
+                        {
+                            title: 'Deep annotate',
+                            description: 'Apply UPOS/BIO tags, affect labels, or translations with script-aware helpers and tutorials.',
+                        },
+                        {
+                            title: 'Release & reuse',
+                            description: 'We aggregate, anonymize, and publish datasets/APIs with documentation, licensing, and governance notes.',
+                        },
+                    ].map((step, index) => (
+                        <div key={step.title} className="relative mb-6 last:mb-0">
+                            <div className="absolute left-[-0.35rem] top-1 w-3 h-3 rounded-full bg-white border-2 border-indigo-500"></div>
+                            <div className="bg-white/95 border border-slate-200 rounded-2xl p-4 shadow-sm hover:shadow-md transition">
+                                <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">Step {index + 1}</div>
+                                <h3 className="font-semibold text-slate-800">{step.title}</h3>
+                                <p className="mt-1 text-sm text-slate-600">{step.description}</p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
             </section>
 
             {/* Community impact */}
@@ -304,100 +408,55 @@ export default function AboutPage() {
                         </div>
                     </div>
 
-                    {/* Contributors Grid */}
-                    <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
-                        {contributors.map((c, index) => (
-                            <div key={c.name} className={`group relative animate-fade-in-up ${index % 2 === 0 ? 'animate-delay-200' : 'animate-delay-300'
-                                }`}>
-                                {/* Background Pattern */}
-                                <div className="absolute inset-0 opacity-30 group-hover:opacity-40 transition-opacity duration-500">
-                                    <div className={`absolute top-0 right-0 w-32 h-32 rounded-full blur-3xl ${index % 4 === 0 ? 'bg-indigo-200' :
-                                        index % 4 === 1 ? 'bg-purple-200' :
-                                            index % 4 === 2 ? 'bg-blue-200' : 'bg-emerald-200'
-                                        }`}></div>
-                                </div>
-
-                                {/* Main Card */}
-                                <div className="relative glass rounded-2xl p-8 border border-slate-100 shadow-xl hover:shadow-2xl transition-all duration-500 hover:-translate-y-2 group-hover:border-slate-200">
-                                    {/* Card Header */}
-                                    <div className="flex items-start gap-6 mb-6">
-                                        {/* Avatar Section */}
-                                        <div className="relative">
-                                            {c.photoUrl ? (
-                                                <div className="relative">
-                                                    <Image
-                                                        alt={c.name}
-                                                        src={c.photoUrl}
-                                                        width={80}
-                                                        height={80}
-                                                        className="w-20 h-20 rounded-2xl object-cover shadow-lg ring-4 ring-white group-hover:ring-indigo-100 transition-all duration-300"
-                                                    />
-                                                    <div className="absolute -bottom-2 -right-2 w-6 h-6 bg-green-400 rounded-full border-2 border-white shadow-md"></div>
-                                                </div>
-                                            ) : (
-                                                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 shadow-lg ring-4 ring-white group-hover:ring-indigo-100 transition-all duration-300 flex items-center justify-center">
-                                                    <svg className="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                                                    </svg>
-                                                </div>
-                                            )}
-                                        </div>
-
-                                        {/* Name and Role */}
-                                        <div className="flex-1">
-                                            <h3 className="text-xl font-bold text-slate-800 mb-1 group-hover:text-indigo-900 transition-colors duration-300">
-                                                {c.name}
-                                            </h3>
-                                            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gradient-to-r from-indigo-50 to-purple-50 border border-indigo-200">
-                                                <div className="w-2 h-2 bg-indigo-500 rounded-full"></div>
-                                                <span className="text-sm font-medium text-indigo-700">{c.role}</span>
+                    {/* Contributors list */}
+                    <div className="mt-8 space-y-4">
+                        {contributors.map((c) => (
+                            <details key={c.name} className="glass rounded-2xl border border-slate-100 shadow-md hover:shadow-lg transition-all">
+                                <summary className="flex flex-col sm:flex-row gap-4 sm:items-center cursor-pointer px-6 py-4">
+                                    <div className="flex items-center gap-4 flex-1">
+                                        {c.photoUrl ? (
+                                            <Image alt={c.name} src={c.photoUrl} width={64} height={64} className="w-16 h-16 rounded-2xl object-cover shadow-md" />
+                                        ) : (
+                                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-400 via-purple-500 to-pink-500 text-white flex items-center justify-center text-lg font-bold shadow-md">
+                                                {c.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                                             </div>
+                                        )}
+                                        <div>
+                                            <p className="text-lg font-semibold text-slate-800">{c.name}</p>
+                                            <p className="text-sm text-slate-500">{c.role}</p>
                                         </div>
                                     </div>
-
-                                    {/* Bio */}
-                                    <div className="mb-6">
-                                        <p className="text-slate-600 leading-relaxed group-hover:text-slate-700 transition-colors duration-300">
-                                            {c.bio}
-                                        </p>
-                                    </div>
-
-                                    {/* Interests */}
-                                    <div className="space-y-4">
-                                        <div className="flex items-center gap-2">
-                                            <svg className="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <span className="text-xs uppercase tracking-wide text-slate-500 flex items-center gap-1">
+                                        View details
+                                        <svg className="w-4 h-4 transition-transform group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </span>
+                                </summary>
+                                <div className="px-6 pb-6 space-y-4 text-sm text-slate-600">
+                                    <p>{c.bio}</p>
+                                    <div>
+                                        <h4 className="font-semibold text-slate-800 mb-2 flex items-center gap-2">
+                                            <svg className="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                             </svg>
-                                            <span className="text-sm font-medium text-slate-700">Research Interests</span>
-                                        </div>
+                                            Research focus (hover for plain speak)
+                                        </h4>
                                         <div className="flex flex-wrap gap-2">
-                                            {c.interests.map((interest, i) => (
+                                            {c.interests.map((interest) => (
                                                 <span
-                                                    key={interest}
-                                                    className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium transition-all duration-300 group-hover:scale-105 ${i % 3 === 0
-                                                        ? 'bg-gradient-to-r from-indigo-100 to-indigo-200 text-indigo-700 border border-indigo-300'
-                                                        : i % 3 === 1
-                                                            ? 'bg-gradient-to-r from-purple-100 to-purple-200 text-purple-700 border border-purple-300'
-                                                            : 'bg-gradient-to-r from-emerald-100 to-emerald-200 text-emerald-700 border border-emerald-300'
-                                                        }`}
+                                                    key={`${c.name}-${interest}`}
+                                                    title={`Focus area: ${interest}`}
+                                                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-slate-100 border border-slate-200 text-slate-700"
                                                 >
-                                                    <div className={`w-1.5 h-1.5 rounded-full ${i % 3 === 0 ? 'bg-indigo-500' :
-                                                        i % 3 === 1 ? 'bg-purple-500' : 'bg-emerald-500'
-                                                        }`}></div>
+                                                    <div className="w-1.5 h-1.5 rounded-full bg-indigo-400"></div>
                                                     {interest}
                                                 </span>
                                             ))}
                                         </div>
                                     </div>
-
-                                    {/* Decorative Elements */}
-                                    <div className="absolute top-4 right-4 opacity-10 group-hover:opacity-20 transition-opacity duration-300">
-                                        <svg className="w-8 h-8 text-indigo-400" fill="currentColor" viewBox="0 0 24 24">
-                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-                                        </svg>
-                                    </div>
                                 </div>
-                            </div>
+                            </details>
                         ))}
                     </div>
 
@@ -500,6 +559,38 @@ export default function AboutPage() {
                             </svg>
                         </summary>
                         <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Annotations help train and evaluate NLP models for Indian languages and scripts. Aggregated data may be released for research with clear licenses through ILHRF initiatives.</p>
+                    </details>
+                    <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                        <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-cyan-900 transition-colors duration-300">
+                            <span className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full bg-cyan-100 flex items-center justify-center group-hover:bg-cyan-200 transition-colors duration-300">
+                                    <svg className="w-4 h-4 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    </svg>
+                                </div>
+                                How do I retract or anonymize my contribution?
+                            </span>
+                            <svg className="w-5 h-5 text-slate-400 group-hover:text-cyan-600 transition-all duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Use the <Link className="text-indigo-600 hover:underline font-medium" href="/data-rights">Data Rights Portal</Link> to withdraw, delete, or anonymize a specific clip, transcription, or annotation. We propagate removals to future dataset releases within 30 days.</p>
+                    </details>
+                    <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
+                        <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-rose-900 transition-colors duration-300">
+                            <span className="flex items-center gap-3">
+                                <div className="w-6 h-6 rounded-full bg-rose-100 flex items-center justify-center group-hover:bg-rose-200 transition-colors duration-300">
+                                    <svg className="w-4 h-4 text-rose-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                                What safeguards protect minority communities?
+                            </span>
+                            <svg className="w-5 h-5 text-slate-400 group-hover:text-rose-600 transition-all duration-300 group-open:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </summary>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">We avoid storing precise geo/IP data, run cultural impact reviews with community partners, and can set collective opt-outs managed by tribal councils or language academies. Sensitive folklore is never released without explicit consent.</p>
                     </details>
                 </div>
             </section>

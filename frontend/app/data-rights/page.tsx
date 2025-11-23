@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Data Subject Rights Portal | Exercise Your Privacy Rights",
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
         "subject access request"
     ],
     openGraph: {
-        title: "Data Subject Rights Portal | Language Data Collection",
+        title: "Data Subject Rights Portal | ILHRF",
         description: "Exercise your data protection rights securely and efficiently.",
         type: "website",
         images: [
@@ -23,13 +24,13 @@ export const metadata: Metadata = {
                 url: "/og-data-rights.jpg",
                 width: 1200,
                 height: 630,
-                alt: "Data Subject Rights Portal - Language Data Collection",
+                alt: "Data Subject Rights Portal - ILHRF",
             },
         ],
     },
     twitter: {
         card: "summary_large_image",
-        title: "Data Subject Rights Portal | Language Data Collection",
+        title: "Data Subject Rights Portal | ILHRF",
         description: "Secure access to your data rights and privacy controls.",
         images: ["/og-data-rights.jpg"],
     },
@@ -74,7 +75,7 @@ export default function DataRightsPage() {
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-blue-800 mb-2">Right to Access (Article 15)</h3>
+                                <h3 title="GDPR Article 15" className="font-semibold text-blue-800 mb-2">Right to Access (Article 15)</h3>
                                 <p className="text-blue-700 text-sm mb-3">
                                     Request a copy of your personal data we process.
                                 </p>
@@ -84,7 +85,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-green-800 mb-2">Right to Rectification (Article 16)</h3>
+                                <h3 title="GDPR Article 16" className="font-semibold text-green-800 mb-2">Right to Rectification (Article 16)</h3>
                                 <p className="text-green-700 text-sm mb-3">
                                     Correct inaccurate or incomplete personal data.
                                 </p>
@@ -94,7 +95,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-red-800 mb-2">Right to Erasure (Article 17)</h3>
+                                <h3 title="GDPR Article 17" className="font-semibold text-red-800 mb-2">Right to Erasure (Article 17)</h3>
                                 <p className="text-red-700 text-sm mb-3">
                                     Request deletion of your personal data.
                                 </p>
@@ -104,7 +105,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-purple-800 mb-2">Right to Data Portability (Article 20)</h3>
+                                <h3 title="GDPR Article 20" className="font-semibold text-purple-800 mb-2">Right to Data Portability (Article 20)</h3>
                                 <p className="text-purple-700 text-sm mb-3">
                                     Receive your data in a structured format.
                                 </p>
@@ -116,7 +117,7 @@ export default function DataRightsPage() {
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-orange-800 mb-2">Right to Restrict Processing (Article 18)</h3>
+                                <h3 title="GDPR Article 18" className="font-semibold text-orange-800 mb-2">Right to Restrict Processing (Article 18)</h3>
                                 <p className="text-orange-700 text-sm mb-3">
                                     Limit how we process your personal data.
                                 </p>
@@ -126,7 +127,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-teal-50 border border-teal-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-teal-800 mb-2">Right to Object (Article 21)</h3>
+                                <h3 title="GDPR Article 21" className="font-semibold text-teal-800 mb-2">Right to Object (Article 21)</h3>
                                 <p className="text-teal-700 text-sm mb-3">
                                     Object to processing based on legitimate interests.
                                 </p>
@@ -153,7 +154,7 @@ export default function DataRightsPage() {
                     <div className="mt-4 space-y-4">
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-orange-800 mb-2">Right to Know</h3>
+                                <h3 title="CCPA §1798.110" className="font-semibold text-orange-800 mb-2">Right to Know</h3>
                                 <p className="text-orange-700 text-sm mb-3">
                                     What personal information we collect and use.
                                 </p>
@@ -163,7 +164,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-red-800 mb-2">Right to Delete</h3>
+                                <h3 title="CCPA §1798.105" className="font-semibold text-red-800 mb-2">Right to Delete</h3>
                                 <p className="text-red-700 text-sm mb-3">
                                     Request deletion of your personal information.
                                 </p>
@@ -173,7 +174,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-green-800 mb-2">Right to Correct</h3>
+                                <h3 title="CCPA §1798.106" className="font-semibold text-green-800 mb-2">Right to Correct</h3>
                                 <p className="text-green-700 text-sm mb-3">
                                     Correct inaccurate personal information.
                                 </p>
@@ -183,7 +184,7 @@ export default function DataRightsPage() {
                             </div>
 
                             <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                                <h3 className="font-semibold text-purple-800 mb-2">Do Not Sell My Info</h3>
+                                <h3 title="CCPA §1798.120" className="font-semibold text-purple-800 mb-2">Do Not Sell My Info</h3>
                                 <p className="text-purple-700 text-sm mb-3">
                                     Opt-out of sale/sharing of personal information.
                                 </p>
@@ -252,6 +253,26 @@ export default function DataRightsPage() {
                     </div>
                 </section>
 
+                <section className="mt-10">
+                    <h2 className="text-xl font-semibold text-slate-800">Consents by data type</h2>
+                    <p className="text-sm text-slate-600 mt-1">Fine-grained control across audio, text, and metadata contributions.</p>
+                    <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        {[
+                            { title: "Audio contributions", description: "Speech clips, spontaneous responses", link: "/privacy-settings#audio" },
+                            { title: "Text & annotations", description: "Transcripts, POS/NER labels", link: "/privacy-settings#text" },
+                            { title: "Metadata & analytics", description: "Language choices, device info", link: "/privacy-settings#metadata" },
+                        ].map((item) => (
+                            <div key={item.title} className="rounded-2xl border border-slate-200 bg-white/95 p-4 shadow-sm">
+                                <h3 className="font-semibold text-slate-800">{item.title}</h3>
+                                <p className="text-slate-600 mt-1">{item.description}</p>
+                                <Link href={item.link} className="text-indigo-600 hover:underline mt-3 inline-flex items-center gap-1">
+                                    Manage consent →
+                                </Link>
+                            </div>
+                        ))}
+                    </div>
+                </section>
+
                 {/* Request Status & History */}
                 <section className="mt-10 animate-fade-in-up animate-delay-500">
                     <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
@@ -288,6 +309,24 @@ export default function DataRightsPage() {
                                     </span>
                                 </div>
                             </div>
+                        </div>
+
+                        <div className="mt-4 rounded-2xl border border-slate-200 bg-white/95 p-4">
+                            <h3 className="font-semibold text-slate-800 mb-2">Live tracking & ETAs</h3>
+                            <ol className="relative border-l border-slate-200 ml-3 space-y-4 text-sm text-slate-700">
+                                <li className="pl-4">
+                                    <span className="absolute -left-1 top-1 w-3 h-3 rounded-full bg-indigo-500"></span>
+                                    Request submitted → instant confirmation email.
+                                </li>
+                                <li className="pl-4">
+                                    <span className="absolute -left-1 top-1 w-3 h-3 rounded-full bg-yellow-500"></span>
+                                    Identity verification → within 3 business days.
+                                </li>
+                                <li className="pl-4">
+                                    <span className="absolute -left-1 top-1 w-3 h-3 rounded-full bg-emerald-500"></span>
+                                    Fulfillment → 15 days (EU) / 45 days (US). Complex exports may take longer; we'll notify you.
+                                </li>
+                            </ol>
                         </div>
                     </div>
                 </section>

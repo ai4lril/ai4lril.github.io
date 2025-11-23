@@ -74,57 +74,157 @@ export default function PrivacyPage() {
                             and continuous monitoring to protect your personal information.
                         </p>
                     </div>
+
+                    <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                        <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Quick action</p>
+                            <p className="text-base font-semibold text-slate-800 mt-1">Data Rights Portal</p>
+                            <p className="text-slate-600 mt-2">Submit access, deletion, or portability requests.</p>
+                            <Link href="/data-rights" className="text-indigo-600 font-medium hover:underline mt-3 inline-flex items-center gap-1">
+                                Open portal
+                                <span aria-hidden="true">→</span>
+                            </Link>
+                        </div>
+                        <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Quick action</p>
+                            <p className="text-base font-semibold text-slate-800 mt-1">Consent & cookies</p>
+                            <p className="text-slate-600 mt-2">Update cookie, analytics, and research consents.</p>
+                            <Link href="/privacy-settings" className="text-indigo-600 font-medium hover:underline mt-3 inline-flex items-center gap-1">
+                                Manage preferences →
+                            </Link>
+                        </div>
+                        <div className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                            <p className="text-xs uppercase tracking-wide text-slate-500">Need guidance?</p>
+                            <p className="text-base font-semibold text-slate-800 mt-1">Consent walkthrough</p>
+                            <p className="text-slate-600 mt-2">See examples of when and why we request consent.</p>
+                            <Link href="/privacy-settings#consent-guide" className="text-indigo-600 font-medium hover:underline mt-3 inline-flex items-center gap-1">
+                                View guide →
+                            </Link>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+                        <h3 className="text-lg font-semibold text-slate-800 mb-3">✨ Your rights at a glance</h3>
+                        <ul className="space-y-2 text-slate-700">
+                            <li>✔️ <strong>Access</strong> – Download what you shared (text, audio, annotations).</li>
+                            <li>✔️ <strong>Correct</strong> – Fix typos or metadata applied to your contributions.</li>
+                            <li>✔️ <strong>Delete / withdraw</strong> – Remove items from future dataset releases.</li>
+                            <li>✔️ <strong>Portability</strong> – Export data in CSV/JSON for your own projects.</li>
+                            <li>✔️ <strong>Consent control</strong> – Toggle analytics, research reuse, and communications.</li>
+                        </ul>
+                        <p className="text-sm text-slate-500 mt-3">Use the quick action buttons above to exercise any right in one place.</p>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl border border-emerald-200 bg-emerald-50/70 p-6">
+                        <h3 className="text-lg font-semibold text-emerald-800 mb-2">🧾 Easy-read version</h3>
+                        <ul className="list-disc ml-6 space-y-1 text-sm text-emerald-900">
+                            <li>We only collect what you choose to share.</li>
+                            <li>You can ask us to show, fix, or delete your data.</li>
+                            <li>We never sell data or run ads.</li>
+                            <li>We anonymize before sharing with researchers.</li>
+                        </ul>
+                        <div className="mt-3 flex flex-wrap gap-4 text-sm font-medium">
+                            <Link href="/privacy-easy" className="text-indigo-700 hover:underline">Read the easy version</Link>
+                            <a href="/privacy-audio.mp3" className="text-indigo-700 hover:underline">Listen to 10‑min audio</a>
+                        </div>
+                    </div>
+
+                    <div className="mt-6 rounded-2xl border border-slate-200 bg-white/95 p-6 shadow-sm">
+                        <h3 className="text-lg font-semibold text-slate-800 mb-4">🌍 International rights comparison</h3>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left text-slate-700">
+                                <thead>
+                                    <tr className="bg-slate-100 text-slate-600 uppercase text-xs">
+                                        <th className="px-3 py-2">Right</th>
+                                        <th className="px-3 py-2">GDPR (EU)</th>
+                                        <th className="px-3 py-2">CCPA (California)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr className="border-b">
+                                        <td className="px-3 py-2">Access / Know</td>
+                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 15</Link></td>
+                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.110</Link></td>
+                                    </tr>
+                                    <tr className="border-b">
+                                        <td className="px-3 py-2">Delete</td>
+                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 17</Link></td>
+                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.105</Link></td>
+                                    </tr>
+                                    <tr className="border-b">
+                                        <td className="px-3 py-2">Data portability</td>
+                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 20</Link></td>
+                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">§1798.130</Link></td>
+                                    </tr>
+                                    <tr>
+                                        <td className="px-3 py-2">Opt-out / Restrict</td>
+                                        <td className="px-3 py-2"><Link href="#gdpr" className="text-indigo-600 hover:underline">Article 21</Link></td>
+                                        <td className="px-3 py-2"><Link href="#ccpa" className="text-indigo-600 hover:underline">Do Not Sell / Share</Link></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="text-xs text-slate-500 mt-3">We follow the strictest applicable rule for your location. If unsure, contact <Link href="/data-rights" className="underline">our DPO team</Link>.</p>
+                    </div>
                 </section>
 
                 <section className="mt-10 animate-fade-in-up animate-delay-200">
-                    <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-indigo-100">
-                            <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                            </svg>
+                    <details open className="rounded-2xl border border-slate-200 bg-white/95 p-4">
+                        <summary className="flex items-center gap-3 text-xl font-semibold text-slate-800 cursor-pointer">
+                            <div className="p-2 rounded-full bg-indigo-100">
+                                <svg className="w-5 h-5 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                </svg>
+                            </div>
+                            What we collect
+                        </summary>
+                        <div className="mt-3">
+                            <div className="h-1 w-20 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
+                            <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
+                                <li>
+                                    <span className="font-medium">Voice data (optional).</span> Audio recordings you submit during tasks like
+                                    scripted or spontaneous speech.
+                                </li>
+                                <li>
+                                    <span className="font-medium">Text data.</span> Typed content (e.g., questions, answers) and token-level annotations
+                                    for tasks such as Part-of-Speech (POS) tagging and Named Entity Recognition (NER).
+                                </li>
+                                <li>
+                                    <span className="font-medium">Task metadata.</span> Language/script selection, prompt identifiers, timestamps, and
+                                    non-identifying contribution context (e.g., which sentence was annotated).
+                                </li>
+                                <li>
+                                    <span className="font-medium">Technical information.</span> Basic logs and aggregated telemetry necessary to keep the
+                                    service reliable and secure (e.g., error events, page loads). We do not profile individuals.
+                                </li>
+                            </ul>
                         </div>
-                        What we collect
-                    </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-indigo-400 to-indigo-600 rounded-full"></div>
-                    <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
-                        <li>
-                            <span className="font-medium">Voice data (optional).</span> Audio recordings you submit during tasks like
-                            scripted or spontaneous speech.
-                        </li>
-                        <li>
-                            <span className="font-medium">Text data.</span> Typed content (e.g., questions, answers) and token-level annotations
-                            for tasks such as Part-of-Speech (POS) tagging and Named Entity Recognition (NER).
-                        </li>
-                        <li>
-                            <span className="font-medium">Task metadata.</span> Language/script selection, prompt identifiers, timestamps, and
-                            non-identifying contribution context (e.g., which sentence was annotated).
-                        </li>
-                        <li>
-                            <span className="font-medium">Technical information.</span> Basic logs and aggregated telemetry necessary to keep the
-                            service reliable and secure (e.g., error events, page loads). We do not profile individuals.
-                        </li>
-                    </ul>
+                    </details>
                 </section>
 
                 <section className="mt-10 animate-fade-in-up animate-delay-300">
-                    <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
-                        <div className="p-2 rounded-full bg-emerald-100">
-                            <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                            </svg>
+                    <details open className="rounded-2xl border border-slate-200 bg-white/95 p-4">
+                        <summary className="flex items-center gap-3 text-xl font-semibold text-slate-800 cursor-pointer">
+                            <div className="p-2 rounded-full bg-emerald-100">
+                                <svg className="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                            </div>
+                            How we use the data
+                        </summary>
+                        <div className="mt-3">
+                            <div className="h-1 w-20 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
+                            <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
+                                <li>Build and evaluate open, research-grade datasets for Indian languages and scripts.</li>
+                                <li>Develop, test, and improve language technologies (e.g., ASR, POS, NER, transcription tools).</li>
+                                <li>Ensure data quality via validation, de-duplication, and aggregation.</li>
+                                <li>Produce anonymized statistics (e.g., number of speakers, hours recorded, annotation counts).</li>
+                            </ul>
+                            <p className="mt-4 text-slate-700 italic">
+                                <strong>Practical Examples:</strong> Your Odia voice clip might train ASR models to digitize folklore, aiding preservation efforts. A Manipuri text annotation could refine NER for indigenous literature, empowering local scholars. Contributions like yours create balanced datasets for equitable AI, focusing on 22 underrepresented scripts. No commercial exploitation—purely for open research, e.g., improving translation for Bodo-English pairs in education.
+                            </p>
                         </div>
-                        How we use the data
-                    </h2>
-                    <div className="mt-3 h-1 w-20 bg-gradient-to-r from-emerald-400 to-teal-500 rounded-full"></div>
-                    <ul className="mt-3 list-disc ml-6 space-y-2 text-slate-700">
-                        <li>Build and evaluate open, research-grade datasets for Indian languages and scripts.</li>
-                        <li>Develop, test, and improve language technologies (e.g., ASR, POS, NER, transcription tools).</li>
-                        <li>Ensure data quality via validation, de-duplication, and aggregation.</li>
-                        <li>Produce anonymized statistics (e.g., number of speakers, hours recorded, annotation counts).</li>
-                    </ul>
-                    <p className="mt-4 text-slate-700 italic">
-                        <strong>Practical Examples:</strong> Your Odia voice clip might train ASR models to digitize folklore, aiding preservation efforts. A Manipuri text annotation could refine NER for indigenous literature, empowering local scholars. Contributions like yours create balanced datasets for equitable AI, focusing on 22 underrepresented scripts. No commercial exploitation—purely for open research, e.g., improving translation for Bodo-English pairs in education.
-                    </p>
+                    </details>
                 </section>
 
                 <section className="mt-10">
@@ -240,7 +340,7 @@ export default function PrivacyPage() {
                 </section>
 
                 {/* GDPR Compliance Section */}
-                <section className="mt-10 animate-fade-in-up animate-delay-400">
+                <section id="gdpr" className="mt-10 animate-fade-in-up animate-delay-400">
                     <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
                         <div className="p-2 rounded-full bg-blue-100">
                             <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -273,7 +373,7 @@ export default function PrivacyPage() {
                 </section>
 
                 {/* CCPA Compliance Section */}
-                <section className="mt-10 animate-fade-in-up animate-delay-500">
+                <section id="ccpa" className="mt-10 animate-fade-in-up animate-delay-500">
                     <h2 className="text-xl font-semibold text-slate-800 flex items-center gap-3">
                         <div className="p-2 rounded-full bg-orange-100">
                             <svg className="w-5 h-5 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -536,6 +636,136 @@ export default function PrivacyPage() {
                 <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
                     <summary className="font-semibold text-slate-700 cursor-pointer pb-2">How does my data help low-resource languages?</summary>
                     <p className="text-slate-600 mt-2 pl-4">Your inputs fill gaps for languages like Dogri or Santhali, enabling AI tools for education and preservation. See examples in <Link href="#use">How We Use the Data</Link>.</p>
+                </details>
+
+                {/* New accordion for Consent Management */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-cyan-100">
+                            <svg className="w-5 h-5 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                        Consent Management
+                    </summary>
+                    <div className="mt-4">
+                        <p className="text-slate-700 mb-3">Your consent is the foundation of our data collection. You can manage your preferences at any time.</p>
+                        <ul className="space-y-2 text-slate-700">
+                            <li><strong>Granular Preferences:</strong> Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., 'Voice only for ASR, no text for NER') or restrict to projects (e.g., 'Opt-in to Hindi Translation Dataset, out of Sentiment Analysis'). Changes apply immediately; we honor per-item consents.</li>
+                            <li><strong>Withdraw Consent:</strong> Easily opt-out of specific data types or projects. Your choices are respected.</li>
+                            <li><strong>Transparency:</strong> Your consent history is available in the <Link href="/data-rights">Data Rights Portal</Link>.</li>
+                        </ul>
+                        <div className="mt-4 bg-cyan-50 border border-cyan-200 rounded-lg p-4">
+                            <h4 className="font-semibold text-cyan-800 mb-2">Granular Data Preferences</h4>
+                            <p className="text-cyan-700 mb-3">Choose specifics: Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., 'Voice only for ASR, no text for NER') or restrict to projects (e.g., 'Opt-in to Hindi Translation Dataset, out of Sentiment Analysis'). Changes apply immediately; we honor per-item consents.</p>
+                            <ul className="space-y-1 text-sm text-cyan-700">
+                                <li>• Voice: For speech models (e.g., Tamil ASR)</li>
+                                <li>• Text: For annotations (e.g., Urdu NER)</li>
+                                <li>• Metadata: For aggregate stats only</li>
+                                <li>• Project Opt-Ins: List available (e.g., 'Bodo Preservation Initiative')</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                {/* New accordion for Audit Trail */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-teal-100">
+                            <svg className="w-5 h-5 text-teal-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        Audit Trail & Accountability Statistics
+                    </summary>
+                    <div className="mt-4">
+                        <p className="text-slate-700 mb-4">Anonymized stats demonstrating transparency (Q4 2025):</p>
+                        <table className="w-full border-collapse border border-slate-300">
+                            <thead>
+                                <tr className="bg-slate-100">
+                                    <th className="border border-slate-300 p-2 text-left">Category</th>
+                                    <th className="border border-slate-300 p-2 text-left">Count</th>
+                                    <th className="border border-slate-300 p-2 text-left">Resolution Rate</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr><td className="border border-slate-300 p-2">Access Requests</td><td className="border border-slate-300 p-2">1,247</td><td className="border border-slate-300 p-2">100% (Avg 15 days)</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Deletions</td><td className="border border-slate-300 p-2">456</td><td className="border border-slate-300 p-2">100% (Full erasure)</td></tr>
+                                <tr><td className="border border-slate-300 p-2">Incidents</td><td className="border border-slate-300 p-2">0</td><td className="border border-slate-300 p-2">N/A</td></tr>
+                            </tbody>
+                        </table>
+                        <p className="mt-2 text-sm text-slate-600">Full reports at <Link href="/transparency-reports">Transparency Hub</Link>. Updated quarterly.</p>
+                    </div>
+                </details>
+
+                {/* In "Informed Consent Enhancements," add to Consent Management: */}
+                <p className="mt-3 text-slate-700">
+                    <strong>Interactive Explanations:</strong> Hover tooltips on forms explain risks/benefits (e.g., 'Voice sharing: Helps preserve dialects but anonymized—no ID risk'). Video walkthroughs: <a href="/consent-guide.mp4" target="_blank" rel="noopener noreferrer">5-Min Guide</a> (subtitled in 22 languages, covers 'Why share? Impact on Marathi education').
+                </p>
+
+                {/* In "Data Portability," expand in Your Choices & Rights: */}
+                <p className="text-slate-700 mt-2">
+                    <strong>Data Portability:</strong> Export via Portal in CSV/JSON (e.g., 'Your Punjabi annotations as structured file for personal research'). Includes metadata (e.g., timestamps, languages); no sensitive re-identification. Request bulk via email—delivered in 7 days.
+                </p>
+
+                {/* In "Partner & Sharing Disclosure," expand table with examples: */}
+                <tr><td className="border border-slate-300 p-2">AI4LRIL Research Consortium</td><td className="border border-slate-300 p-2">Anonymized text/audio</td><td className="border border-slate-300 p-2">Collaborative NER models</td><td className="border border-slate-300 p-2"><Link href="/partners/ai4lril">Privacy</Link></td></tr>
+                <tr><td className="border border-slate-300 p-2">Hugging Face</td><td className="border border-slate-300 p-2">Aggregated datasets</td><td className="border border-slate-300 p-2">Open model training</td><td className="border border-slate-300 p-2"><a href="https://huggingface.co/privacy">Policy</a></td></tr>
+
+                {/* In "Changes to this Policy," add future-proofing: */}
+                <p className="mt-3 text-slate-700">
+                    <strong>Future-Proofing:</strong> Policy adapts to new frameworks (e.g., India's DPDP 2023 updates, EU AI Act)—reviewed quarterly. We'll incorporate emerging standards like biometric data rules for voice, notifying via email/banner.
+                </p>
+
+                {/* In User Controls, add notifications: */}
+                <p className="text-slate-700 mt-2">
+                    <strong>Community Notifications:</strong> When results live (e.g., 'Your data in new Odia paper!'), get opt-in emails (e.g., 'Publication Alert: View impact'). Engages without spam—unsubscribe anytime.
+                </p>
+
+                {/* Add new section for Training & Education after Accessibility: */}
+                <section className="mt-10">
+                    <h2 className="text-2xl font-bold text-slate-800 mb-4">Training & Education Resources</h2>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-blue-800 mb-2">For Contributors</h3>
+                            <ul className="text-sm text-blue-700 space-y-1">
+                                <li>• <Link href="/guides/privacy-basics">Privacy Best Practices</Link> (Video: 3 min)</li>
+                                <li>• Risks Guide: 'Voice Data Security'</li>
+                                <li>• Protections: 'Your Rights in 5 Steps'</li>
+                            </ul>
+                        </div>
+                        <div className="bg-blue-50 p-4 rounded-lg">
+                            <h3 className="font-semibold text-blue-800 mb-2">For Researchers</h3>
+                            <ul className="text-sm text-blue-700 space-y-1">
+                                <li>• <Link href="/guides/research-ethics">Ethical Data Use</Link></li>
+                                <li>• API Privacy: See below</li>
+                                <li>• Audit Summaries for Compliance</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                {/* New accordion for API Privacy at end: */}
+                <details className="mt-8 bg-white border border-slate-200 rounded-lg p-4 open:bg-slate-50">
+                    <summary className="font-semibold text-slate-800 cursor-pointer pb-2 flex items-center gap-2">
+                        <div className="p-1 rounded bg-gray-100">
+                            <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" />
+                            </svg>
+                        </div>
+                        API Privacy & Security for Developers
+                    </summary>
+                    <div className="mt-4 space-y-3">
+                        <p className="text-slate-700">For research APIs interacting with language data:</p>
+                        <ul className="space-y-1 text-slate-700">
+                            <li><strong>Authentication:</strong> JWT tokens (OAuth2); rate-limited (100/min per user).</li>
+                            <li><strong>Data Access:</strong> Anonymized only (e.g., no raw voice via API—aggregated stats/annotations).</li>
+                            <li><strong>Security:</strong> End-to-end encryption; audit logs for every call (IP anonymized).</li>
+                            <li><strong>Compliance:</strong> Logs under GDPR Art. 25; no profiling from API usage.</li>
+                            <li><strong>Documentation:</strong> <Link href="/api/docs/privacy">Full API Privacy Guide</Link> (includes rate limits, error handling).</li>
+                        </ul>
+                        <p className="text-sm text-slate-600">Developer audiences: APIs for ethical querying (e.g., 'Fetch Konkani POS samples'); violations lead to bans.</p>
+                    </div>
                 </details>
 
             </div>

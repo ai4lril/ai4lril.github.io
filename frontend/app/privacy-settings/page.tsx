@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState, useEffect } from 'react';
 import { getConsentPreferences, showConsentPreferences } from '@/lib/gdprConsent';
 import { getAccessibilitySettings, updateAccessibilitySettings, toggleHighContrast, toggleFontSize, toggleReducedMotion, AccessibilitySettings } from '@/lib/accessibility';
@@ -46,6 +47,19 @@ export default function PrivacySettingsPage() {
                 <p className="text-gray-600">
                     Manage your privacy preferences, consent settings, and accessibility options.
                 </p>
+                <div className="mt-4 grid grid-cols-1 md:grid-cols-3 gap-3 text-sm">
+                    {[
+                        { step: "1", title: "Review cookies", detail: "See what’s enabled and why" },
+                        { step: "2", title: "Set data consents", detail: "Choose per audio/text/metadata" },
+                        { step: "3", title: "Track requests", detail: "Open the Data Rights Portal" },
+                    ].map((item) => (
+                        <div key={item.step} className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                            <p className="text-xs uppercase text-slate-500">Step {item.step}</p>
+                            <p className="font-semibold text-slate-800">{item.title}</p>
+                            <p className="text-slate-600">{item.detail}</p>
+                        </div>
+                    ))}
+                </div>
             </div>
 
             <div className="space-y-8">
@@ -107,6 +121,41 @@ export default function PrivacySettingsPage() {
                         </div>
                     )}
                 </div>
+
+                {consentPrefs && (
+                    <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                        <h2 className="text-2xl font-semibold text-gray-900 mb-4">Consents by data type</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
+                            <div className="p-4 border border-gray-200 rounded-lg">
+                                <h3 className="font-semibold text-gray-900">Audio</h3>
+                                <p className="text-sm text-gray-600 mt-1">Speech clips, spontaneous prompts</p>
+                                <p className={`mt-2 text-xs font-semibold ${consentPrefs.dataCollection ? 'text-green-600' : 'text-red-600'}`}>
+                                    {consentPrefs.dataCollection ? 'Enabled for research' : 'Disabled'}
+                                </p>
+                            </div>
+                            <div className="p-4 border border-gray-200 rounded-lg">
+                                <h3 className="font-semibold text-gray-900">Text & annotations</h3>
+                                <p className="text-sm text-gray-600 mt-1">Transcripts, POS/NER labels</p>
+                                <p className={`mt-2 text-xs font-semibold ${consentPrefs.dataProcessing ? 'text-green-600' : 'text-red-600'}`}>
+                                    {consentPrefs.dataProcessing ? 'Processing allowed' : 'Processing paused'}
+                                </p>
+                            </div>
+                            <div className="p-4 border border-gray-200 rounded-lg">
+                                <h3 className="font-semibold text-gray-900">Metadata & analytics</h3>
+                                <p className="text-sm text-gray-600 mt-1">Language choices, device info</p>
+                                <p className={`mt-2 text-xs font-semibold ${consentPrefs.analytics ? 'text-green-600' : 'text-red-600'}`}>
+                                    {consentPrefs.analytics ? 'Anonymous metrics enabled' : 'Analytics disabled'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={showConsentPreferences}
+                            className="mt-4 inline-flex px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition-colors"
+                        >
+                            Adjust data-type consents
+                        </button>
+                    </section>
+                )}
 
                 {/* Accessibility Settings Section */}
                 <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
@@ -185,8 +234,8 @@ export default function PrivacySettingsPage() {
                                 <button
                                     onClick={toggleHighContrast}
                                     className={`px-4 py-2 rounded-md font-semibold transition-colors ${accessibilitySettings.colorScheme === 'high-contrast'
-                                            ? 'bg-blue-600 text-white'
-                                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                                        ? 'bg-blue-600 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                                         }`}
                                 >
                                     Toggle Contrast
@@ -194,6 +243,19 @@ export default function PrivacySettingsPage() {
                             </div>
                         </div>
                     )}
+                </div>
+
+                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <h2 className="text-2xl font-semibold text-gray-900 mb-4">Accessibility documentation</h2>
+                    <p className="text-gray-600 mb-3">Need help configuring screen reader modes, captions, or keyboard navigation?</p>
+                    <ul className="list-disc ml-6 space-y-2 text-sm text-gray-700">
+                        <li>Screen reader tips for VoiceOver, NVDA, and TalkBack.</li>
+                        <li>High-contrast modes tested with WCAG 2.1 AA.</li>
+                        <li>Reduced motion guidelines for vestibular safety.</li>
+                    </ul>
+                    <Link href="/guides/accessibility" className="inline-flex mt-3 text-indigo-600 hover:underline">
+                        View accessibility guide →
+                    </Link>
                 </div>
 
                 {/* Data Rights Section */}
@@ -257,6 +319,9 @@ export default function PrivacySettingsPage() {
                         </p>
                         <p>
                             For more information about how we handle your data, please review our <a href="/privacy" className="underline hover:text-blue-900">Privacy Policy</a>.
+                        </p>
+                        <p>
+                            Need to escalate or download data? Visit the <Link href="/data-rights" className="underline hover:text-blue-900">Data Rights Portal</Link>.
                         </p>
                     </div>
                 </div>
