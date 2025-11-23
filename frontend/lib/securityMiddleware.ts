@@ -53,11 +53,13 @@ class SecurityMiddleware {
             }
 
             // CSRF protection for state-changing requests
-            if (config && (config.method === 'POST' || config.method === 'PUT' || config.method === 'DELETE')) {
-                if (!this.validateCsrfToken()) {
-                    reportSecurityEvent('csrf_violation', 'critical', 'CSRF token validation failed');
-                    throw new Error('Security validation failed. Please refresh the page.');
-                }
+            if (
+                config &&
+                (config.method === 'POST' || config.method === 'PUT' || config.method === 'DELETE') &&
+                !this.validateCsrfToken()
+            ) {
+                reportSecurityEvent('csrf_violation', 'critical', 'CSRF token validation failed');
+                throw new Error('Security validation failed. Please refresh the page.');
             }
 
             try {
@@ -66,9 +68,7 @@ class SecurityMiddleware {
                 // Monitor for unusual response patterns
                 if (response.status === 429) {
                     reportSecurityEvent('rate_limit_response', 'medium', 'Received 429 Too Many Requests');
-                } else if (response.status >= 400 && response.status < 500) {
-                    reportSecurityEvent('client_error', 'low', `Client error: ${response.status}`);
-                }
+                } else if (response.status >= 400 && response.status < 500) reportSecurityEvent('client_error', 'low', `Client error: ${response.status}`);
 
                 return response;
             } catch (error) {
@@ -78,7 +78,7 @@ class SecurityMiddleware {
         };
 
         // Monitor for suspicious form submissions
-        document.addEventListener('submit', (e) => {
+        document.addEventListener('submit', (e: Event) => {
             const form = e.target as HTMLFormElement;
             if (!this.validateFormSubmission(form)) {
                 e.preventDefault();
@@ -88,7 +88,7 @@ class SecurityMiddleware {
         });
 
         // Monitor for suspicious DOM manipulation
-        const observer = new MutationObserver((mutations) => {
+        const observer = new MutationObserver((mutations: MutationRecord[]) => {
             let suspiciousChanges = 0;
             mutations.forEach((mutation) => {
                 mutation.addedNodes.forEach((node) => {
@@ -112,13 +112,11 @@ class SecurityMiddleware {
         });
 
         // Monitor for clipboard access
-        document.addEventListener('paste', (e) => {
-            const clipboardData = e.clipboardData;
+        document.addEventListener('paste', (e: ClipboardEvent) => {
+            const { clipboardData } = e;
             if (clipboardData) {
                 const text = clipboardData.getData('text');
-                if (text && text.length > 10000) {
-                    reportSecurityEvent('large_clipboard_paste', 'medium', 'Large clipboard content detected');
-                }
+                if (text && text?.length > 10000) reportSecurityEvent('large_clipboard_paste', 'medium', 'Large clipboard content detected');
             }
         });
     }
@@ -163,10 +161,10 @@ class SecurityMiddleware {
 
         inputs.forEach((input) => {
             const element = input as HTMLInputElement;
-            const value = element.value;
-            const name = element.name || element.id;
+            const { value } = element;
+            const name = element.name ?? element.id;
 
-            if (name && value) {
+            if (name && value && !this.validateInput(name, value)) {
                 if (!this.validateInput(name, value)) {
                     isValid = false;
                     element.classList.add('border-red-500');
@@ -188,15 +186,10 @@ class SecurityMiddleware {
 
     // Public methods for external use
     public getCsrfToken(): string {
-        let token = sessionStorage.getItem('csrf_token');
-        if (!token) {
-            token = this.generateCsrfToken();
-            sessionStorage.setItem('csrf_token', token);
-        }
-        return token;
+        let token = sessionStorage.getItem('csrf_token') ?? this.generateCsrfToken();
+        sessionStorage.setItem('csrf_token', token);
+        return token ?? '';
     }
-
-
 
     public sanitizeInput(input: string): string {
         // Remove potentially dangerous characters and patterns

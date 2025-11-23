@@ -120,13 +120,14 @@ class AdminAuthManager {
 
         // Check session expiry every minute
         setInterval(() => {
-            if (this.isAuthenticated()) {
-                if (this.isSessionExpired() || this.isInactiveTimeout()) {
-                    this.logout();
-                    // Redirect to login page
-                    if (typeof window !== 'undefined') {
-                        window.location.href = '/admin/login';
-                    }
+            if (
+                this.isAuthenticated() &&
+                (this.isSessionExpired() || this.isInactiveTimeout())
+            ) {
+                this.logout();
+                // Redirect to login page
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/admin/login';
                 }
             }
         }, 60000); // Check every minute

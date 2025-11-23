@@ -25,22 +25,15 @@ export function tokenizeByScript(text: string, script: ScriptCode): string[] {
     // For Indic scripts, keep combining marks with base characters; we already avoided splitting within word
     // Further refine by separating punctuation at boundaries
     const tokens: string[] = [];
-    for (const t of roughTokens) {
-        tokens.push(...splitPunctuation(t));
-    }
+    roughTokens.forEach(t => tokens.push(...splitPunctuation(t)));
 
     // Optionally, add script-specific tweaks
-    if (script === 'devanagari') {
-        // Merge common Devanagari abbreviations like 	3	4 with dot? (Keep simple for now)
-        return tokens;
-    }
-    if (script === 'kannada') {
-        return tokens;
-    }
+    if (script === 'devanagari') return tokens; // Merge common Devanagari abbreviations like 	3	4 with dot? (Keep simple for now)
+    if (script === 'kannada') return tokens;
     return tokens;
 }
 
-export function detectScript(text: string): ScriptCode {
+export function detectScript(text: string): 'roman' | 'devanagari' | 'kannada' | undefined {
     // Devanagari: \u0900-\u097F, Kannada: \u0C80-\u0CFF
     if (/[\u0900-\u097F]/.test(text)) return 'devanagari';
     if (/[\u0C80-\u0CFF]/.test(text)) return 'kannada';

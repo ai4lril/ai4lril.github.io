@@ -25,19 +25,21 @@ This is the frontend application for the voice data collection platform. It prov
 ### Installation
 
 1. Navigate to the frontend directory:
-    ```
-    cd frontend
-    ```
+
+   ```
+   cd frontend
+   ```
 
 2. Install dependencies:
-    ```
-    npm install
-    ```
+
+   ```
+   npm install
+   ```
 
 3. Start the development server:
-    ```
-    npm run dev
-    ```
+   ```
+   npm run dev
+   ```
 
 ## Usage
 
