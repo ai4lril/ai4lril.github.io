@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE_URL } from '@/lib/api-config';
 
 import { useEffect, useState } from 'react';
 import { adminAuth } from '@/lib/adminAuth';
@@ -83,7 +84,7 @@ export default function SuperAdminPage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [showAddAdmin, setShowAddAdmin] = useState(false);
-  const [newAdmin, setNewAdmin] = useState({ email: '', name: '', role: 'admin' as 'admin' | 'super_admin' });
+  const [newAdmin, setNewAdmin] = useState({ email: '', name: '', role: 'admin' as 'admin' | 'super_admin', password: '' });
 
   useEffect(() => {
     // Check if user is super admin
@@ -100,15 +101,21 @@ export default function SuperAdminPage() {
       setLoading(true);
 
       // Load admin users
-      const response = await fetch('/api/admin/admin-users?page=1&limit=20', {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = '/admin/login';
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/admin/users`, {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
         const data = await response.json();
-        setAdminUsers(data.adminUsers || []);
+        setAdminUsers(data || []);
       } else {
         setAdminUsers([]);
       }
@@ -150,24 +157,40 @@ export default function SuperAdminPage() {
 
   const addAdminUser = async () => {
     try {
-      if (!newAdmin.email || !newAdmin.name) {
-        alert('Please fill in all required fields');
+      if (!newAdmin.email || !newAdmin.name || !newAdmin.password) {
+        alert('Please fill in all required fields including password');
         return;
       }
 
-      // In a real app, this would be an API call
-      const newUser: AdminUser = {
-        id: Date.now().toString(),
-        email: newAdmin.email,
-        name: newAdmin.name,
-        role: newAdmin.role,
-        isActive: true,
-        lastLogin: new Date().toISOString(),
-        createdAt: new Date().toISOString()
-      };
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = '/admin/login';
+        return;
+      }
 
+      const response = await fetch(`${API_BASE_URL}/admin/users`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          name: newAdmin.name,
+          email: newAdmin.email,
+          password: newAdmin.password,
+          role: newAdmin.role,
+        }),
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Failed to create admin user' }));
+        alert(error.message || 'Failed to create admin user');
+        return;
+      }
+
+      const newUser = await response.json();
       setAdminUsers(prev => [...prev, newUser]);
-      setNewAdmin({ email: '', name: '', role: 'admin' });
+      setNewAdmin({ email: '', name: '', role: 'admin', password: '' });
       setShowAddAdmin(false);
       alert('Admin user added successfully!');
     } catch (error) {
@@ -194,6 +217,25 @@ export default function SuperAdminPage() {
     }
 
     try {
+      const token = localStorage.getItem('adminToken');
+      if (!token) {
+        window.location.href = '/admin/login';
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/admin/users/${adminId}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const error = await response.json().catch(() => ({ message: 'Failed to delete admin user' }));
+        alert(error.message || 'Failed to delete admin user');
+        return;
+      }
+
       setAdminUsers(prev => prev.filter(admin => admin.id !== adminId));
       alert('Admin user removed successfully!');
     } catch (error) {
@@ -670,23 +712,42 @@ export default function SuperAdminPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                         Full Name
                       </label>
                       <input
                         type="text"
+                        id="name"
                         value={newAdmin.name}
                         onChange={(e) => setNewAdmin(prev => ({ ...prev, name: e.target.value }))}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                         placeholder="John Doe"
+                        required
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
+                        Password
+                      </label>
+                      <input
+                        type="password"
+                        id="password"
+                        value={newAdmin.password}
+                        onChange={(e) => setNewAdmin(prev => ({ ...prev, password: e.target.value }))}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                        placeholder="Enter password (min 8 characters)"
+                        required
+                        minLength={8}
+                      />
+                    </div>
+
+                    <div>
+                      <label htmlFor="role" className="block text-sm font-medium text-gray-700 mb-2">
                         Role
                       </label>
                       <select
+                        id="role"
                         value={newAdmin.role}
                         onChange={(e) => setNewAdmin(prev => ({ ...prev, role: e.target.value as 'admin' | 'super_admin' }))}
                         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
@@ -701,7 +762,7 @@ export default function SuperAdminPage() {
                     <button
                       onClick={() => {
                         setShowAddAdmin(false);
-                        setNewAdmin({ email: '', name: '', role: 'admin' });
+                        setNewAdmin({ email: '', name: '', role: 'admin', password: '' });
                       }}
                       className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 border border-gray-300 rounded-md hover:bg-gray-200"
                     >

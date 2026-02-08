@@ -9,11 +9,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
 
   enableShutdownHooks(app: INestApplication) {
     // Shutdown hook implementation
-    process.on('SIGTERM', async () => {
-      await app.close();
+    process.on('SIGTERM', () => {
+      void app.close();
     });
-    process.on('SIGINT', async () => {
-      await app.close();
+    process.on('SIGINT', () => {
+      void app.close();
     });
   }
 }

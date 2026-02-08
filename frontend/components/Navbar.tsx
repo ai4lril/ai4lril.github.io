@@ -23,6 +23,7 @@ const navbarItems: NavbarItem[] = [
     { name: 'Token Classification', path: '/ner' },
     { name: 'Translation', path: '/translate' },
     { name: 'Affect', path: '/sentiment' },
+    { name: 'API Docs', path: '/docs' },
 ];
 
 export default function Navbar() {

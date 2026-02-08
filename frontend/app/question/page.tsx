@@ -70,16 +70,22 @@ export default function Question() {
         try {
             setIsSubmitting(true);
 
+            // Get auth token
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             // Submit to backend
             const response = await fetch('/api/question-submission', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify({
                     questionText: question.trim(),
                     languageCode: lang || 'eng_latn',
-                    // userId: undefined // Add when authentication is implemented
                 }),
             });
 
@@ -130,7 +136,7 @@ export default function Question() {
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                     <h3 className="text-sm font-medium text-blue-800 mb-2">Example Questions:</h3>
                     <p className="text-sm text-blue-700 italic">
-                        "{questionSentences[currentSentenceIndex]?.text}"
+                    &quot;{questionSentences[currentSentenceIndex]?.text}&quot;
                     </p>
                 </div>
             )}

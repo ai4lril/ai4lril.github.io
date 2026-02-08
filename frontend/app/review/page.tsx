@@ -5,37 +5,130 @@ import TextBox from "@/components/TextBox";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
 
+interface ReviewData {
+    id: string;
+    speechRecordingId: string;
+    audioFile: string;
+    transcriptionText: string;
+    sentence: {
+        id: string;
+        text: string;
+        languageCode: string;
+    };
+}
+
 export default function Review() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [skipped, setSkipped] = useState(false);
     const [lang, setLang] = useState<string | null>(null);
+    const [currentReview, setCurrentReview] = useState<ReviewData | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchReview = async (languageCode?: string) => {
+        setLoading(true);
+        setError(null);
+        setCurrentReview(null);
+        try {
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const url = languageCode ? `/api/review-transcription?languageCode=${languageCode}` : '/api/review-transcription';
+            const response = await fetch(url, { headers });
+
+            if (response.status === 404) {
+                setCurrentReview(null);
+                setError("No transcriptions available for review in this language.");
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch transcription: ${response.statusText}`);
+            }
+
+            const data: ReviewData = await response.json();
+            setCurrentReview(data);
+        } catch (err) {
+            console.error("Error fetching transcription:", err);
+            setError("Failed to load transcription. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
+        fetchReview(saved || undefined);
+
         const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
+            fetchReview(code || undefined);
         };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
-    }, [lang]);
+    }, []);
 
-    const handleSubmit = (transcript: string) => {
+    const handleSubmit = async () => {
+        if (!currentReview) {
+            alert('No transcription loaded. Please wait for transcription to load.');
+            return;
+        }
+
         setIsSubmitting(true);
-        // Simulate backend call
-        setTimeout(() => {
+
+        try {
+            const transcriptionReviewId = currentReview.id;
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to submit review');
+                return;
+            }
+
+            const response = await fetch('/api/review-submission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    transcriptionReviewId,
+                    isApproved: true, // Would be determined by user action
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit review');
+            }
+
             setIsSubmitting(false);
             setSubmitted(true);
-            setTimeout(() => setSubmitted(false), 2000);
-        }, 1000);
-        console.log(transcript);
+            setTimeout(() => {
+                setSubmitted(false);
+                fetchReview(lang || undefined); // Fetch next review
+            }, 2000);
+        } catch (error) {
+            console.error('Error submitting review:', error);
+            setIsSubmitting(false);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to submit review. Please try again.';
+            alert(errorMessage);
+        }
     };
 
     const handleSkip = () => {
         setSkipped(true);
-        setTimeout(() => setSkipped(false), 1500);
+        setTimeout(() => {
+            setSkipped(false);
+            fetchReview(lang || undefined); // Fetch next review
+        }, 1500);
     };
 
     return (
@@ -56,16 +149,22 @@ export default function Review() {
                         <div className="absolute -top-8 -left-8 w-24 h-24 sm:w-32 sm:h-32 bg-cyan-100/60 rounded-full opacity-60 pointer-events-none"></div>
                         <div className="absolute -bottom-10 -right-10 w-28 h-28 sm:w-36 sm:h-36 bg-indigo-100/50 rounded-full opacity-50 pointer-events-none"></div>
                         <div className="w-full flex flex-col items-center">
-                            <audio
-                                controls
-                                className="my-3 sm:my-5 w-full max-w-xs"
-                                src="/sample-audio.mp3"
-                            >
-                                Your browser does not support the audio element.
-                            </audio>
-                            <div className="text-center text-gray-500 text-xs sm:text-sm">
-                                Listen to the audio above and review the transcription.
-                            </div>
+                            {loading && <p className="text-gray-500">Loading audio...</p>}
+                            {error && <p className="text-red-500 text-sm">{error}</p>}
+                            {currentReview && (
+                                <>
+                                    <audio
+                                        controls
+                                        className="my-3 sm:my-5 w-full max-w-xs"
+                                        src={currentReview.audioFile}
+                                    >
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                    <div className="text-center text-gray-500 text-xs sm:text-sm">
+                                        Listen to the audio above and review the transcription.
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                     {/* Review Section */}
@@ -75,22 +174,30 @@ export default function Review() {
                         <div className="absolute -bottom-10 -right-10 w-16 h-16 sm:w-24 sm:h-24 bg-blue-100/50 rounded-full opacity-50 pointer-events-none"></div>
                         <h2 className="text-base md:text-xl font-semibold text-gray-800 mb-2 text-center">Transcription Review</h2>
                         <div className="mb-3 md:mb-4 min-h-[80px] md:min-h-[100px] h-auto flex-1 relative z-10">
-                            <TextBox
-                                onSubmit={handleSubmit}
-                                placeholder="Review and edit the transcription if necessary..."
-                            />
+                            {currentReview ? (
+                                <TextBox
+                                    onSubmit={handleSubmit}
+                                    placeholder="Review and edit the transcription if necessary..."
+                                    defaultValue={currentReview.transcriptionText}
+                                />
+                            ) : (
+                                <TextBox
+                                    onSubmit={handleSubmit}
+                                    placeholder="Loading transcription..."
+                                    disabled={true}
+                                />
+                            )}
                         </div>
                         <div className="flex flex-col sm:flex-row-reverse gap-2 sm:gap-3 mt-2">
                             <button
                                 onClick={() => document.forms[0].requestSubmit()}
-                                disabled={isSubmitting || submitted}
-                                className={`group flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${
-                                    isSubmitting
-                                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                                        : submitted
-                                            ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                            : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
-                                }`}
+                                disabled={isSubmitting || submitted || !currentReview}
+                                className={`group flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${isSubmitting
+                                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                                    : submitted
+                                        ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                        : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                                    }`}
                             >
                                 <span className="flex items-center justify-center gap-2">
                                     {isSubmitting ? (

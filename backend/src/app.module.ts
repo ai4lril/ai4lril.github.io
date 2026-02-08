@@ -1,5 +1,7 @@
 import { Module, ValidationPipe } from '@nestjs/common';
-import { APP_PIPE } from '@nestjs/core';
+import { APP_PIPE, APP_GUARD, APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './common/filters/http-exception.filter';
+import { ThrottlerModule, ThrottlerGuard } from '@nestjs/throttler';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
@@ -7,10 +9,50 @@ import { NlpModule } from './nlp/nlp.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { CacheModule } from './cache/cache.module';
 import { LoggerModule } from './logger/logger.module';
-// import { AdminModule } from './admin/admin.module';
+import { AdminModule } from './admin/admin.module';
+import { StorageModule } from './storage/storage.module';
+import { ProgressModule } from './progress/progress.module';
+import { SpeechModule } from './speech/speech.module';
+import { QuestionModule } from './question/question.module';
+import { WriteModule } from './write/write.module';
+import { TranscriptionModule } from './transcription/transcription.module';
+import { DatasetModule } from './dataset/dataset.module';
+import { SchedulerModule } from './scheduler/scheduler.module';
+import { UsersModule } from './users/users.module';
+import { AnalyticsModule } from './analytics/analytics.module';
+import { MetricsModule } from './metrics/metrics.module';
 
 @Module({
-  imports: [PrismaModule, AuthModule, NlpModule, CacheModule, LoggerModule],
+  imports: [
+    ThrottlerModule.forRoot([
+      {
+        ttl: 60000, // 1 minute
+        limit: 60, // 60 requests per minute for authenticated users
+      },
+      {
+        name: 'short',
+        ttl: 1000, // 1 second
+        limit: 10, // 10 requests per second
+      },
+    ]),
+    PrismaModule,
+    AuthModule,
+    NlpModule,
+    CacheModule,
+    LoggerModule,
+    AdminModule,
+    StorageModule,
+    ProgressModule,
+    SpeechModule,
+    QuestionModule,
+    WriteModule,
+    TranscriptionModule,
+    DatasetModule,
+    SchedulerModule,
+    UsersModule,
+    AnalyticsModule,
+    MetricsModule,
+  ],
   controllers: [AppController],
   providers: [
     AppService,
@@ -18,6 +60,14 @@ import { LoggerModule } from './logger/logger.module';
       provide: APP_PIPE,
       useClass: ValidationPipe,
     },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
+    },
+    {
+      provide: APP_FILTER,
+      useClass: AllExceptionsFilter,
+    },
   ],
 })
-export class AppModule { }
+export class AppModule {}

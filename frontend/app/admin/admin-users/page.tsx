@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE_URL } from '@/lib/api-config';
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
@@ -33,13 +34,32 @@ export default function AdminUsersPage() {
 
     const loadAdminUsers = async () => {
         setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        try {
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
+            }
 
-        // Get users from adminAuth
-        const adminUsers = adminAuth.getAllAdminUsers();
-        setUsers(adminUsers);
-        setLoading(false);
+            const response = await fetch(`${API_BASE_URL}/admin/users`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch admin users');
+            }
+
+            const data = await response.json();
+            setUsers(data || []);
+        } catch (error) {
+            console.error('Failed to load admin users:', error);
+            // Fallback to empty array
+            setUsers([]);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const validateForm = (): boolean => {
@@ -78,29 +98,44 @@ export default function AdminUsersPage() {
 
         setCreating(true);
         try {
-            const result = await adminAuth.createAdminUser({
-                name: formData.name.trim(),
-                email: formData.email.trim(),
-                role: formData.role,
-                isActive: true
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/admin/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    name: formData.name.trim(),
+                    email: formData.email.trim(),
+                    password: formData.password,
+                    role: formData.role,
+                }),
             });
 
-            if (result.success && result.user) {
-                setUsers(prev => [...prev, result.user!]);
-                setShowCreateForm(false);
-                setFormData({
-                    name: '',
-                    email: '',
-                    password: '',
-                    confirmPassword: '',
-                    role: 'admin'
-                });
-                setFormErrors({});
-            } else {
-                setFormErrors({ email: result.error || 'Failed to create user' });
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Failed to create user' }));
+                setFormErrors({ email: error.message || 'Failed to create user' });
+                return;
             }
-            // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        } catch (error) {
+
+            const newUser = await response.json();
+            setUsers(prev => [...prev, newUser]);
+            setShowCreateForm(false);
+            setFormData({
+                name: '',
+                email: '',
+                password: '',
+                confirmPassword: '',
+                role: 'admin'
+            });
+            setFormErrors({});
+        } catch {
             setFormErrors({ email: 'An unexpected error occurred' });
         } finally {
             setCreating(false);
@@ -114,14 +149,28 @@ export default function AdminUsersPage() {
 
         setDeletingId(userId);
         try {
-            const result = await adminAuth.deleteAdminUser(userId);
-
-            if (result.success) {
-                setUsers(prev => prev.filter(user => user.id !== userId));
-            } else {
-                alert(result.error || 'Failed to delete user');
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
             }
-        } catch {
+
+            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Failed to delete user' }));
+                alert(error.message || 'Failed to delete user');
+                return;
+            }
+
+            setUsers(prev => prev.filter(user => user.id !== userId));
+        } catch (error) {
+            console.error('Error deleting user:', error);
             alert('An unexpected error occurred');
         } finally {
             setDeletingId(null);

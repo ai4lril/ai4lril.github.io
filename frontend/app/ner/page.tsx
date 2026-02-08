@@ -28,7 +28,7 @@ export default function NerPage() {
     const [loading, setLoading] = useState(true);
     const [index, setIndex] = useState<number>(0);
     const [text, setText] = useState<string>("");
-    const tokens = useMemo(() => tokenizeByScript(text, detectScript(text)), [text]);
+    const tokens = useMemo(() => tokenizeByScript(text, detectScript(text) || 'roman'), [text]);
     const [entities, setEntities] = useState<Record<number, string>>({});
     const [missing, setMissing] = useState<Set<number>>(new Set());
     const [errorMsg, setErrorMsg] = useState<string>("");
@@ -99,7 +99,7 @@ export default function NerPage() {
         };
 
         loadSentences();
-    }, []);
+    }, [lang]);
 
     useEffect(() => {
         const onLangChanged = (e: Event) => {

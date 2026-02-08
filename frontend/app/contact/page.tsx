@@ -158,7 +158,7 @@ export default function ContactPage() {
                 <div className="max-w-3xl mx-auto space-y-4">
                     <details className="bg-white border border-slate-200 rounded-lg p-4">
                         <summary className="font-semibold text-slate-700 cursor-pointer pb-2">What should I include in my message?</summary>
-                        <p className="text-slate-600 mt-2 pl-4">Please provide your name, email, and a clear description of your query. If it's about collaboration or technical support, include relevant details like the language or feature you're interested in.</p>
+                        <p className="text-slate-600 mt-2 pl-4">Please provide your name, email, and a clear description of your query. If it&apos;s about collaboration or technical support, include relevant details like the language or feature you&apos;re interested in.</p>
                     </details>
                     <details className="bg-white border border-slate-200 rounded-lg p-4">
                         <summary className="font-semibold text-slate-700 cursor-pointer pb-2">How long does it take to get a response?</summary>
@@ -166,7 +166,7 @@ export default function ContactPage() {
                     </details>
                     <details className="bg-white border border-slate-200 rounded-lg p-4">
                         <summary className="font-semibold text-slate-700 cursor-pointer pb-2">Can I contribute to the project?</summary>
-                        <p className="text-slate-600 mt-2 pl-4">Absolutely! We're always looking for contributors. Whether you're a linguist, developer, or language speaker, check our GitHub for open issues or contact us to discuss contribution opportunities.</p>
+                        <p className="text-slate-600 mt-2 pl-4">Absolutely! We&apos;re always looking for contributors. Whether you&apos;re a linguist, developer, or language speaker, check our GitHub for open issues or contact us to discuss contribution opportunities.</p>
                     </details>
                     <details className="bg-white border border-slate-200 rounded-lg p-4">
                         <summary className="font-semibold text-slate-700 cursor-pointer pb-2">Is my information secure?</summary>

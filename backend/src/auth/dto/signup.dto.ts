@@ -31,25 +31,25 @@ export class SignupDto {
   @IsNotEmpty()
   email: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  phone_number: string;
+  phone_number?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  current_residence_pincode: string;
+  current_residence_pincode?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  birth_place_pincode: string;
+  birth_place_pincode?: string;
 
+  @IsOptional()
   @IsDateString()
-  @IsNotEmpty()
-  birth_date: string;
+  birth_date?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  gender: string;
+  gender?: string;
 
   @IsOptional()
   @IsString()
@@ -59,9 +59,9 @@ export class SignupDto {
   @IsString()
   mother?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  first_language: string;
+  first_language?: string;
 
   @IsOptional()
   @IsString()

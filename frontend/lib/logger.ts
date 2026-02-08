@@ -16,7 +16,7 @@ export interface LogEntry {
     sessionId?: string;
     userAgent?: string;
     url?: string;
-    metadata?: Record<string, any>;
+    metadata?: Record<string, unknown>;
     compliance?: 'GDPR' | 'CCPA' | 'HIPAA';
 }
 
@@ -75,7 +75,7 @@ class FrontendLogger {
         this.info('User authenticated', { userId: this.maskSensitiveData(userId, 'userId') });
     }
 
-    private createLogEntry(level: LogLevel, message: string, category: string, metadata?: Record<string, any>): LogEntry {
+    private createLogEntry(level: LogLevel, message: string, category: string, metadata?: Record<string, unknown>): LogEntry {
         return {
             timestamp: new Date().toISOString(),
             level,
@@ -150,13 +150,13 @@ class FrontendLogger {
         if (process.env.NODE_ENV === 'development') {
             try {
                 localStorage.setItem('voice_data_logs', JSON.stringify(this.logs.slice(-20)));
-            } catch (error) {
+            } catch {
                 // Ignore localStorage errors
             }
         }
     }
 
-    private log(level: LogLevel, message: string, category: string, metadata?: Record<string, any>) {
+    private log(level: LogLevel, message: string, category: string, metadata?: Record<string, unknown>) {
         if (!this.shouldLog(level)) return;
 
         const entry = this.createLogEntry(level, message, category, metadata);
@@ -172,19 +172,19 @@ class FrontendLogger {
     }
 
     // Public logging methods
-    debug(message: string, metadata?: Record<string, any>) {
+    debug(message: string, metadata?: Record<string, unknown>) {
         this.log(LogLevel.DEBUG, message, 'DEBUG', metadata);
     }
 
-    info(message: string, metadata?: Record<string, any>) {
+    info(message: string, metadata?: Record<string, unknown>) {
         this.log(LogLevel.INFO, message, 'INFO', metadata);
     }
 
-    warn(message: string, metadata?: Record<string, any>) {
+    warn(message: string, metadata?: Record<string, unknown>) {
         this.log(LogLevel.WARN, message, 'WARN', metadata);
     }
 
-    error(message: string, error?: Error, metadata?: Record<string, any>) {
+    error(message: string, error?: Error, metadata?: Record<string, unknown>) {
         const errorMetadata = {
             ...metadata,
             error: error ? {
@@ -192,17 +192,17 @@ class FrontendLogger {
                 message: error.message,
                 stack: error.stack
             } : undefined
-        };
+        } as Record<string, unknown>;
         this.log(LogLevel.ERROR, message, 'ERROR', errorMetadata);
     }
 
-    security(message: string, metadata?: Record<string, any>) {
+    security(message: string, metadata?: Record<string, unknown>) {
         const securityMetadata = { ...metadata, compliance: 'GDPR' as const };
         this.log(LogLevel.SECURITY, message, 'SECURITY', securityMetadata);
     }
 
     // User interaction logging
-    userAction(action: string, element?: string, metadata?: Record<string, any>) {
+    userAction(action: string, element?: string, metadata?: Record<string, unknown>) {
         this.log(LogLevel.INFO, `User Action: ${action}`, 'USER_INTERACTION', {
             ...metadata,
             action,
@@ -212,7 +212,7 @@ class FrontendLogger {
     }
 
     // API call logging
-    apiCall(method: string, url: string, status?: number, duration?: number, metadata?: Record<string, any>) {
+    apiCall(method: string, url: string, status?: number, duration?: number, metadata?: Record<string, unknown>) {
         this.log(LogLevel.INFO, `API Call: ${method} ${url}`, 'API', {
             ...metadata,
             method,
@@ -223,7 +223,7 @@ class FrontendLogger {
     }
 
     // Performance logging
-    performance(metric: string, value: number, metadata?: Record<string, any>) {
+    performance(metric: string, value: number, metadata?: Record<string, unknown>) {
         this.log(LogLevel.INFO, `Performance: ${metric}`, 'PERFORMANCE', {
             ...metadata,
             metric,
@@ -233,7 +233,7 @@ class FrontendLogger {
     }
 
     // Sensitive data processing logging
-    sensitiveData(action: string, dataTypes: string[], metadata?: Record<string, any>) {
+    sensitiveData(action: string, dataTypes: string[], metadata?: Record<string, unknown>) {
         this.log(LogLevel.SECURITY, `Sensitive Data: ${action}`, 'SENSITIVE_DATA', {
             ...metadata,
             action,
@@ -243,7 +243,7 @@ class FrontendLogger {
     }
 
     // Form interaction logging (with sensitive data masking)
-    formInteraction(formId: string, action: string, fields?: Record<string, any>, metadata?: Record<string, any>) {
+    formInteraction(formId: string, action: string, fields?: Record<string, unknown>, metadata?: Record<string, unknown>) {
         const maskedFields = fields ? this.maskFormData(fields) : undefined;
 
         this.log(LogLevel.INFO, `Form ${action}: ${formId}`, 'FORM_INTERACTION', {
@@ -255,13 +255,13 @@ class FrontendLogger {
     }
 
     // Mask sensitive form data
-    private maskFormData(fields: Record<string, any>): Record<string, any> {
+    private maskFormData(fields: Record<string, unknown>): Record<string, unknown> {
         const masked = { ...fields };
         const sensitiveFields = ['password', 'email', 'phone', 'age', 'ssn', 'creditCard'];
 
         for (const field of sensitiveFields) {
             if (masked[field]) {
-                masked[field] = this.maskSensitiveData(masked[field], field);
+                masked[field] = this.maskSensitiveData(masked[field] as string, field);
             }
         }
 

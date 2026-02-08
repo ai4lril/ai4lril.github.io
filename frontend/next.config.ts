@@ -2,13 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   eslint: {
-    ignoreDuringBuilds: true,
+    ignoreDuringBuilds: false,
   },
   images: {
     unoptimized: true,
   },
   turbopack: {
     root: __dirname,
+  },
+  // Suppress preload warnings in development
+  onDemandEntries: {
+    maxInactiveAge: 25 * 1000,
+    pagesBufferLength: 2,
   },
   async rewrites() {
     return [
@@ -17,6 +22,10 @@ const nextConfig: NextConfig = {
         destination: 'http://localhost:5566/api/:path*',
       },
     ];
+  },
+  // Suppress resource preload warnings
+  experimental: {
+    optimizePackageImports: [],
   },
 };
 

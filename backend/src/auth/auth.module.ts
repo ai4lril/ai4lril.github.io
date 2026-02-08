@@ -4,7 +4,12 @@ import { PassportModule } from '@nestjs/passport';
 import { PrismaModule } from '../prisma/prisma.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
+import { ApiKeyController } from './api-key.controller';
 import { JwtStrategy } from './jwt.strategy';
+import { GoogleStrategy } from './google.strategy';
+import { GitHubStrategy } from './github.strategy';
+import { ApiKeyStrategy } from './api-key.strategy';
+import { ApiKeyService } from './api-key.service';
 
 @Module({
   imports: [
@@ -15,8 +20,15 @@ import { JwtStrategy } from './jwt.strategy';
       signOptions: { expiresIn: '24h' },
     }),
   ],
-  controllers: [AuthController],
-  providers: [AuthService, JwtStrategy],
-  exports: [AuthService],
+  controllers: [AuthController, ApiKeyController],
+  providers: [
+    AuthService,
+    ApiKeyService,
+    JwtStrategy,
+    GoogleStrategy,
+    GitHubStrategy,
+    ApiKeyStrategy,
+  ],
+  exports: [AuthService, ApiKeyService],
 })
 export class AuthModule {}

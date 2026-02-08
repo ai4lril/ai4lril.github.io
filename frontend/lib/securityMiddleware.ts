@@ -186,7 +186,7 @@ class SecurityMiddleware {
 
     // Public methods for external use
     public getCsrfToken(): string {
-        let token = sessionStorage.getItem('csrf_token') ?? this.generateCsrfToken();
+        const token = sessionStorage.getItem('csrf_token') ?? this.generateCsrfToken();
         sessionStorage.setItem('csrf_token', token);
         return token ?? '';
     }

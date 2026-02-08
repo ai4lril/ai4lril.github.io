@@ -223,22 +223,6 @@ export default function SystemMonitoringPage() {
     }]
   };
 
-  const memoryChartData = {
-    labels: ['Used', 'Free'],
-    datasets: [{
-      data: [
-        metrics?.memory.used || 0,
-        (metrics?.memory.total || 0) - (metrics?.memory.used || 0)
-      ],
-      backgroundColor: [
-        'rgba(239, 68, 68, 0.8)',
-        'rgba(34, 197, 94, 0.8)'
-      ],
-      borderWidth: 2,
-      borderColor: '#ffffff'
-    }]
-  };
-
   const requestsChartData = {
     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00'],
     datasets: [{

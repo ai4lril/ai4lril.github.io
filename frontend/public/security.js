@@ -6,8 +6,9 @@
   "use strict";
 
   // Development mode detection - be much less intrusive
-  const isDevelopment = window.location.hostname === "localhost" ||
-                       window.location.hostname === "127.0.0.1";
+  const isDevelopment =
+    window.location.hostname === "localhost" ||
+    window.location.hostname === "127.0.0.1";
 
   // Enhanced client-side security measures with advanced monitoring
   document.addEventListener("contextmenu", function (e) {
@@ -52,30 +53,31 @@
       ? 50
       : 5;
 
-  function reportSuspiciousActivity(activity, data = null) {
+  const reportSuspiciousActivity = (activity, data = null) => {
     suspiciousActivities++;
     // Only log critical events in development mode to reduce noise
     if (
-      window.location.hostname === "localhost" ||
-      window.location.hostname === "127.0.0.1"
+      isDevelopment &&
+      (activity.includes("injection") || activity.includes("script"))
     ) {
-      // Only log if it's a critical security issue
-      if (activity.includes("injection") || activity.includes("script")) {
-        console.warn("Critical Security Alert:", activity, data);
-      }
+      console.warn("Critical Security Alert:", activity, data);
     }
 
     if (suspiciousActivities >= MAX_SUSPICIOUS_ACTIVITIES) {
       // Could send report to security endpoint (disabled for static site)
       if (
-        window.location.hostname === "localhost" ||
-        window.location.hostname === "127.0.0.1"
+        isDevelopment &&
+        (activity.includes("injection") ||
+          activity.includes("script") ||
+          activity.includes("malware"))
       ) {
         // Only show error for critical security issues in development
-        if (activity.includes("injection") || activity.includes("script") || activity.includes("malware")) {
-          console.error("Multiple suspicious activities detected - Critical Security Issue");
-        }
-        // Reset counter more frequently in development
+        console.error(
+          "Multiple suspicious activities detected - Critical Security Issue"
+        );
+      }
+      // Reset counter more frequently in development
+      if (isDevelopment) {
         suspiciousActivities = Math.max(0, suspiciousActivities - 10);
       }
       // In a real application, this would send a report to a security monitoring service
@@ -100,7 +102,7 @@
     } catch (e) {
       // Ignore localStorage errors
     }
-  }
+  };
 
   // Monitor for rapid clicks (potential bot activity)
   let clickCount = 0;
@@ -142,9 +144,12 @@
   };
 
   // Protect against prototype pollution
-  Object.freeze(Object.prototype);
-  Object.freeze(Array.prototype);
-  Object.freeze(Function.prototype);
+  // Disabled in development mode as it interferes with Turbopack's module loading
+  if (!isDevelopment) {
+    Object.freeze(Object.prototype);
+    Object.freeze(Array.prototype);
+    Object.freeze(Function.prototype);
+  }
 
   // Additional security: Prevent certain global variable access
   const dangerousGlobals = ["eval", "Function", "setTimeout", "setInterval"];
@@ -172,7 +177,7 @@
   const MAX_ANOMALY_SCORE = isDevelopment ? 20 : 10;
 
   // Monitor for SQL injection patterns in form inputs
-  function detectSqlInjection(input) {
+  const detectSqlInjection = (input) => {
     const sqlPatterns = [
       /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)/i,
       /('|(\\x27)|(\\x2D\\x2D)|(\\#)|(\\x2F\\x2A)|(\\x2A\\x2F))/i,
@@ -180,10 +185,10 @@
     ];
 
     return sqlPatterns.some((pattern) => pattern.test(input));
-  }
+  };
 
   // Monitor for XSS patterns
-  function detectXss(input) {
+  const detectXss = (input) => {
     const xssPatterns = [
       /<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi,
       /javascript:/gi,
@@ -194,13 +199,17 @@
     ];
 
     return xssPatterns.some((pattern) => pattern.test(input));
-  }
+  };
 
   // Monitor for unusual keyboard patterns (potential keyloggers)
   let keySequence = [];
   const SUSPICIOUS_KEY_SEQUENCE = ["ctrl", "shift", "j"]; // Developer tools shortcut
 
   document.addEventListener("keydown", function (e) {
+    // Skip if key is undefined (can happen with some special keys)
+    if (!e.key) {
+      return;
+    }
     const key = e.key.toLowerCase();
     if (e.ctrlKey) keySequence.push("ctrl");
     if (e.shiftKey) keySequence.push("shift");
@@ -238,11 +247,9 @@
     if (now - focusTime > 1000) {
       focusCount = 1;
       focusTime = now;
-    } else if (focusCount > (isDevelopment ? 30 : 15)) {
-      if (!isDevelopment) {
-        anomalyScore += 1;
-        reportSuspiciousActivity("Rapid focus changes detected");
-      }
+    } else if (focusCount > (isDevelopment ? 30 : 15) && !isDevelopment) {
+      anomalyScore += 1;
+      reportSuspiciousActivity("Rapid focus changes detected");
     }
   });
 
@@ -262,7 +269,9 @@
       ) {
         if (!isDevelopment) {
           anomalyScore += 3;
-          reportSuspiciousActivity("Suspicious network request detected: " + url);
+          reportSuspiciousActivity(
+            "Suspicious network request detected: " + url
+          );
         } else {
           anomalyScore += 0.5; // Much less severe in development
         }
@@ -338,18 +347,13 @@
   };
 
   // Monitor for suspicious eval usage
-  const originalEval = window.eval;
-  window.eval = function (code) {
-    if (!isDevelopment) {
+  // In development mode, Turbopack uses eval() for hot module replacement, so we skip monitoring
+  if (!isDevelopment) {
+    const originalEval = window.eval;
+    window.eval = function (code) {
       anomalyScore += 5; // High score for eval usage
       reportSuspiciousActivity("Eval usage detected - potential security risk");
-    } else {
-      anomalyScore += 0.5; // Much less severe in development
-      // Only warn for eval in development if it's clearly malicious
-      if (code && code.length > 100) {
-        console.warn("Eval usage detected in development - consider alternatives");
-      }
-    }
-    return originalEval(code);
-  };
+      return originalEval(code);
+    };
+  }
 })();

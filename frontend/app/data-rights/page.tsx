@@ -324,7 +324,7 @@ export default function DataRightsPage() {
                                 </li>
                                 <li className="pl-4">
                                     <span className="absolute -left-1 top-1 w-3 h-3 rounded-full bg-emerald-500"></span>
-                                    Fulfillment → 15 days (EU) / 45 days (US). Complex exports may take longer; we'll notify you.
+                                    Fulfillment → 15 days (EU) / 45 days (US). Complex exports may take longer; we&apos;ll notify you.
                                 </li>
                             </ol>
                         </div>

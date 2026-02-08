@@ -1,27 +1,23 @@
 'use client';
+import { API_BASE_URL } from '@/lib/api-config';
 
-import { useEffect, useState } from 'react';
-import { adminAuth } from '@/lib/adminAuth';
+import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import {
-    Users,
-    Search,
-    Filter,
-    MoreVertical,
-    UserCheck,
-    UserX,
-    Mail,
-    Phone,
-    MapPin,
-    Calendar,
-    Shield,
-    Edit,
-    Trash2,
     Eye,
+    Edit,
+    Users,
+    UserX,
+    Search,
+    Trash2,
+    Shield,
+    Calendar,
     Download,
+    UserCheck,
     RefreshCw,
-    AlertTriangle,
-    CheckCircle
+    CheckCircle,
+    MoreVertical,
+    AlertTriangle
 } from 'lucide-react';
 
 interface User {
@@ -60,7 +56,6 @@ export default function AdminUsersPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [usersPerPage] = useState(10);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-    const [showUserDetails, setShowUserDetails] = useState<string | null>(null);
     const [stats, setStats] = useState<UserStats>({
         totalUsers: 0,
         activeUsers: 0,
@@ -70,21 +65,7 @@ export default function AdminUsersPage() {
         topLanguages: []
     });
     const [totalPages, setTotalPages] = useState<number>(1);
-
-    useEffect(() => {
-        loadUsers();
-        loadStats();
-    }, []);
-
-    useEffect(() => {
-        loadUsers();
-    }, [currentPage, searchTerm, statusFilter]);
-
-    useEffect(() => {
-        filterAndSortUsers();
-    }, [users, languageFilter, sortBy, sortOrder]);
-
-    const loadUsers = async () => {
+    const loadUsers = useCallback(async () => {
         try {
             setLoading(true);
 
@@ -96,7 +77,7 @@ export default function AdminUsersPage() {
                 status: statusFilter || '',
             });
 
-            const response = await fetch(`/api/admin/users?${params}`, {
+            const response = await fetch(`${API_BASE_URL}/admin/users?${params}`, {
                 headers: {
                     'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
                 },
@@ -114,7 +95,7 @@ export default function AdminUsersPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [currentPage, searchTerm, statusFilter]);
 
     const loadStats = async () => {
         try {
@@ -137,9 +118,18 @@ export default function AdminUsersPage() {
             console.error('Failed to load stats:', error);
         }
     };
+    
+    useEffect(() => {
+        loadUsers();
+        loadStats();
+    }, [loadUsers]);
 
-    const filterAndSortUsers = () => {
-        let filtered = users.filter(user => {
+    useEffect(() => {
+        loadUsers();
+    }, [currentPage, searchTerm, statusFilter, loadUsers]);
+
+    const filterAndSortUsers = useCallback(() => {
+        const filtered = users.filter(user => {
             const matchesSearch = searchTerm === '' ||
                 user.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 user.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -159,7 +149,7 @@ export default function AdminUsersPage() {
 
         // Sort users
         filtered.sort((a, b) => {
-            let aValue: any, bValue: any;
+            let aValue: string | number, bValue: string | number;
 
             switch (sortBy) {
                 case 'name':
@@ -187,7 +177,12 @@ export default function AdminUsersPage() {
 
         setFilteredUsers(filtered);
         setCurrentPage(1);
-    };
+    }, [users, searchTerm, statusFilter, languageFilter, sortBy, sortOrder]);
+
+    useEffect(() => {
+        filterAndSortUsers();
+    }, [users, languageFilter, sortBy, sortOrder, filterAndSortUsers]);
+
 
     const toggleUserSelection = (userId: string) => {
         setSelectedUsers(prev =>
@@ -218,9 +213,9 @@ export default function AdminUsersPage() {
                     ? {
                         ...user,
                         isActive: action === 'activate' ? true : action === 'deactivate' ? false : user.isActive
-                    }
+                    } as User
                     : user
-            ));
+            ) as User[]);
 
             setSelectedUsers([]);
         } catch (error) {
@@ -238,7 +233,7 @@ export default function AdminUsersPage() {
                 user.contributionCount.toString(),
                 user.isActive ? 'Active' : 'Inactive',
                 new Date(user.createdAt).toLocaleDateString()
-            ])
+            ] as string[])
         ].map(row => row.join(',')).join('\n');
 
         const blob = new Blob([csvContent], { type: 'text/csv' });
@@ -412,7 +407,7 @@ export default function AdminUsersPage() {
                                 {/* Status Filter */}
                                 <select
                                     value={statusFilter}
-                                    onChange={(e) => setStatusFilter(e.target.value as any)}
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setStatusFilter(e.target.value as 'all' | 'active' | 'inactive')}
                                     className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 >
                                     <option value="all">All Status</option>
@@ -437,10 +432,10 @@ export default function AdminUsersPage() {
                                 {/* Sort */}
                                 <select
                                     value={`${sortBy}_${sortOrder}`}
-                                    onChange={(e) => {
-                                        const [sort, order] = e.target.value.split('_');
-                                        setSortBy(sort as any);
-                                        setSortOrder(order as any);
+                                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => {
+                                        const [sort, order] = e.target.value.split('_') as ['name' | 'date' | 'contributions', 'asc' | 'desc'];
+                                        setSortBy(sort);
+                                        setSortOrder(order);
                                     }}
                                     className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                                 >
@@ -562,7 +557,6 @@ export default function AdminUsersPage() {
 
                                             <div className="flex items-center space-x-2">
                                                 <button
-                                                    onClick={() => setShowUserDetails(user.id)}
                                                     className="p-1 text-gray-400 hover:text-gray-600"
                                                 >
                                                     <Eye className="h-4 w-4" />

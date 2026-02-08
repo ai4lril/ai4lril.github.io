@@ -1,0 +1,53 @@
+User(String id, String first_name, String last_name, String display_name, String username, String? password, String email, String? phone_number, String? current_residence_pincode, String? birth_place_pincode, DateTime? birth_date, String? gender, String? religion, String? mother, String? first_language, String? second_language, String? third_language, String? fourth_language, String? fifth_language, String? profile_picture_url, String? googleId, String? githubId, OAuthProvider? oauthProvider, String? occupation, String? education, String? birthplace_village_city, String? birthplace_pincode, String? current_residence_village_city, String? workplace_college_village_city, String? workplace_college_pincode, DateTime created_at, DateTime updated_at, DateTime? deleted_at, UserRole role FK (User.id), Sentence[] sentences)
+
+Sentence(String id, String text, String languageCode, String? userId FK (User.id), Boolean isActive, String? difficulty, String taskType, Boolean? valid, String? citation, DateTime createdAt, DateTime updatedAt)
+
+TranslationMapping(String id, String srcSentenceId FK (Sentence.id), String tgtSentenceId FK (Sentence.id), String? userId FK (User.id), Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+SpeechRecording(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), String audioFile, String audioFormat, Float? duration, Int? fileSize, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+QuestionSubmission(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), String submittedText, String languageCode, Boolean isValidated, Boolean? valid, DateTime createdAt, DateTime updatedAt)
+
+NerResult(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), Json entities, Float? confidence, String languageCode, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+PosResult(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), Json tokens, String languageCode, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+TranslationResult(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), String sourceLanguage, String targetLanguage, String originalText, String translatedText, Float? confidence, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+SentimentResult(String id, String? sentenceId FK (Sentence.id), String? userId FK (User.id), String text, String sentiment, Float confidence, String languageCode, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+EmotionResult(String id, String? sentenceId FK (Sentence.id), String? userId FK (User.id), String text, String emotion, Float confidence, String languageCode, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+SystemMetric(String id, String metricType, Float value, String? unit, DateTime timestamp, Json? metadata)
+
+UserActivity(String id, String? userId FK (User.id), String action, String? resource, Json? metadata, String? ipAddress, String? userAgent, DateTime timestamp, String? adminUserId FK (AdminUser.id))
+
+Contribution(String id, String userId FK (User.id), String type, String content, String language, String status, Json? metadata, String? reviewedBy FK (User.id), DateTime? reviewedAt, DateTime createdAt, DateTime updatedAt)
+
+SecurityEvent(String id, String eventType, String severity, String? userId FK (User.id), String? ipAddress, String? userAgent, String description, Json? metadata, Boolean resolved, DateTime? resolvedAt, String? resolvedBy FK (User.id), DateTime createdAt, DateTime updatedAt)
+
+AuditLog(String id, String? userId FK (User.id), String action, String resource, String? resourceId, Json? oldValues, Json? newValues, String? ipAddress, String? userAgent, DateTime timestamp, String? adminUserId FK (AdminUser.id))
+
+NerAnnotation(String id, String sentenceId FK (Sentence.id), String? userId FK (User.id), Json annotations, String languageCode, Boolean isValidated, DateTime createdAt, DateTime updatedAt)
+
+AdminUser(String id, String name, String email, String password, String role, Boolean isActive, DateTime? lastLogin, DateTime createdAt, DateTime updatedAt)
+
+UserProgress(String id, String userId FK (User.id), String resourceType, String resourceId, String featureType, DateTime completedAt, DateTime createdAt)
+
+Validation(String id, String speechRecordingId FK (SpeechRecording.id), String userId FK (User.id), Boolean isValid, DateTime createdAt)
+
+SentenceValidation(String id, String sentenceId FK (Sentence.id), String adminUserId FK (AdminUser.id), Boolean valid, String? comment, DateTime createdAt)
+
+QuestionValidation(String id, String questionSubmissionId FK (QuestionSubmission.id), String adminUserId FK (AdminUser.id), Boolean valid, String? comment, DateTime createdAt)
+
+AudioMetadata(String id, String speechRecordingId FK (SpeechRecording.id), String userId FK (User.id), String blobStorageLink, Float audioDuration, DateTime timestamp, String languageCode, String? gender, String? ageGroup, String? region, String? state, DateTime createdAt, DateTime updatedAt)
+
+DatasetCategory(String id, String resourceType, String resourceId, String category, Int voteCount, Int positiveVoteCount, Float votePercentage, DateTime categorizedAt, DateTime createdAt)
+
+TranscriptionReview(String id, String speechRecordingId FK (SpeechRecording.id), String userId FK (User.id), String transcriptionText, Boolean isApproved, String? reviewedBy FK (User.id), DateTime? reviewedAt, DateTime createdAt, DateTime updatedAt)
+
+AnswerRecording(String id, String questionSubmissionId FK (QuestionSubmission.id), String userId FK (User.id), String audioFile, String audioFormat, Float? duration, Int? fileSize, DateTime createdAt, DateTime updatedAt)
+
+ApiKey(String id, String userId FK (User.id), String key, String keyPrefix, String name, DateTime? lastUsedAt, DateTime? expiresAt, Boolean isActive, DateTime createdAt, DateTime updatedAt)
+
+OAuthAccount(String id, String userId FK (User.id), OAuthProvider provider, String providerId, String? email, DateTime createdAt)

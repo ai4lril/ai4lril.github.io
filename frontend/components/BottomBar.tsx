@@ -1,24 +1,29 @@
 import React, { useRef, useState } from 'react';
 
 interface BottomBarProps {
-    audioSrc?: string; // Source URL for the audio player
+    audioSrc?: string; // Source URL for the audio/video player
+    mediaType?: 'audio' | 'video'; // Type of media to play
     onSkip: () => void; // Callback when skip is clicked
     onSubmit: () => void; // Callback when submit is clicked
     disabled?: boolean; // Optional prop to disable buttons
 }
 
-export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false }: BottomBarProps) {
+export default function BottomBar({ audioSrc, mediaType = 'audio', onSkip, onSubmit, disabled = false }: BottomBarProps) {
 
     const audioRef = useRef<HTMLAudioElement>(null);
+    const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
 
+    const isVideo = mediaType === 'video';
+
     const handlePlayPause = () => {
-        if (!audioRef.current) return;
+        const mediaEl = isVideo ? videoRef.current : audioRef.current;
+        if (!mediaEl) return;
 
         if (isPlaying) {
-            audioRef.current.pause();
+            mediaEl.pause();
         } else {
-            audioRef.current.play();
+            mediaEl.play();
         }
         setIsPlaying(!isPlaying);
     };
@@ -36,9 +41,9 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
                 </svg>
             </button>
 
-            {/* Audio + Submit Group */}
+            {/* Audio/Video + Submit Group */}
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
-                {/* Audio Player */}
+                {/* Media Player */}
                 <div className="bg-white/90 hover:bg-white shadow-lg hover:shadow-xl border border-gray-200 flex items-center justify-center space-x-4 px-6 sm:px-8 w-full sm:w-auto py-3 rounded-full transition-all duration-300 hover:scale-105">
                     <button
                         onClick={handlePlayPause}
@@ -57,15 +62,30 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
                         )}
                     </button>
 
-                    <audio
-                        ref={audioRef}
-                        src={audioSrc}
-                        className="hidden"
-                        onEnded={() => setIsPlaying(false)}
-                    />
+                    {/* Hidden audio element */}
+                    {!isVideo && (
+                        <audio
+                            ref={audioRef}
+                            src={audioSrc}
+                            className="hidden"
+                            onEnded={() => setIsPlaying(false)}
+                        />
+                    )}
+
+                    {/* Hidden video element for audio-only playback in bottom bar */}
+                    {isVideo && (
+                        <video
+                            ref={videoRef}
+                            src={audioSrc}
+                            className="hidden"
+                            onEnded={() => setIsPlaying(false)}
+                        />
+                    )}
 
                     {audioSrc ? (
-                        <span className="text-sm text-blue-700 font-semibold">Play Recording</span>
+                        <span className="text-sm text-blue-700 font-semibold">
+                            {isVideo ? 'Play Video' : 'Play Recording'}
+                        </span>
                     ) : (
                         <span className="text-sm text-gray-400 italic">No recording</span>
                     )}
@@ -74,8 +94,8 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
                     {isPlaying && (
                         <div className="flex space-x-1">
                             <div className="w-1 h-4 bg-blue-500 rounded-full animate-pulse"></div>
-                            <div className="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.1s'}}></div>
-                            <div className="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style={{animationDelay: '0.2s'}}></div>
+                            <div className="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }}></div>
+                            <div className="w-1 h-4 bg-blue-500 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                     )}
                 </div>
@@ -84,11 +104,10 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
                 <button
                     onClick={onSubmit}
                     disabled={disabled || !audioSrc}
-                    className={`group w-[40vw] sm:w-auto min-w-[110px] px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl border-2 ${
-                        audioSrc
-                            ? 'bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-300 hover:scale-105 active:scale-95'
-                            : 'bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed opacity-60'
-                    }`}
+                    className={`group w-[40vw] sm:w-auto min-w-[110px] px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl border-2 ${audioSrc
+                        ? 'bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-300 hover:scale-105 active:scale-95'
+                        : 'bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                        }`}
                 >
                     <span className="flex items-center gap-2">
                         <span>Submit</span>
@@ -102,4 +121,4 @@ export default function BottomBar({ audioSrc, onSkip, onSubmit, disabled = false
             </div>
         </div>
     );
-};
+}

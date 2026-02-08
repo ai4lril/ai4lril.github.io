@@ -1,4 +1,5 @@
 'use client';
+import { API_BASE_URL } from '@/lib/api-config';
 
 import { useEffect, useState } from 'react';
 import { adminAuth } from '@/lib/adminAuth';
@@ -18,22 +19,23 @@ import {
     Filler,
 } from 'chart.js';
 import {
-  Users,
-  FileText,
-  Clock,
-  TrendingUp,
-  Activity,
-  Shield,
-  Database,
-  Server,
-  AlertTriangle,
-  CheckCircle,
-  XCircle,
-  BarChart3,
-  PieChart,
-  LineChart,
-  RefreshCw
+    Users,
+    FileText,
+    Clock,
+    TrendingUp,
+    Activity,
+    Shield,
+    Database,
+    Server,
+    AlertTriangle,
+    CheckCircle,
+    XCircle,
+    BarChart3,
+    PieChart,
+    LineChart,
+    RefreshCw
 } from 'lucide-react';
+import { showToast } from '@/lib/toast';
 
 ChartJS.register(
     CategoryScale,
@@ -77,9 +79,20 @@ interface LanguageStats {
 interface RealtimeMetrics {
     activeUsers: number;
     currentRequests: number;
-    systemLoad: any;
-    memoryUsage: any;
-    cacheStats: any;
+    systemLoad: {
+        avg: number;
+        cores: number;
+    };
+    memoryUsage: {
+        used: number;
+        total: number;
+        percentage: number;
+    };
+    cacheStats: {
+        hits: number;
+        misses: number;
+        hitRate: number;
+    };
 }
 
 export default function AdminDashboard() {
@@ -106,6 +119,7 @@ export default function AdminDashboard() {
     const [loading, setLoading] = useState(true);
     const [refreshing, setRefreshing] = useState(false);
     const [activeTab, setActiveTab] = useState('overview');
+    const [error, setError] = useState<string | null>(null); // Added error state
 
     useEffect(() => {
         loadDashboardData();
@@ -117,17 +131,57 @@ export default function AdminDashboard() {
     const loadDashboardData = async () => {
         try {
             setLoading(true);
+            setError(null);
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                showToast('Admin token missing. Redirecting to login.', 'error');
+                window.location.href = '/admin/login';
+                return;
+            }
 
             // Fetch dashboard stats
-            const statsResponse = await fetch('/api/admin/dashboard/stats');
+            const statsResponse = await fetch(`${API_BASE_URL}/analytics/engagement`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
             const statsData = await statsResponse.json();
 
-            // Fetch language stats
-            const languageResponse = await fetch('/api/admin/dashboard/charts?type=language-distribution');
-            const languageData = await languageResponse.json();
+            // Map backend response to frontend format
+            setStats({
+                totalVisitors: statsData.totalUsers || 0,
+                totalUsers: statsData.totalUsers || 0,
+                totalContributions: statsData.totalContributions || 0,
+                totalAudioDuration: 0, // Would need separate endpoint
+                todayVisitors: statsData.activeUsers || 0,
+                todayContributions: 0, // Would need separate endpoint
+                activeUsers: statsData.activeUsers || 0,
+                pendingReviews: 0, // Would need separate endpoint
+                systemHealth: {
+                    overall: 'healthy',
+                    components: {
+                        database: { status: 'healthy' },
+                        cache: { status: 'healthy' },
+                        system: { status: 'healthy' }
+                    }
+                }
+            });
 
-            setStats(statsData);
-            setLanguageStats(languageData.data || []);
+            // Fetch contribution stats for language distribution
+            const contributionResponse = await fetch(`${API_BASE_URL}/analytics/contributions`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+            const contributionData = await contributionResponse.json();
+
+            // Map language stats
+            const langStats = (contributionData.language || []).map((lang: { languageCode?: string; _count?: { id: number }; _sum?: { audioDuration: number } }) => ({
+                language: lang.languageCode || 'unknown',
+                contributions: lang._count?.id || 0,
+                audioDuration: lang._sum?.audioDuration || 0,
+            }));
+            setLanguageStats(langStats);
         } catch (error) {
             console.error('Failed to load dashboard data:', error);
             // Fallback to mock data
@@ -167,11 +221,16 @@ export default function AdminDashboard() {
 
     const loadRealtimeMetrics = async () => {
         try {
-            const response = await fetch('/api/admin/dashboard/realtime');
-            const data = await response.json();
+            const response = await fetch(`${API_BASE_URL}/admin/dashboard/realtime');
+            if (!response.ok) {
+                throw new Error(`Realtime fetch failed: ${response.status} ${response.statusText}`);
+            }
+            const data: RealtimeMetrics = await response.json();
             setRealtimeMetrics(data);
         } catch (error) {
-            console.error('Failed to load realtime metrics:', error);
+            const errMsg = error instanceof Error ? error.message : 'Failed to load realtime metrics';
+            console.error(errMsg, error);
+            showToast(errMsg, 'error');
         }
     };
 
@@ -225,28 +284,28 @@ export default function AdminDashboard() {
         }]
     };
 
-    const systemHealthData = {
-        labels: ['Database', 'Cache', 'System'],
-        datasets: [{
-            label: 'Status',
-            data: [
-                stats.systemHealth.components.database.status === 'healthy' ? 100 : 0,
-                stats.systemHealth.components.cache.status === 'healthy' ? 100 : 0,
-                stats.systemHealth.components.system.status === 'healthy' ? 100 : 0
-            ],
-            backgroundColor: [
-                stats.systemHealth.components.database.status === 'healthy' ? '#10B981' : '#EF4444',
-                stats.systemHealth.components.cache.status === 'healthy' ? '#10B981' : '#EF4444',
-                stats.systemHealth.components.system.status === 'healthy' ? '#10B981' : '#EF4444'
-            ]
-        }]
-    };
+    // const systemHealthData = {
+    //     labels: ['Database', 'Cache', 'System'],
+    //     datasets: [{
+    //         label: 'Status',
+    //         data: [
+    //             stats.systemHealth.components.database.status === 'healthy' ? 100 : 0,
+    //             stats.systemHealth.components.cache.status === 'healthy' ? 100 : 0,
+    //             stats.systemHealth.components.system.status === 'healthy' ? 100 : 0
+    //         ],
+    //         backgroundColor: [
+    //             stats.systemHealth.components.database.status === 'healthy' ? '#10B981' : '#EF4444',
+    //             stats.systemHealth.components.cache.status === 'healthy' ? '#10B981' : '#EF4444',
+    //             stats.systemHealth.components.system.status === 'healthy' ? '#10B981' : '#EF4444'
+    //         ]
+    //     }]
+    // };
 
     const StatCard = ({ title, value, subtitle, icon: Icon, color, trend }: {
         title: string;
         value: string | number;
         subtitle?: string;
-        icon: any;
+        icon: React.ElementType;
         color: string;
         trend?: { value: number; label: string };
     }) => (
@@ -290,6 +349,27 @@ export default function AdminDashboard() {
                 <div className="flex items-center justify-center min-h-96">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
                     <p className="mt-4 text-gray-600">Loading dashboard...</p>
+                </div>
+            </AdminLayout>
+        );
+    }
+
+    if (error) {
+        return (
+            <AdminLayout>
+                <div className="flex flex-col items-center justify-center min-h-96 space-y-4">
+                    <AlertTriangle className="h-12 w-12 text-red-500" />
+                    <h2 className="text-xl font-bold text-gray-900">Dashboard Error</h2>
+                    <p className="text-gray-600 text-center max-w-md">{error}</p>
+                    <button
+                        onClick={() => {
+                            setError(null);
+                            loadDashboardData();
+                        }}
+                        className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                    >
+                        Retry
+                    </button>
                 </div>
             </AdminLayout>
         );

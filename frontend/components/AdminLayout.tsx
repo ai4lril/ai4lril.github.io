@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { adminAuth, AdminUser } from '@/lib/adminAuth';
+import { AdminUser } from '@/lib/adminAuth';
 import AdminNavbar from './AdminNavbar';
 
 interface AdminLayoutProps {
@@ -15,18 +15,29 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
   const router = useRouter();
 
   useEffect(() => {
-    // Check authentication
-    if (!adminAuth.isAuthenticated()) {
+    // Check authentication using localStorage
+    const token = localStorage.getItem('adminToken');
+    const adminUserStr = localStorage.getItem('adminUser');
+
+    if (!token || !adminUserStr) {
       router.push('/admin/login');
       return;
     }
 
-    setUser(adminAuth.getCurrentUser());
-    setLoading(false);
+    try {
+      const adminUser = JSON.parse(adminUserStr);
+      setUser(adminUser);
+      setLoading(false);
+    } catch (error) {
+      console.error('Failed to parse admin user:', error);
+      router.push('/admin/login');
+      return;
+    }
 
     // Set up periodic auth checks
     const interval = setInterval(() => {
-      if (!adminAuth.isAuthenticated()) {
+      const currentToken = localStorage.getItem('adminToken');
+      if (!currentToken) {
         router.push('/admin/login');
       }
     }, 30000); // Check every 30 seconds
@@ -64,10 +75,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
               <div className="text-sm text-gray-600">
                 Welcome back, {user.name}!
               </div>
-              <div className={`px-2 py-1 text-xs rounded-full ${adminAuth.getSessionTimeRemaining() < 600000 // Less than 10 minutes
-                ? 'bg-red-100 text-red-800'
-                : 'bg-green-100 text-green-800'
-                }`}>
+              <div className="px-2 py-1 text-xs rounded-full bg-green-100 text-green-800">
                 Session Active
               </div>
             </div>

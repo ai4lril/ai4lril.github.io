@@ -1,21 +1,28 @@
 "use client";
 import { useEffect, useRef, useState } from "react";
-import { LANGUAGES, type Language } from "@/lib/languages";
+import { LANGUAGES, type Language, getBaseLanguageCode } from "@/lib/languages";
 import { getPreferredLanguage, setPreferredLanguage } from "@/lib/langPreference";
 
 export default function LangSwitcher() {
-    const [selectedLanguage, setSelectedLanguage] = useState<Language>(LANGUAGES[0]);
+    const [selectedLanguage, setSelectedLanguage] = useState<Language | null>(null);
     const [isOpen, setIsOpen] = useState<boolean>(false);
+    const [mounted, setMounted] = useState<boolean>(false);
     const wrapperRef = useRef<HTMLDivElement | null>(null);
     const listRef = useRef<HTMLUListElement | null>(null);
 
-    // Initialize from localStorage if available
+    // Initialize from localStorage if available (client-side only)
     useEffect(() => {
+        setMounted(true);
         const saved = getPreferredLanguage();
         if (saved) {
             const found = LANGUAGES.find(l => l.code === saved);
-            if (found) setSelectedLanguage(found);
+            if (found) {
+                setSelectedLanguage(found);
+                return;
+            }
         }
+        // Default to first language if nothing saved
+        setSelectedLanguage(LANGUAGES[0]);
     }, []);
 
     // Outside click close (pointerdown for better mobile/safari support)
@@ -56,12 +63,15 @@ export default function LangSwitcher() {
             >
                 <div className="flex items-center gap-2">
                     <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                        selectedLanguage.code === 'hi' ? 'bg-orange-400' :
-                        selectedLanguage.code === 'mr' ? 'bg-blue-400' :
-                        selectedLanguage.code === 'kok' ? 'bg-green-400' :
-                        selectedLanguage.code === 'en' ? 'bg-purple-400' : 'bg-gray-400'
+                        !mounted || !selectedLanguage ? 'bg-gray-400' :
+                        getBaseLanguageCode(selectedLanguage.code) === 'hin' ? 'bg-orange-400' :
+                        getBaseLanguageCode(selectedLanguage.code) === 'mar' ? 'bg-blue-400' :
+                        getBaseLanguageCode(selectedLanguage.code) === 'kok' ? 'bg-green-400' :
+                        getBaseLanguageCode(selectedLanguage.code) === 'eng' ? 'bg-purple-400' : 'bg-gray-400'
                     }`}></div>
-                    <span className="capitalize font-medium text-gray-800">{selectedLanguage.name}</span>
+                    <span className="capitalize font-medium text-gray-800">
+                        {!mounted || !selectedLanguage ? 'Loading...' : selectedLanguage.name}
+                    </span>
                 </div>
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -93,22 +103,22 @@ export default function LangSwitcher() {
                             <li key={lang.code}>
                                 <button
                                     className={`group w-full text-left px-4 py-3 text-sm hover:bg-blue-50 focus:bg-blue-50 focus:outline-none transition-all duration-200 flex items-center gap-3 ${
-                                        selectedLanguage.code === lang.code
+                                        selectedLanguage?.code === lang.code
                                             ? "bg-blue-100 font-semibold text-blue-900 border-l-4 border-blue-500"
                                             : "text-gray-700 hover:text-blue-900"
                                     }`}
                                     onClick={() => choose(lang)}
                                     role="option"
-                                    aria-selected={selectedLanguage.code === lang.code}
+                                    aria-selected={selectedLanguage?.code === lang.code}
                                 >
                                     <div className={`w-3 h-3 rounded-full transition-colors duration-300 ${
-                                        lang.code === 'hi' ? 'bg-orange-400' :
-                                        lang.code === 'mr' ? 'bg-blue-400' :
-                                        lang.code === 'kok' ? 'bg-green-400' :
-                                        lang.code === 'en' ? 'bg-purple-400' : 'bg-gray-400'
+                                        getBaseLanguageCode(lang.code) === 'hin' ? 'bg-orange-400' :
+                                        getBaseLanguageCode(lang.code) === 'mar' ? 'bg-blue-400' :
+                                        getBaseLanguageCode(lang.code) === 'kok' ? 'bg-green-400' :
+                                        getBaseLanguageCode(lang.code) === 'eng' ? 'bg-purple-400' : 'bg-gray-400'
                                     }`}></div>
                                     <span className="flex-1">{lang.name}</span>
-                                    {selectedLanguage.code === lang.code && (
+                                    {selectedLanguage?.code === lang.code && (
                                         <svg className="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                                         </svg>

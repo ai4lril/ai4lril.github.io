@@ -1,6 +1,4 @@
-
-import React, { useState, useEffect } from 'react';
-import { getPreferredLanguage } from '@/lib/langPreference';
+import { useEffect } from 'react';
 
 interface SpeechSentence {
     id: string;
@@ -15,15 +13,12 @@ interface DialogBoxProps {
 }
 
 export default function DialogBox({ currentSentence, loading = false }: DialogBoxProps) {
-    const [lang, setLang] = useState<string | null>(null);
 
     useEffect(() => {
-        const saved = getPreferredLanguage();
-        setLang(saved);
 
         const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
-            setLang(code);
+            console.log('Language changed:', code);
         };
 
         window.addEventListener('language-changed', onLangChanged as EventListener);

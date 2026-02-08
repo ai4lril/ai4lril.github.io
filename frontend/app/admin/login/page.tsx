@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { adminAuth, LoginCredentials } from '@/lib/adminAuth';
+import { LoginCredentials } from '@/lib/adminAuth';
 
 export default function AdminLoginPage() {
     const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -19,14 +19,33 @@ export default function AdminLoginPage() {
         setError('');
 
         try {
-            const result = await adminAuth.login(credentials);
+            // Call backend API
+            const response = await fetch('/api/admin/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(credentials),
+            });
 
-            if (result.success && result.user) {
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Login failed' }));
+                setError(error.message || 'Login failed');
+                return;
+            }
+
+            const data = await response.json();
+
+            // Store token and admin info
+            if (data.token && data.admin) {
+                localStorage.setItem('adminToken', data.token);
+                localStorage.setItem('adminUser', JSON.stringify(data.admin));
                 router.push('/admin/dashboard');
             } else {
-                setError(result.error || 'Login failed');
+                setError('Invalid response from server');
             }
-        } catch {
+        } catch (error) {
+            console.error('Login error:', error);
             setError('An unexpected error occurred');
         } finally {
             setLoading(false);

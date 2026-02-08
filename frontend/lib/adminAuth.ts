@@ -187,6 +187,12 @@ class AdminAuthManager {
             sessionExpiry: new Date()
         };
         this.saveAuthState();
+        // Clear localStorage items
+        if (typeof window !== 'undefined') {
+            localStorage.removeItem('adminToken');
+            localStorage.removeItem('adminUser');
+            localStorage.removeItem('admin_auth_state');
+        }
         // Clear any admin-specific cookies
         deleteCookie('admin_session');
     }

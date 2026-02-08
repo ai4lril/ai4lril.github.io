@@ -21,7 +21,7 @@ export default function PosPage() {
     const [pool, setPool] = useState(posSentences);
     const [index, setIndex] = useState<number>(0);
     const [text, setText] = useState<string>(pool[0]?.text ?? "");
-    const tokens = useMemo(() => tokenizeByScript(text, detectScript(text)), [text]);
+    const tokens = useMemo(() => tokenizeByScript(text, detectScript(text) || 'roman'), [text]);
     const [tags, setTags] = useState<Record<number, string>>({});
     const [missing, setMissing] = useState<Set<number>>(new Set());
     const [errorMsg, setErrorMsg] = useState<string>("");

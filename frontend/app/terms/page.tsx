@@ -52,7 +52,7 @@ export default function TermsPage() {
                 </div>
 
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-8">
-                    <h2 className="text-xl font-bold text-slate-800 mb-4">What You're Agreeing To (Quick Summary)</h2>
+                    <h2 className="text-xl font-bold text-slate-800 mb-4">What You&apos;re Agreeing To (Quick Summary)</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
                             <div className="p-2 rounded-full bg-green-100 mt-1">
@@ -95,7 +95,7 @@ export default function TermsPage() {
                             </div>
                             <div>
                                 <h3 className="font-semibold text-slate-700">Limited Liability</h3>
-                                <p className="text-sm text-slate-600">Service 'as is'; no damages for indirect losses.</p>
+                                <p className="text-sm text-slate-600">Service &apos;as is&apos;; no damages for indirect losses.</p>
                             </div>
                         </div>
                     </div>

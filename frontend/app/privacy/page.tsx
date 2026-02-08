@@ -308,7 +308,7 @@ export default function PrivacyPage() {
                         </h3>
                         <p className="text-yellow-700 text-sm mb-3">Your inputs drive heritage preservation!</p>
                         <ul className="space-y-1 text-sm text-yellow-700">
-                            <li><strong>Access/Withdrawal:</strong> View/download your Kannada annotations or Urdu recordings anytime via <Link href="/data-rights">Portal</Link> (export as audio/JSON). Delete specific items (e.g., a Santhali sentence) or bulk—we'll propagate removal to datasets (up to 90 days for mirrors).</li>
+                            <li><strong>Access/Withdrawal:</strong> View/download your Kannada annotations or Urdu recordings anytime via <Link href="/data-rights">Portal</Link> (export as audio/JSON). Delete specific items (e.g., a Santhali sentence) or bulk—we&apos;ll propagate removal to datasets (up to 90 days for mirrors).</li>
                             <li><strong>Researcher Angle:</strong> Access aggregated data freely for studies; request raw subsets with ethics approval. Withdraw consent halts future use—no retroactive paper invalidation.</li>
                         </ul>
                         <p className="mt-2 text-sm">For custom queries (e.g., dialect-specific deletion), <Link href="/contact">contact us</Link>.</p>
@@ -423,7 +423,7 @@ export default function PrivacyPage() {
                         <li><strong>Detection:</strong> AI alerts in &lt;5 minutes.</li>
                         <li><strong>Containment:</strong> Firewall isolation, &lt;1 hour.</li>
                         <li><strong>Forensics:</strong> External experts, 24 hours.</li>
-                        <li><strong>Notify:</strong> Regulators: 24-72 hours; Users: Personalized email/SMS, e.g., 'Affected: Your Tamil annotations—steps: Change password, free therapy if emotional harm'.</li>
+                        <li><strong>Notify:</strong> Regulators: 24-72 hours; Users: Personalized email/SMS, e.g., &quot;Affected: Your Tamil annotations—steps: Change password, free therapy if emotional harm&quot;.</li>
                         <li><strong>Mitigate:</strong> Data wipe, compensation: e.g., ₹5000 for ID theft.</li>
                         <li><strong>Review:</strong> Lessons learned report to community.</li>
                     </ol>
@@ -554,7 +554,7 @@ export default function PrivacyPage() {
                         <li><strong>Ethical Review & Sharing:</strong> IRB-vetted; released as open resources (e.g., Hugging Face, with usage logs).</li>
                         <li><strong>Archival/Deletion:</strong> Retained for reproducibility (indefinite anonymized); full purge on request (30 days, including backups).</li>
                     </ol>
-                    <p className="mt-3 text-sm text-slate-600">For language data, we ensure script integrity (Unicode normalization) and dialect sensitivity throughout. Track your contribution's status via <Link href="/data-rights">Data Rights Portal</Link>.</p>
+                    <p className="mt-3 text-sm text-slate-600">For language data, we ensure script integrity (Unicode normalization) and dialect sensitivity throughout. Track your contribution&apos;s status via <Link href="/data-rights">Data Rights Portal</Link>.</p>
                 </details>
 
                 {/* New accordion for Multi-Lingual Transparency */}
@@ -572,7 +572,7 @@ export default function PrivacyPage() {
                         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs">Assamese: অসমীয়া</span>
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs">Bengali: বাংলা</span>
-                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Bodo: बर'</span>
+                            <span className="bg-slate-100 px-2 py-1 rounded text-xs">Bodo: बर</span>
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs">Dogri: डोगरी</span>
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs">Gujarati: ગુજરાતી</span>
                             <span className="bg-slate-100 px-2 py-1 rounded text-xs">Hindi: हिन्दी</span>
@@ -632,7 +632,7 @@ export default function PrivacyPage() {
                 </details>
                 <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
                     <summary className="font-semibold text-slate-700 cursor-pointer pb-2">Can my submitted sentences be published in research papers?</summary>
-                    <p className="text-slate-600 mt-2 pl-4">Anonymized excerpts yes (e.g., in EMNLP papers as 'ILHRF Dataset Sample'). Full sentences aggregated; no attribution unless opted-in. Withdraw pre-pub—we'll exclude from releases.</p>
+                    <p className="text-slate-600 mt-2 pl-4">Anonymized excerpts yes (e.g., in EMNLP papers as &quot;ILHRF Dataset Sample&quot;). Full sentences aggregated; no attribution unless opted-in. Withdraw pre-pub—we&apos;ll exclude from releases.</p>
                 </details>
                 <details className="bg-white border border-slate-200 rounded-lg p-4 mt-4">
                     <summary className="font-semibold text-slate-700 cursor-pointer pb-2">How does my data help low-resource languages?</summary>
@@ -652,18 +652,18 @@ export default function PrivacyPage() {
                     <div className="mt-4">
                         <p className="text-slate-700 mb-3">Your consent is the foundation of our data collection. You can manage your preferences at any time.</p>
                         <ul className="space-y-2 text-slate-700">
-                            <li><strong>Granular Preferences:</strong> Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., 'Voice only for ASR, no text for NER') or restrict to projects (e.g., 'Opt-in to Hindi Translation Dataset, out of Sentiment Analysis'). Changes apply immediately; we honor per-item consents.</li>
+                            <li><strong>Granular Preferences:</strong> Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., &quot;Voice only for ASR, no text for NER&quot;) or restrict to projects (e.g., &quot;Opt-in to Hindi Translation Dataset, out of Sentiment Analysis&quot;). Changes apply immediately; we honor per-item consents.</li>
                             <li><strong>Withdraw Consent:</strong> Easily opt-out of specific data types or projects. Your choices are respected.</li>
                             <li><strong>Transparency:</strong> Your consent history is available in the <Link href="/data-rights">Data Rights Portal</Link>.</li>
                         </ul>
                         <div className="mt-4 bg-cyan-50 border border-cyan-200 rounded-lg p-4">
                             <h4 className="font-semibold text-cyan-800 mb-2">Granular Data Preferences</h4>
-                            <p className="text-cyan-700 mb-3">Choose specifics: Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., 'Voice only for ASR, no text for NER') or restrict to projects (e.g., 'Opt-in to Hindi Translation Dataset, out of Sentiment Analysis'). Changes apply immediately; we honor per-item consents.</p>
+                            <p className="text-cyan-700 mb-3">Choose specifics: Via <Link href="/privacy-settings">Settings</Link>, select share types (e.g., &quot;Voice only for ASR, no text for NER&quot;) or restrict to projects (e.g., &quot;Opt-in to Hindi Translation Dataset, out of Sentiment Analysis&quot;). Changes apply immediately; we honor per-item consents.</p>
                             <ul className="space-y-1 text-sm text-cyan-700">
                                 <li>• Voice: For speech models (e.g., Tamil ASR)</li>
                                 <li>• Text: For annotations (e.g., Urdu NER)</li>
                                 <li>• Metadata: For aggregate stats only</li>
-                                <li>• Project Opt-Ins: List available (e.g., 'Bodo Preservation Initiative')</li>
+                                <li>• Project Opt-Ins: List available (e.g., &quot;Bodo Preservation Initiative&quot;)</li>
                             </ul>
                         </div>
                     </div>
@@ -701,12 +701,12 @@ export default function PrivacyPage() {
 
                 {/* In "Informed Consent Enhancements," add to Consent Management: */}
                 <p className="mt-3 text-slate-700">
-                    <strong>Interactive Explanations:</strong> Hover tooltips on forms explain risks/benefits (e.g., 'Voice sharing: Helps preserve dialects but anonymized—no ID risk'). Video walkthroughs: <a href="/consent-guide.mp4" target="_blank" rel="noopener noreferrer">5-Min Guide</a> (subtitled in 22 languages, covers 'Why share? Impact on Marathi education').
+                    <strong>Interactive Explanations:</strong> Hover tooltips on forms explain risks/benefits (e.g., &quot;Voice sharing: Helps preserve dialects but anonymized—no ID risk&quot;). Video walkthroughs: <a href="/consent-guide.mp4" target="_blank" rel="noopener noreferrer">5-Min Guide</a> (subtitled in 22 languages, covers &quot;Why share? Impact on Marathi education&quot;).
                 </p>
 
                 {/* In "Data Portability," expand in Your Choices & Rights: */}
                 <p className="text-slate-700 mt-2">
-                    <strong>Data Portability:</strong> Export via Portal in CSV/JSON (e.g., 'Your Punjabi annotations as structured file for personal research'). Includes metadata (e.g., timestamps, languages); no sensitive re-identification. Request bulk via email—delivered in 7 days.
+                    <strong>Data Portability:</strong> Export via Portal in CSV/JSON (e.g., &quot;Your Punjabi annotations as structured file for personal research&quot;). Includes metadata (e.g., timestamps, languages); no sensitive re-identification. Request bulk via email—delivered in 7 days.
                 </p>
 
                 {/* In "Partner & Sharing Disclosure," expand table with examples: */}
@@ -715,12 +715,12 @@ export default function PrivacyPage() {
 
                 {/* In "Changes to this Policy," add future-proofing: */}
                 <p className="mt-3 text-slate-700">
-                    <strong>Future-Proofing:</strong> Policy adapts to new frameworks (e.g., India's DPDP 2023 updates, EU AI Act)—reviewed quarterly. We'll incorporate emerging standards like biometric data rules for voice, notifying via email/banner.
+                    <strong>Future-Proofing:</strong> Policy adapts to new frameworks (e.g., India&apos;s DPDP 2023 updates, EU AI Act)—reviewed quarterly. We&apos;ll incorporate emerging standards like biometric data rules for voice, notifying via email/banner.
                 </p>
 
                 {/* In User Controls, add notifications: */}
                 <p className="text-slate-700 mt-2">
-                    <strong>Community Notifications:</strong> When results live (e.g., 'Your data in new Odia paper!'), get opt-in emails (e.g., 'Publication Alert: View impact'). Engages without spam—unsubscribe anytime.
+                    <strong>Community Notifications:</strong> When results live (e.g., &quot;Your data in new Odia paper!&quot;), get opt-in emails (e.g., &quot;Publication Alert: View impact&quot;). Engages without spam—unsubscribe anytime.
                 </p>
 
                 {/* Add new section for Training & Education after Accessibility: */}
@@ -731,8 +731,8 @@ export default function PrivacyPage() {
                             <h3 className="font-semibold text-blue-800 mb-2">For Contributors</h3>
                             <ul className="text-sm text-blue-700 space-y-1">
                                 <li>• <Link href="/guides/privacy-basics">Privacy Best Practices</Link> (Video: 3 min)</li>
-                                <li>• Risks Guide: 'Voice Data Security'</li>
-                                <li>• Protections: 'Your Rights in 5 Steps'</li>
+                                <li>• Risks Guide: &quot;Voice Data Security&quot;</li>
+                                <li>• Protections: &quot;Your Rights in 5 Steps&quot;</li>
                             </ul>
                         </div>
                         <div className="bg-blue-50 p-4 rounded-lg">
@@ -765,7 +765,7 @@ export default function PrivacyPage() {
                             <li><strong>Compliance:</strong> Logs under GDPR Art. 25; no profiling from API usage.</li>
                             <li><strong>Documentation:</strong> <Link href="/api/docs/privacy">Full API Privacy Guide</Link> (includes rate limits, error handling).</li>
                         </ul>
-                        <p className="text-sm text-slate-600">Developer audiences: APIs for ethical querying (e.g., 'Fetch Konkani POS samples'); violations lead to bans.</p>
+                        <p className="text-sm text-slate-600">Developer audiences: APIs for ethical querying (e.g., &quot;Fetch Konkani POS samples&quot;); violations lead to bans.</p>
                     </div>
                 </details>
 

@@ -5,37 +5,130 @@ import TextBox from "@/components/TextBox";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
 
+interface TranscriptionAudio {
+    id: string;
+    audioFile: string;
+    audioFormat: string;
+    duration: number;
+    sentence: {
+        id: string;
+        text: string;
+        languageCode: string;
+    };
+}
+
 export default function TranscribePage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitted, setSubmitted] = useState(false);
     const [skipped, setSkipped] = useState(false);
     const [lang, setLang] = useState<string | null>(null);
+    const [currentAudio, setCurrentAudio] = useState<TranscriptionAudio | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    const fetchAudio = async (languageCode?: string) => {
+        setLoading(true);
+        setError(null);
+        setCurrentAudio(null);
+        try {
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const url = languageCode ? `/api/transcribe-audio?languageCode=${languageCode}` : '/api/transcribe-audio';
+            const response = await fetch(url, { headers });
+
+            if (response.status === 404) {
+                setCurrentAudio(null);
+                setError("No audio clips available for transcription in this language.");
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`Failed to fetch audio: ${response.statusText}`);
+            }
+
+            const data: TranscriptionAudio = await response.json();
+            setCurrentAudio(data);
+        } catch (err) {
+            console.error("Error fetching audio:", err);
+            setError("Failed to load audio. Please try again.");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     useEffect(() => {
         const saved = getPreferredLanguage();
         setLang(saved);
+        fetchAudio(saved || undefined);
+
         const onLangChanged = (e: Event) => {
             const code = (e as CustomEvent<string>).detail;
             setLang(code);
+            fetchAudio(code || undefined);
         };
         window.addEventListener('language-changed', onLangChanged as EventListener);
         return () => window.removeEventListener('language-changed', onLangChanged as EventListener);
     }, []);
 
-    const handleSubmit = (transcript: string) => {
+    const handleSubmit = async (transcript: string) => {
+        if (!currentAudio) {
+            alert('No audio loaded. Please wait for audio to load.');
+            return;
+        }
+
         setIsSubmitting(true);
-        // Simulate backend call
-        setTimeout(() => {
+
+        try {
+            const speechRecordingId = currentAudio.id;
+
+            const token = localStorage.getItem('token');
+            if (!token) {
+                alert('Please login to submit transcription');
+                return;
+            }
+
+            const response = await fetch('/api/transcription-submission', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    speechRecordingId,
+                    transcriptionText: transcript,
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to submit transcription');
+            }
+
             setIsSubmitting(false);
             setSubmitted(true);
-            setTimeout(() => setSubmitted(false), 2000);
-        }, 1000);
-        console.log(transcript);
+            setTimeout(() => {
+                setSubmitted(false);
+                fetchAudio(lang || undefined); // Fetch next audio
+            }, 2000);
+        } catch (error) {
+            console.error('Error submitting transcription:', error);
+            setIsSubmitting(false);
+            const errorMessage = error instanceof Error ? error.message : 'Failed to submit transcription. Please try again.';
+            alert(errorMessage);
+        }
     };
 
     const handleSkip = () => {
         setSkipped(true);
-        setTimeout(() => setSkipped(false), 1500);
+        setTimeout(() => {
+            setSkipped(false);
+            fetchAudio(lang || undefined); // Fetch next audio
+        }, 1500);
     };
 
     return (
@@ -56,16 +149,22 @@ export default function TranscribePage() {
                         <div className="absolute -top-4 -left-4 w-16 h-16 sm:-top-8 sm:-left-8 sm:w-24 sm:h-24 bg-cyan-100/60 rounded-full opacity-70 pointer-events-none"></div>
                         <div className="absolute -bottom-6 -right-6 w-20 h-20 sm:-bottom-10 sm:-right-10 sm:w-28 sm:h-28 bg-indigo-100/50 rounded-full opacity-60 pointer-events-none"></div>
                         <div className="w-full flex flex-col items-center">
-                            <audio
-                                controls
-                                className="my-3 sm:my-5 w-full max-w-xs"
-                                src="/sample-audio.mp3"
-                            >
-                                Your browser does not support the audio element.
-                            </audio>
-                            <div className="text-center text-gray-500 text-xs sm:text-sm">
-                                Listen to the audio above and transcribe what you hear.
-                            </div>
+                            {loading && <p className="text-gray-500">Loading audio...</p>}
+                            {error && <p className="text-red-500 text-sm">{error}</p>}
+                            {currentAudio && (
+                                <>
+                                    <audio
+                                        controls
+                                        className="my-3 sm:my-5 w-full max-w-xs"
+                                        src={currentAudio.audioFile}
+                                    >
+                                        Your browser does not support the audio element.
+                                    </audio>
+                                    <div className="text-center text-gray-500 text-xs sm:text-sm">
+                                        Listen to the audio above and transcribe what you hear.
+                                    </div>
+                                </>
+                            )}
                         </div>
                     </div>
                     {/* Transcription Section */}
@@ -83,14 +182,13 @@ export default function TranscribePage() {
                         <div className="flex flex-col sm:flex-row-reverse gap-2 sm:gap-3 mt-2">
                             <button
                                 onClick={() => document.forms[0].requestSubmit()}
-                                disabled={isSubmitting || submitted}
-                                className={`group flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${
-                                    isSubmitting
+                                disabled={isSubmitting || submitted || !currentAudio}
+                                className={`group flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${isSubmitting
                                         ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
                                         : submitted
                                             ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
                                             : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
-                                }`}
+                                    }`}
                             >
                                 <span className="flex items-center justify-center gap-2">
                                     {isSubmitting ? (

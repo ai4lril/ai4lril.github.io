@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Noto_Sans } from 'next/font/google';
 import Navbar from "@/components/Navbar";
 import AccessibilityWidget from "@/components/AccessibilityWidget";
+import { ToastContainer } from "@/lib/toast";
 import "./globals.css";
 
 // Import compliance and accessibility managers
@@ -139,34 +140,9 @@ export default function RootLayout({
                 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
                 <meta name="format-detection" content="telephone=no" />
 
-                {/* Security Headers */}
-                <meta httpEquiv="X-Content-Type-Options" content="nosniff" />
-                <meta httpEquiv="X-Frame-Options" content="DENY" />
-                <meta httpEquiv="X-XSS-Protection" content="1; mode=block" />
-                <meta httpEquiv="Referrer-Policy" content="strict-origin-when-cross-origin" />
-                <meta name="permissions-policy" content="camera=(), microphone=(), geolocation=()" />
-
-                {/* Content Security Policy */}
-                <meta httpEquiv="Content-Security-Policy" content="
-                    default-src 'self';
-                    script-src 'self' 'unsafe-inline';
-                    style-src 'self' 'unsafe-inline';
-                    img-src 'self' data: https:;
-                    font-src 'self' data:;
-                    connect-src 'self';
-                    frame-src 'none';
-                    object-src 'none';
-                    base-uri 'self';
-                    form-action 'self';
-                    upgrade-insecure-requests;
-                    report-uri /csp-report;
-                " />
-
-                {/* Additional Security Headers */}
-                <meta name="strict-transport-security" content="max-age=31536000; includeSubDomains; preload" />
-                <meta name="cross-origin-embedder-policy" content="require-corp" />
-                <meta name="cross-origin-opener-policy" content="same-origin" />
-                <meta name="cross-origin-resource-policy" content="same-origin" />
+                {/* Security Headers - Note: These should ideally be set via HTTP headers in production */}
+                {/* Removed X-Frame-Options from meta (should be HTTP header only) */}
+                {/* Removed CSP meta tag - causes issues with Turbopack in development. Set CSP via HTTP headers in production. */}
 
                 {/* Additional Security Measures */}
                 <meta name="referrer" content="strict-origin-when-cross-origin" />
@@ -180,8 +156,8 @@ export default function RootLayout({
                 <meta httpEquiv="Cache-Control" content="public, max-age=31536000, immutable" />
 
                 {/* Preload Critical Resources */}
-                <link rel="preload" href="/favicon.ico" as="image" type="image/x-icon" />
-                <link rel="preload" href="/manifest.json" as="fetch" type="application/manifest+json" />
+                {/* Removed favicon preload - browsers fetch favicons automatically, preloading causes warnings */}
+                {/* Removed manifest.json preload - causes warning if not used immediately */}
                 <link rel="dns-prefetch" href="//fonts.googleapis.com" />
                 <link rel="dns-prefetch" href="//fonts.gstatic.com" />
 
@@ -416,6 +392,7 @@ export default function RootLayout({
             <body className={`flex flex-col min-h-screen ${notoSans.className}`}>
                 {/* Load security script securely */}
                 <script src="/security.js" defer></script>
+                <ToastContainer />
                 <Navbar />
                 <main className="flex-1 container mx-auto flex flex-col items-center justify-around px-4 sm:px-6 md:px-8" role="main">
                     {children}
@@ -426,6 +403,7 @@ export default function RootLayout({
                         <nav className="flex items-center gap-4" role="navigation" aria-label="Footer navigation">
                             <Link className="hover:text-blue-700" href="/about" aria-label="About">About</Link>
                             <Link className="hover:text-blue-700" href="/contact" aria-label="Contact">Contact</Link>
+                            <Link className="hover:text-blue-700" href="/docs" aria-label="API Documentation">API Docs</Link>
                             <Link className="hover:text-blue-700" href="/privacy" aria-label="Privacy">Privacy</Link>
                             <Link className="hover:text-blue-700" href="/terms" aria-label="Terms">Terms</Link>
                             <Link className="hover:text-blue-700" href="/cookies" aria-label="Cookies">Cookies</Link>

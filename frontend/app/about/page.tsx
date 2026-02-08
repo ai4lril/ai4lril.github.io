@@ -402,7 +402,7 @@ export default function AboutPage() {
                                     <h2 className="text-3xl font-bold text-slate-800 mb-2">
                                         Meet Our Contributors
                                     </h2>
-                                    <p className="text-slate-600 text-lg">Dedicated researchers and developers committed to preserving India's linguistic heritage</p>
+                                    <p className="text-slate-600 text-lg">Dedicated researchers and developers committed to preserving India&apos;s linguistic heritage</p>
                                 </div>
                             </div>
                         </div>
@@ -469,7 +469,7 @@ export default function AboutPage() {
                                 </svg>
                             </div>
                             <h3 className="text-lg font-semibold text-slate-800 mb-2">Join Our Team</h3>
-                            <p className="text-slate-600 text-sm mb-4">Interested in contributing to the preservation of Indian linguistic heritage? We'd love to hear from you.</p>
+                            <p className="text-slate-600 text-sm mb-4">Interested in contributing to the preservation of Indian linguistic heritage? We&apos;d love to hear from you.</p>
                             <Link
                                 href="/contact"
                                 className="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-indigo-600 to-purple-600 text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105"
@@ -526,7 +526,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">We avoid collecting directly identifying information. See our <Link className="text-indigo-600 hover:underline font-medium" href="/privacy">Privacy Policy</Link> for details on how ILHRF protects contributors' data.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">We avoid collecting directly identifying information. See our <Link className="text-indigo-600 hover:underline font-medium" href="/privacy">Privacy Policy</Link> for details on how ILHRF protects contributors&apos; data.</p>
                     </details>
                     <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
                         <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-amber-900 transition-colors duration-300">
@@ -542,7 +542,7 @@ export default function AboutPage() {
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                             </svg>
                         </summary>
-                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Yes. Use the <Link className="text-indigo-600 hover:underline font-medium" href="/contact">contact page</Link> to propose new languages or scripts and we'll coordinate onboarding for ILHRF.</p>
+                        <p className="mt-4 text-sm text-slate-700 leading-relaxed pl-9">Yes. Use the <Link className="text-indigo-600 hover:underline font-medium" href="/contact">contact page</Link> to propose new languages or scripts and we&apos;ll coordinate onboarding for ILHRF.</p>
                     </details>
                     <details className="group rounded-xl border border-slate-200 bg-white/90 hover:bg-white p-4 shadow-sm hover:shadow-md transition-all duration-300">
                         <summary className="cursor-pointer font-semibold text-slate-800 flex items-center justify-between hover:text-purple-900 transition-colors duration-300">

@@ -1,27 +1,22 @@
 'use client';
+import { API_BASE_URL } from '@/lib/api-config';
 
-import { useEffect, useState } from 'react';
-import { adminAuth } from '@/lib/adminAuth';
+import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import {
-  Shield,
-  AlertTriangle,
-  Lock,
-  Unlock,
   Eye,
-  EyeOff,
-  UserCheck,
+  Lock,
   UserX,
-  Key,
-  FileText,
+  Globe,
   Search,
-  Filter,
-  Download,
-  RefreshCw,
-  Settings,
-  Clock,
   MapPin,
-  Globe
+  Shield,
+  Download,
+  FileText,
+  Settings,
+  UserCheck,
+  RefreshCw,
+  AlertTriangle
 } from 'lucide-react';
 
 interface SecurityEvent {
@@ -38,7 +33,7 @@ interface SecurityEvent {
     city: string;
   };
   description: string;
-  metadata?: Record<string, any>;
+  metadata?: Record<string, unknown>;
 }
 
 interface SecurityStats {
@@ -79,14 +74,10 @@ export default function SecurityPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [severityFilter, setSeverityFilter] = useState<'all' | 'low' | 'medium' | 'high' | 'critical'>('all');
   const [typeFilter, setTypeFilter] = useState<'all' | 'login_attempt' | 'failed_login' | 'suspicious_activity' | 'data_access' | 'permission_change' | 'security_alert'>('all');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage] = useState(1);
   const [eventsPerPage] = useState(20);
 
-  useEffect(() => {
-    loadSecurityData();
-  }, []);
-
-  const loadSecurityData = async () => {
+  const loadSecurityData = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -99,12 +90,12 @@ export default function SecurityPage() {
       });
 
       const [eventsResponse, auditResponse] = await Promise.all([
-        fetch(`/api/admin/security-events?${eventsParams}`, {
+        fetch(`${API_BASE_URL}/admin/security-events?${eventsParams}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
           },
         }),
-        fetch(`/api/admin/audit-logs?page=1&limit=20`, {
+        fetch(`${API_BASE_URL}/admin/audit-logs?page=1&limit=20`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
           },
@@ -140,7 +131,13 @@ export default function SecurityPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, eventsPerPage, severityFilter, typeFilter]);
+
+  useEffect(() => {
+    loadSecurityData();
+  }, [loadSecurityData]);
+
+
 
   const filteredEvents = events.filter(event => {
     const matchesSearch = searchTerm === '' ||
@@ -444,7 +441,7 @@ export default function SecurityPage() {
                     type="text"
                     placeholder="Search events..."
                     value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setSearchTerm(e.target.value)}
                     className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500"
                   />
                 </div>
@@ -452,7 +449,7 @@ export default function SecurityPage() {
                 {/* Severity Filter */}
                 <select
                   value={severityFilter}
-                  onChange={(e) => setSeverityFilter(e.target.value as any)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSeverityFilter(e.target.value as 'all' | 'low' | 'medium' | 'high' | 'critical')}
                   className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All Severities</option>
@@ -465,7 +462,7 @@ export default function SecurityPage() {
                 {/* Type Filter */}
                 <select
                   value={typeFilter}
-                  onChange={(e) => setTypeFilter(e.target.value as any)}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setTypeFilter(e.target.value as 'all' | 'login_attempt' | 'failed_login' | 'suspicious_activity' | 'data_access' | 'permission_change' | 'security_alert')}
                   className="block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
                 >
                   <option value="all">All Types</option>

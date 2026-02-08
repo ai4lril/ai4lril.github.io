@@ -1,0 +1,2255 @@
+
+> ilhrf-linguistic-data-collection-backend@0.0.1 test:functional /Users/alvynabranches/phd/voice-data-collection/backend
+> NODE_PATH=./node_modules jest --config ../tests/functional/backend/jest.config.js --testPathPattern=../tests/functional/backend
+
+FAIL ../tests/functional/backend/nlp/nlp.functional.spec.ts
+  ● Console
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+  ● NLP API (Functional) › GET /api/ner-sentences › should return sentences for NER tagging
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › GET /api/ner-sentences › should filter sentences by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/ner-annotation › should save NER annotation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/ner-annotation › should reject annotation without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › GET /api/translation-sentences › should return sentences for translation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › GET /api/translation-sentences › should filter sentences by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/translation-submission › should save translation submission
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/translation-submission › should reject submission without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › GET /api/pos-sentences › should return sentences for POS tagging
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/pos-annotation › should save POS annotation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/sentiment-annotation › should save sentiment annotation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● NLP API (Functional) › POST /api/emotion-annotation › should save emotion annotation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/nlp/nlp.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/write/write.functional.spec.ts
+  ● Console
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+  ● Write API (Functional) › POST /api/write/submission › should submit sentences for write feature
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should submit sentences without citation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should reject submission without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should reject submission with empty sentences array
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should reject submission with missing language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should handle multiple sentences correctly
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Write API (Functional) › POST /api/write/submission › should handle different language codes
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/write/write.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/admin/admin.functional.spec.ts
+  ● Console
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+  ● Admin API (Functional) › POST /api/admin/login › should login admin user
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/admin/admin.functional.spec.ts:22:53)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Admin API (Functional) › GET /api/admin/dashboard/stats › should require admin authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/admin/admin.functional.spec.ts:22:53)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Admin API (Functional) › GET /api/admin/users › should list users (admin only)
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/admin/admin.functional.spec.ts:22:53)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Admin API (Functional) › GET /api/admin/sentences/pending › should return pending sentences (admin only)
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/admin/admin.functional.spec.ts:22:53)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Admin API (Functional) › GET /api/admin/questions/pending › should return pending questions (admin only)
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/admin/admin.functional.spec.ts:22:53)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/auth/api-keys.functional.spec.ts
+  ● Console
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+  ● API Keys API (Functional) › POST /api/auth/api-keys › should create a new API key
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › POST /api/auth/api-keys › should create API key with expiration date
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › POST /api/auth/api-keys › should reject API key creation without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › POST /api/auth/api-keys › should reject API key creation without name
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › GET /api/auth/api-keys › should list user API keys
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › GET /api/auth/api-keys › should reject listing API keys without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › DELETE /api/auth/api-keys/:id › should revoke an API key
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › DELETE /api/auth/api-keys/:id › should reject revoking non-existent API key
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › DELETE /api/auth/api-keys/:id › should reject revoking another user's API key
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › PUT /api/auth/api-keys/:id › should update API key name
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● API Keys API (Functional) › PUT /api/auth/api-keys/:id › should update API key expiration
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/auth/api-keys.functional.spec.ts:22:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/question/question.functional.spec.ts
+  ● Console
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+  ● Question API (Functional) › POST /api/question/submission › should submit a question
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/submission › should reject submission without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/submission › should reject submission with missing question text
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/submission › should reject submission with missing language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › GET /api/question/sentences › should return validated questions
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › GET /api/question/sentences › should filter questions by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › GET /api/question/sentences › should not return questions already answered by user
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should save answer recording
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should save answer recording
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+       99 |         beforeAll(async () => {
+      100 |             // Submit a question first
+    > 101 |             const submitResponse = await authenticatedPost(auth.app, auth.token, '/api/question/submission')
+          |                                                                 ^
+      102 |                 .send({
+      103 |                     questionText: testQuestions.english[0],
+      104 |                     languageCode: 'en',
+
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:101:65)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should reject recording without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should reject recording without authentication
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+       99 |         beforeAll(async () => {
+      100 |             // Submit a question first
+    > 101 |             const submitResponse = await authenticatedPost(auth.app, auth.token, '/api/question/submission')
+          |                                                                 ^
+      102 |                 .send({
+      103 |                     questionText: testQuestions.english[0],
+      104 |                     languageCode: 'en',
+
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:101:65)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should reject recording with missing required fields
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Question API (Functional) › POST /api/question/answer-recording › should reject recording with missing required fields
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+       99 |         beforeAll(async () => {
+      100 |             // Submit a question first
+    > 101 |             const submitResponse = await authenticatedPost(auth.app, auth.token, '/api/question/submission')
+          |                                                                 ^
+      102 |                 .send({
+      103 |                     questionText: testQuestions.english[0],
+      104 |                     languageCode: 'en',
+
+      at Object.<anonymous> (../tests/functional/backend/question/question.functional.spec.ts:101:65)
+
+FAIL ../tests/functional/backend/speech/speech.functional.spec.ts
+  ● Console
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+  ● Speech API (Functional) › GET /api/speech/sentences › should return sentences for speech recording
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › GET /api/speech/sentences › should filter sentences by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › GET /api/speech/sentences › should not return sentences already recorded by user
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › GET /api/speech/sentences › should work without authentication (optional)
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should save speech recording with valid data
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should save speech recording with valid data
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+      86 |         beforeAll(async () => {
+      87 |             // Get a sentence to record
+    > 88 |             const response = await authenticatedGet(auth.app, auth.token, '/api/speech/sentences')
+         |                                                          ^
+      89 |                 .expect(200);
+      90 |
+      91 |             sentenceId = response.body[0]?.id;
+
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:88:58)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording without authentication
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+      86 |         beforeAll(async () => {
+      87 |             // Get a sentence to record
+    > 88 |             const response = await authenticatedGet(auth.app, auth.token, '/api/speech/sentences')
+         |                                                          ^
+      89 |                 .expect(200);
+      90 |
+      91 |             sentenceId = response.body[0]?.id;
+
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:88:58)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording with missing sentenceId
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording with missing sentenceId
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+      86 |         beforeAll(async () => {
+      87 |             // Get a sentence to record
+    > 88 |             const response = await authenticatedGet(auth.app, auth.token, '/api/speech/sentences')
+         |                                                          ^
+      89 |                 .expect(200);
+      90 |
+      91 |             sentenceId = response.body[0]?.id;
+
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:88:58)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording with invalid audio format
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/recording › should reject recording with invalid audio format
+
+    TypeError: Cannot read properties of undefined (reading 'app')
+
+      86 |         beforeAll(async () => {
+      87 |             // Get a sentence to record
+    > 88 |             const response = await authenticatedGet(auth.app, auth.token, '/api/speech/sentences')
+         |                                                          ^
+      89 |                 .expect(200);
+      90 |
+      91 |             sentenceId = response.body[0]?.id;
+
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:88:58)
+
+  ● Speech API (Functional) › GET /api/speech/listen-audio › should return audio for validation
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › GET /api/speech/listen-audio › should filter audio by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › GET /api/speech/listen-audio › should not return audio already validated by user
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/listen-validation › should save validation for audio
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/listen-validation › should reject validation without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Speech API (Functional) › POST /api/speech/listen-validation › should reject validation with missing required fields
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/speech/speech.functional.spec.ts:20:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/transcription/transcription.functional.spec.ts
+  ● Console
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+  ● Transcription API (Functional) › GET /api/transcription/audio › should return audio for transcription
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › GET /api/transcription/audio › should filter audio by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › GET /api/transcription/audio › should not return audio already transcribed by user
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/submission › should submit transcription
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/submission › should reject submission without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/submission › should reject submission with missing required fields
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › GET /api/transcription/review › should return transcriptions for review
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › GET /api/transcription/review › should filter transcriptions by language code
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/review-submission › should submit transcription review
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/review-submission › should reject review without authentication
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Transcription API (Functional) › POST /api/transcription/review-submission › should reject review with missing required fields
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at createAuthenticatedRequest (../tests/functional/backend/utils/auth-helper.ts:78:37)
+      at Object.<anonymous> (../tests/functional/backend/transcription/transcription.functional.spec.ts:19:48)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+FAIL ../tests/functional/backend/auth/auth.functional.spec.ts
+  ● Console
+
+    console.log
+      Connected to Dragonfly cache server
+
+      at CacheService.onModuleInit (src/cache/cache.service.ts:19:21)
+          at async Promise.all (index 0)
+
+    console.error
+      Error ensuring bucket exists: Error: read ECONNRESET
+          at TCP.onStreamRead (node:internal/stream_base_commons:216:20) {
+        errno: -54,
+        code: 'ECONNRESET',
+        syscall: 'read'
+      }
+
+      28 |             }
+      29 |         } catch (error) {
+    > 30 |             console.error('Error ensuring bucket exists:', error);
+         |                     ^
+      31 |         }
+      32 |     }
+      33 |
+
+      at StorageService.ensureBucketExists (src/storage/storage.service.ts:30:21)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should create a new user with valid data
+
+    expected 201 "Created", got 404 "Not Found"
+
+      30 |                 .post('/api/auth/signup')
+      31 |                 .send(userData)
+    > 32 |                 .expect(201);
+         |                  ^
+      33 |
+      34 |             expect(response.body).toHaveProperty('token');
+      35 |             expect(response.body).toHaveProperty('user');
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:32:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should create user with minimal required fields
+
+    expected 201 "Created", got 404 "Not Found"
+
+      49 |                 .post('/api/auth/signup')
+      50 |                 .send(userData)
+    > 51 |                 .expect(201);
+         |                  ^
+      52 |
+      53 |             expect(response.body).toHaveProperty('token');
+      54 |             expect(response.body.user.email).toBe(userData.email);
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:51:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should reject signup with missing email
+
+    expected 400 "Bad Request", got 404 "Not Found"
+
+      59 |                 .post('/api/auth/signup')
+      60 |                 .send(invalidUserData.missingEmail)
+    > 61 |                 .expect(400);
+         |                  ^
+      62 |         });
+      63 |
+      64 |         it('should reject signup with invalid email format', async () => {
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:61:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should reject signup with invalid email format
+
+    expected 400 "Bad Request", got 404 "Not Found"
+
+      66 |                 .post('/api/auth/signup')
+      67 |                 .send(invalidUserData.invalidEmail)
+    > 68 |                 .expect(400);
+         |                  ^
+      69 |         });
+      70 |
+      71 |         it('should reject signup with short password', async () => {
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:68:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should reject signup with short password
+
+    expected 400 "Bad Request", got 404 "Not Found"
+
+      73 |                 .post('/api/auth/signup')
+      74 |                 .send(invalidUserData.shortPassword)
+    > 75 |                 .expect(400);
+         |                  ^
+      76 |         });
+      77 |
+      78 |         it('should reject signup with duplicate email', async () => {
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:75:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should reject signup with duplicate email
+
+    expected 201 "Created", got 404 "Not Found"
+
+      87 |                 .post('/api/auth/signup')
+      88 |                 .send(userData)
+    > 89 |                 .expect(201);
+         |                  ^
+      90 |
+      91 |             // Try to create duplicate
+      92 |             await request(app.getHttpServer())
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:89:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/signup › should reject signup with duplicate username
+
+    expected 201 "Created", got 404 "Not Found"
+
+      107 |                 .post('/api/auth/signup')
+      108 |                 .send(userData)
+    > 109 |                 .expect(201);
+          |                  ^
+      110 |
+      111 |             // Try to create duplicate with same username
+      112 |             const duplicateData = {
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:109:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/login › should login with valid credentials
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:134:33)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/login › should reject login with invalid email
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:134:33)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/login › should reject login with invalid password
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:134:33)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/login › should reject login with missing email
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:134:33)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/login › should reject login with missing password
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:134:33)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/me › should return user profile with valid token
+
+    expected 201 "Created", got 404 "Not Found"
+
+      41 |         .post('/api/auth/signup')
+      42 |         .send(userData)
+    > 43 |         .expect(201);
+         |          ^
+      44 |
+      45 |     return {
+      46 |         token: signupResponse.body.token,
+
+      at createTestUser (../tests/functional/backend/utils/auth-helper.ts:43:10)
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:193:51)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/me › should reject request without token
+
+    expected 401 "Unauthorized", got 404 "Not Found"
+
+      206 |             await request(app.getHttpServer())
+      207 |                 .post('/api/auth/me')
+    > 208 |                 .expect(401);
+          |                  ^
+      209 |         });
+      210 |
+      211 |         it('should reject request with invalid token', async () => {
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:208:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+  ● Auth API (Functional) › POST /api/auth/me › should reject request with invalid token
+
+    expected 401 "Unauthorized", got 404 "Not Found"
+
+      213 |                 .post('/api/auth/me')
+      214 |                 .set('Authorization', 'Bearer invalid_token')
+    > 215 |                 .expect(401);
+          |                  ^
+      216 |         });
+      217 |     });
+      218 | });
+
+      at Object.<anonymous> (../tests/functional/backend/auth/auth.functional.spec.ts:215:18)
+      ----
+      at Test._assertStatus (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:309:14)
+      at node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:365:13
+      at Test._assertFunction (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:342:13)
+      at Test.assert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:195:23)
+      at localAssert (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:138:14)
+      at Server.<anonymous> (node_modules/.pnpm/supertest@7.1.4/node_modules/supertest/lib/test.js:152:11)
+
+Test Suites: 8 failed, 8 total
+Tests:       85 failed, 85 total
+Snapshots:   0 total
+Time:        4.344 s
+Ran all test suites matching /..\/tests\/functional\/backend/i.
+ ELIFECYCLE  Command failed with exit code 1.

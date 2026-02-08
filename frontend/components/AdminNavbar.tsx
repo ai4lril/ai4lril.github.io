@@ -14,62 +14,68 @@ interface NavItem {
 }
 
 const navigationItems: NavItem[] = [
-  {
-    name: 'Dashboard',
-    href: '/admin/dashboard',
-    icon: '📊',
-    description: 'Overview and key metrics'
-  },
-  {
-    name: 'Analytics',
-    href: '/admin/analytics',
-    icon: '📈',
-    description: 'Visitor and user analytics'
-  },
-  {
-    name: 'Users',
-    href: '/admin/users',
-    icon: '👥',
-    description: 'User management and profiles'
-  },
-  {
-    name: 'Contributions',
-    href: '/admin/contributions',
-    icon: '📝',
-    description: 'Contribution tracking and reviews'
-  },
-  {
-    name: 'Data Collection',
-    href: '/admin/data-collection',
-    icon: '🎙️',
-    description: 'Speech data collection metrics'
-  },
-  {
-    name: 'Language Data',
-    href: '/admin/data-collection?tab=language',
-    icon: '🌍',
-    description: 'Language-wise data statistics'
-  },
-  {
-    name: 'Reviews',
-    href: '/admin/reviews',
-    icon: '✅',
-    description: 'Review management and quality'
-  },
-  {
-    name: 'Admin Users',
-    href: '/admin/admin-users',
-    icon: '👑',
-    description: 'Manage admin users',
-    superAdminOnly: true
-  },
-  {
-    name: 'Settings',
-    href: '/admin/settings',
-    icon: '⚙️',
-    description: 'System configuration',
-    superAdminOnly: true
-  }
+    {
+        name: 'Dashboard',
+        href: '/admin/dashboard',
+        icon: '📊',
+        description: 'Overview and key metrics'
+    },
+    {
+        name: 'Analytics',
+        href: '/admin/analytics',
+        icon: '📈',
+        description: 'Visitor and user analytics'
+    },
+    {
+        name: 'Users',
+        href: '/admin/users',
+        icon: '👥',
+        description: 'User management and profiles'
+    },
+    {
+        name: 'Content Moderation',
+        href: '/admin/content-moderation',
+        icon: '✅',
+        description: 'Review sentences and questions'
+    },
+    {
+        name: 'Contributions',
+        href: '/admin/contributions',
+        icon: '📝',
+        description: 'Contribution tracking and reviews'
+    },
+    {
+        name: 'Data Collection',
+        href: '/admin/data-collection',
+        icon: '🎙️',
+        description: 'Speech data collection metrics'
+    },
+    {
+        name: 'Language Data',
+        href: '/admin/data-collection?tab=language',
+        icon: '🌍',
+        description: 'Language-wise data statistics'
+    },
+    {
+        name: 'Reviews',
+        href: '/admin/reviews',
+        icon: '✅',
+        description: 'Review management and quality'
+    },
+    {
+        name: 'Admin Users',
+        href: '/admin/admin-users',
+        icon: '👑',
+        description: 'Manage admin users',
+        superAdminOnly: true
+    },
+    {
+        name: 'Settings',
+        href: '/admin/settings',
+        icon: '⚙️',
+        description: 'System configuration',
+        superAdminOnly: true
+    }
 ];
 
 export default function AdminNavbar() {
