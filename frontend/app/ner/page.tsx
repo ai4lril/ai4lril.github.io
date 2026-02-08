@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { tokenizeByScript, detectScript } from "@/lib/tokenize";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface NerSentence {
     id: string;
@@ -35,10 +36,13 @@ export default function NerPage() {
 
     const fetchSentences = async (languageCode?: string) => {
         try {
-            const url = languageCode ? `/api/ner-sentences?languageCode=${languageCode}` : '/api/ner-sentences';
-            console.log('Fetching NER sentences from:', url);
+            const url = new URL(`${API_BASE_URL}/ner-sentences`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
+            console.log('Fetching NER sentences from:', url.toString());
 
-            const response = await fetch(url, {
+            const response = await fetch(url.toString(), {
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
@@ -167,12 +171,19 @@ export default function NerPage() {
 
             console.log('Submitting NER annotations for sentence:', sentence?.id);
 
+            // Get auth token if available
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             // Send NER annotations to backend
-            const response = await fetch('/api/ner-annotation', {
+            const response = await fetch(`${API_BASE_URL}/ner-annotation`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify({
                     sentenceId: sentence?.id,
                     annotations: annotations,

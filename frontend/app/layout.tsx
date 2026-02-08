@@ -1,431 +1,261 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { Noto_Sans } from 'next/font/google';
-import Navbar from "@/components/Navbar";
-import AccessibilityWidget from "@/components/AccessibilityWidget";
-import { ToastContainer } from "@/lib/toast";
-import "./globals.css";
+'use client';
 
-// Import compliance and accessibility managers
-import '@/lib/gdprConsent';
-import '@/lib/accessibility';
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import TableOfContents from '@/components/docs/TableOfContents';
+import { useHeadings } from '@/components/docs/useHeadings';
 
-export const metadata: Metadata = {
-    metadataBase: new URL('https://ai4lril.github.io'),
-    title: {
-        default: "ILHRF | AI Training Data for Indian Languages",
-        template: "%s | ILHRF"
-    },
-    description: "Open-source platform for collecting, validating, and curating high-quality language data for Indian languages. Contribute speech, text, and annotations to advance AI and NLP research.",
-    keywords: [
-        "language data collection",
-        "Indian languages",
-        "NLP datasets",
-        "speech recognition",
-        "machine learning",
-        "artificial intelligence",
-        "multilingual data",
-        "linguistic research",
-        "open source",
-        "Assamese",
-        "Bengali",
-        "Bodo",
-        "Dogri",
-        "Gujarati",
-        "Hindi",
-        "Kannada",
-        "Kashmiri",
-        "Konkani",
-        "Maithili",
-        "Malayalam",
-        "Manipuri",
-        "Marathi",
-        "Nepali",
-        "Odia",
-        "Punjabi",
-        "Sanskrit",
-        "Santhali",
-        "Sindhi",
-        "Tamil",
-        "Telugu",
-        "Urdu",
-        "language preservation",
-        "dataset annotation",
-        "voice data",
-        "text annotation",
-        "POS tagging",
-        "sentiment analysis",
-        "emotion recognition",
-        "NER tagging",
-        "translation data",
-        "linguistic annotation"
-    ],
-    authors: [{ name: "Alvyn Abranches", url: "https://github.com/ai4lril" }],
-    creator: "Alvyn Abranches",
-    publisher: "ILHRF",
-    formatDetection: {
-        email: false,
-        address: false,
-        telephone: false,
-    },
-    category: "Technology",
-    classification: "Research Platform",
-    robots: {
-        index: true,
-        follow: true,
-        nocache: false,
-        googleBot: {
-            index: true,
-            follow: true,
-            noimageindex: false,
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-        },
-    },
-    verification: {
-        google: 'your-google-site-verification-code',
-    },
-    alternates: {
-        canonical: 'https://ai4lril.github.io',
-        languages: {
-            'en-US': 'https://ai4lril.github.io',
-        },
-    },
-    openGraph: {
-        type: 'website',
-        locale: 'en_US',
-        url: 'https://ai4lril.github.io/voice-data-collection',
-        title: 'ILHRF | AI Training Data for Indian Languages',
-        description: 'Open-source platform for collecting, validating, and curating high-quality language data for Indian languages.',
-        siteName: 'ILHRF',
-        images: [
-            {
-                url: '/og-image.jpg',
-                width: 1200,
-                height: 630,
-                alt: 'ILHRF Platform',
-                type: 'image/jpeg',
-            },
+interface NavItem {
+    title: string;
+    path: string;
+    children?: NavItem[];
+}
+
+const navItems: NavItem[] = [
+    {
+        title: 'Getting Started',
+        path: '/docs',
+        children: [
+            { title: 'Introduction', path: '/docs' },
+            { title: 'Authentication', path: '/docs/authentication' },
+            { title: 'API Keys', path: '/docs/api-keys' },
+            { title: 'Rate Limiting', path: '/docs/rate-limiting' },
+            { title: 'Supported Languages', path: '/docs/languages' },
         ],
     },
-    twitter: {
-        card: 'summary_large_image',
-        title: 'ILHRF | AI Training Data for Indian Languages',
-        description: 'Open-source platform for collecting, validating, and curating high-quality language data for Indian languages.',
-        creator: '@ai4lril',
-        images: ['/og-image.jpg'],
+    {
+        title: 'Scripted Speech',
+        path: '/docs/speech',
+        children: [
+            { title: 'Get Sentences', path: '/docs/speech/get-sentences' },
+            { title: 'Submit Recording', path: '/docs/speech/submit-recording' },
+            { title: 'Listen Audio', path: '/docs/speech/listen-audio' },
+            { title: 'Submit Validation', path: '/docs/speech/submit-validation' },
+        ],
     },
-    other: {
-        'msapplication-TileColor': '#2563eb',
-        'theme-color': '#2563eb',
-        'color-scheme': 'light dark',
-    }
-};
+    {
+        title: 'Spontaneous Speech',
+        path: '/docs/question',
+        children: [
+            { title: 'Submit Question', path: '/docs/question/submit-question' },
+            { title: 'Get Questions', path: '/docs/question/get-questions' },
+            { title: 'Submit Answer', path: '/docs/question/submit-answer' },
+        ],
+    },
+    {
+        title: 'Write',
+        path: '/docs/write',
+        children: [
+            { title: 'Submit Sentences', path: '/docs/write/submit-sentences' },
+        ],
+    },
+    {
+        title: 'Transcription',
+        path: '/docs/transcription',
+        children: [
+            { title: 'Get Audio', path: '/docs/transcription/get-audio' },
+            { title: 'Submit Transcription', path: '/docs/transcription/submit' },
+            { title: 'Review Transcription', path: '/docs/transcription/review' },
+        ],
+    },
+    {
+        title: 'NLP',
+        path: '/docs/nlp',
+        children: [
+            { title: 'NER Sentences', path: '/docs/nlp/ner-sentences' },
+            { title: 'NER Annotation', path: '/docs/nlp/ner-annotation' },
+            { title: 'POS Sentences', path: '/docs/nlp/pos-sentences' },
+            { title: 'POS Annotation', path: '/docs/nlp/pos-annotation' },
+            { title: 'Translation', path: '/docs/nlp/translation' },
+            { title: 'Sentiment Analysis', path: '/docs/nlp/sentiment' },
+            { title: 'Emotion Recognition', path: '/docs/nlp/emotion' },
+        ],
+    },
+];
 
-const notoSans = Noto_Sans({ subsets: ['latin', 'devanagari'], weight: ['400', '500', '700'] });
-
-export default function RootLayout({
+export default function DocsLayout({
     children,
-}: Readonly<{
+}: {
     children: React.ReactNode;
-}>) {
+}) {
+    const pathname = usePathname();
+    const [openSections, setOpenSections] = useState<Set<string>>(new Set());
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState('');
+    const headings = useHeadings();
+
+    useEffect(() => {
+        // Auto-expand section containing current page
+        navItems.forEach((section) => {
+            if (section.children) {
+                const isActive = section.children.some(
+                    (item) => item.path === pathname
+                );
+                if (isActive) {
+                    setOpenSections((prev) => new Set(prev).add(section.path));
+                }
+            }
+        });
+    }, [pathname]);
+
+    const toggleSection = (path: string) => {
+        setOpenSections((prev) => {
+            const next = new Set(prev);
+            if (next.has(path)) {
+                next.delete(path);
+            } else {
+                next.add(path);
+            }
+            return next;
+        });
+    };
+
+    // Filter nav items based on search
+    const filteredNavItems = navItems.map((section) => {
+        if (searchQuery) {
+            const query = searchQuery.toLowerCase();
+            if (section.children) {
+                const filteredChildren = section.children.filter(
+                    (item) =>
+                        item.title.toLowerCase().includes(query) ||
+                        section.title.toLowerCase().includes(query)
+                );
+                if (filteredChildren.length > 0) {
+                    return { ...section, children: filteredChildren };
+                }
+                return null;
+            } else if (section.title.toLowerCase().includes(query)) {
+                return section;
+            }
+            return null;
+        }
+        return section;
+    }).filter(Boolean) as NavItem[];
+
     return (
-        <html lang="en" >
-            <head>
-                <link rel="icon" href="/favicon.ico" sizes="any" />
-                <link rel="apple-touch-icon" href="/favicon.ico" />
-                <link rel="manifest" href="/manifest.json" />
-                <meta name="theme-color" content="#2563eb" />
-                <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5" />
-                <meta name="format-detection" content="telephone=no" />
-
-                {/* Security Headers - Note: These should ideally be set via HTTP headers in production */}
-                {/* Removed X-Frame-Options from meta (should be HTTP header only) */}
-                {/* Removed CSP meta tag - causes issues with Turbopack in development. Set CSP via HTTP headers in production. */}
-
-                {/* Additional Security Measures */}
-                <meta name="referrer" content="strict-origin-when-cross-origin" />
-                <meta name="feature-policy" content="camera 'none'; microphone 'none'; geolocation 'none'; payment 'none'" />
-                <meta name="document-policy" content="force-load-at-top" />
-
-                {/* DNS Prefetch Control */}
-                <meta httpEquiv="x-dns-prefetch-control" content="on" />
-
-                {/* Cache Control */}
-                <meta httpEquiv="Cache-Control" content="public, max-age=31536000, immutable" />
-
-                {/* Preload Critical Resources */}
-                {/* Removed favicon preload - browsers fetch favicons automatically, preloading causes warnings */}
-                {/* Removed manifest.json preload - causes warning if not used immediately */}
-                <link rel="dns-prefetch" href="//fonts.googleapis.com" />
-                <link rel="dns-prefetch" href="//fonts.gstatic.com" />
-
-                {/* Feature Policy Enhancements */}
-                <meta name="permissions-policy" content="
-                    camera=(),
-                    microphone=(),
-                    geolocation=(),
-                    gyroscope=(),
-                    accelerometer=(),
-                    magnetometer=(),
-                    payment=(),
-                    usb=(),
-                    autoplay=(),
-                    encrypted-media=(),
-                    fullscreen=(self),
-                    picture-in-picture=()
-                " />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "WebSite",
-                            "name": "ILHRF",
-                            "url": "https://ai4lril.github.io",
-                            "description": "Open-source platform for collecting, validating, and curating high-quality language data for Indian languages",
-                            "publisher": {
-                                "@type": "Organization",
-                                "name": "ILHRF",
-                                "founder": {
-                                    "@type": "Person",
-                                    "name": "Alvyn Abranches"
-                                }
-                            },
-                            "potentialAction": {
-                                "@type": "SearchAction",
-                                "target": "https://ai4lril.github.io/search?q={search_term_string}",
-                                "query-input": "required name=search_term_string"
-                            },
-                            "sameAs": [
-                                "https://github.com/ai4lril/ai4lril.github.io"
-                            ]
-                        })
-                    }}
+        <div className="flex min-h-screen">
+            {/* Mobile sidebar overlay */}
+            {sidebarOpen && (
+                <div
+                    className="fixed inset-0 bg-black/50 z-40 lg:hidden"
+                    onClick={() => setSidebarOpen(false)}
                 />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "SoftwareApplication",
-                            "name": "ILHRF Platform",
-                            "description": "Web application for collecting and curating language data for AI training",
-                            "url": "https://ai4lril.github.io",
-                            "applicationCategory": "DeveloperApplication",
-                            "operatingSystem": "Web Browser",
-                            "offers": {
-                                "@type": "Offer",
-                                "price": "0",
-                                "priceCurrency": "USD"
-                            },
-                            "author": {
-                                "@type": "Person",
-                                "name": "Alvyn Abranches"
-                            }
-                        })
-                    }}
-                />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Organization",
-                            "name": "ILHRF",
-                            "url": "https://ai4lril.github.io",
-                            "logo": "https://ai4lril.github.io/logo.png",
-                            "description": "Open-source platform supporting 23 Indian languages for collecting, validating, and curating high-quality language data for AI and NLP research",
-                            "founder": {
-                                "@type": "Person",
-                                "name": "Alvyn Abranches",
-                                "url": "https://github.com/alvynabranches"
-                            },
-                            "contactPoint": {
-                                "@type": "ContactPoint",
-                                "email": "contact@language-data-collection.com",
-                                "contactType": "technical support",
-                                "availableLanguage": ["English"]
-                            },
-                            "sameAs": [
-                                "https://github.com/ai4lril/ai4lril.github.io",
-                                "https://twitter.com/alvynabranches"
-                            ]
-                        })
-                    }}
-                />
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "FAQPage",
-                            "mainEntity": [
-                                {
-                                    "@type": "Question",
-                                    "name": "What languages does the platform support?",
-                                    "acceptedAnswer": {
-                                        "@type": "Answer",
-                                        "text": "Our platform supports 23 languages including Assamese, Bengali, Gujarati, Hindi, Kannada, Malayalam, Marathi, Punjabi, Tamil, Telugu, Urdu, English, and many more Indian languages with their native scripts."
-                                    }
-                                },
-                                {
-                                    "@type": "Question",
-                                    "name": "How can I contribute to language data collection?",
-                                    "acceptedAnswer": {
-                                        "@type": "Answer",
-                                        "text": "You can contribute by recording speech, validating audio samples, transcribing text, or annotating data through our user-friendly web interface. All contributions help advance AI and NLP research for Indian languages."
-                                    }
-                                },
-                                {
-                                    "@type": "Question",
-                                    "name": "Is the platform free to use?",
-                                    "acceptedAnswer": {
-                                        "@type": "Answer",
-                                        "text": "Yes, our platform is completely free and open-source. We believe in democratizing access to language technology and making high-quality datasets available to researchers and developers worldwide."
-                                    }
-                                }
-                            ]
-                        })
-                    }}
-                />
+            )}
 
-                {/* Enhanced SEO Structured Data */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "WebSite",
-                            "name": "ILHRF",
-                            "alternateName": "AI4LRIL Language Data Platform",
-                            "url": "https://ai4lril.github.io/voice-data-collection",
-                            "description": "Open-source platform for collecting, validating, and curating high-quality language data for Indian languages",
-                            "publisher": {
-                                "@type": "Organization",
-                                "name": "AI4LRIL",
-                                "url": "https://github.com/ai4lril"
-                            },
-                            "potentialAction": {
-                                "@type": "SearchAction",
-                                "target": "https://ai4lril.github.io/voice-data-collection/search?q={search_term_string}",
-                                "query-input": "required name=search_term_string"
-                            },
-                            "inLanguage": [
-                                "en", "hi", "bn", "te", "mr", "ta", "gu", "kn", "ml", "pa",
-                                "or", "as", "mai", "bho", "mag", "hne", "doi", "mtr", "raj",
-                                "gon", "kok", "sat", "sd"
-                            ]
-                        })
-                    }}
-                />
+            {/* Sidebar */}
+            <aside
+                className={`fixed lg:sticky top-0 left-0 z-50 lg:z-auto w-64 border-r border-slate-200 bg-white/95 backdrop-blur-sm h-screen overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                    }`}
+            >
+                <div className="p-4 flex items-center justify-between">
+                    <Link href="/docs" className="text-xl font-bold" style={{ color: 'var(--brand-900)' }}>
+                        API Documentation
+                    </Link>
+                    <button
+                        onClick={() => setSidebarOpen(false)}
+                        className="lg:hidden p-2 hover:bg-slate-100 rounded"
+                        aria-label="Close sidebar"
+                    >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
 
-                {/* Organization Schema */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Organization",
-                            "name": "ILHRF",
-                            "url": "https://ai4lril.github.io/voice-data-collection",
-                            "logo": "https://ai4lril.github.io/voice-data-collection/logo.png",
-                            "description": "Open-source platform for multilingual language data collection and annotation",
-                            "founder": {
-                                "@type": "Person",
-                                "name": "Alvyn Abranches",
-                                "url": "https://github.com/ai4lril"
-                            },
-                            "sameAs": [
-                                "https://github.com/ai4lril/voice-data-collection"
-                            ],
-                            "contactPoint": {
-                                "@type": "ContactPoint",
-                                "email": "contact@ai4lril.github.io",
-                                "contactType": "technical support"
-                            }
-                        })
-                    }}
-                />
-
-                {/* Dataset Schema for Language Data */}
-                <script
-                    type="application/ld+json"
-                    dangerouslySetInnerHTML={{
-                        __html: JSON.stringify({
-                            "@context": "https://schema.org",
-                            "@type": "Dataset",
-                            "name": "Indian Language Data Collection",
-                            "description": "Comprehensive dataset of Indian language annotations including speech, text, POS tags, sentiment analysis, and emotion recognition",
-                            "url": "https://ai4lril.github.io/voice-data-collection",
-                            "creator": {
-                                "@type": "Organization",
-                                "name": "AI4LRIL"
-                            },
-                            "distribution": {
-                                "@type": "DataDownload",
-                                "encodingFormat": "application/json",
-                                "contentUrl": "https://github.com/ai4lril/voice-data-collection"
-                            },
-                            "includedInDataCatalog": {
-                                "@type": "DataCatalog",
-                                "name": "AI4LRIL Language Resources"
-                            },
-                            "measurementTechnique": [
-                                "Crowdsourcing",
-                                "Expert Annotation",
-                                "Automated Validation"
-                            ],
-                            "variableMeasured": [
-                                "Speech Audio",
-                                "Text Transcription",
-                                "Part-of-Speech Tags",
-                                "Named Entities",
-                                "Sentiment Labels",
-                                "Emotion Labels"
-                            ]
-                        })
-                    }}
-                />
-            </head>
-            <body className={`flex flex-col min-h-screen ${notoSans.className}`}>
-                {/* Load security script securely */}
-                <script src="/security.js" defer></script>
-                <ToastContainer />
-                <Navbar />
-                <main className="flex-1 container mx-auto flex flex-col items-center justify-around px-4 sm:px-6 md:px-8" role="main">
-                    {children}
-                </main>
-                <footer className="mt-8 border-t border-slate-200/70 bg-white/60" role="contentinfo">
-                    <div className="container mx-auto px-4 py-6 text-sm text-slate-600 flex flex-col sm:flex-row items-center justify-between gap-3">
-                        <div>© {new Date().getFullYear()} ILHRF</div>
-                        <nav className="flex items-center gap-4" role="navigation" aria-label="Footer navigation">
-                            <Link className="hover:text-blue-700" href="/about" aria-label="About">About</Link>
-                            <Link className="hover:text-blue-700" href="/contact" aria-label="Contact">Contact</Link>
-                            <Link className="hover:text-blue-700" href="/docs" aria-label="API Documentation">API Docs</Link>
-                            <Link className="hover:text-blue-700" href="/privacy" aria-label="Privacy">Privacy</Link>
-                            <Link className="hover:text-blue-700" href="/terms" aria-label="Terms">Terms</Link>
-                            <Link className="hover:text-blue-700" href="/cookies" aria-label="Cookies">Cookies</Link>
-                            <Link className="hover:text-blue-700" href="/data-rights" aria-label="Data Rights">Data Rights</Link>
-                            <Link className="hover:text-blue-700" href="/privacy-settings" aria-label="Privacy Settings">Privacy Settings</Link>
-                            <Link className="hover:text-blue-700" href="/contact#faq" aria-label="Help Center">Help Center</Link>
-                            <span className="inline-flex items-center gap-2 ml-2">
-                                <a href="https://twitter.com/alvynabranches" aria-label="Twitter" className="hover:text-blue-700" target="_blank" rel="noopener noreferrer">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M22.46 6c-.77.35-1.6.58-2.46.69a4.21 4.21 0 001.85-2.32 8.39 8.39 0 01-2.66 1.02 4.18 4.18 0 00-7.12 3.81A11.86 11.86 0 013 4.9a4.17 4.17 0 001.29 5.58 4.13 4.13 0 01-1.9-.52v.05a4.18 4.18 0 003.35 4.1 4.21 4.21 0 01-1.89.07 4.18 4.18 0 003.9 2.9A8.39 8.39 0 012 19.54a11.84 11.84 0 006.41 1.88c7.69 0 11.89-6.37 11.89-11.89l-.01-.54A8.5 8.5 0 0022.46 6z" /></svg>
-                                </a>
-                                <a href="https://github.com/ai4lril" aria-label="GitHub" className="hover:text-blue-700" target="_blank" rel="noopener noreferrer">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.016c0 4.422 2.865 8.166 6.839 9.49.5.093.682-.216.682-.48 0-.237-.009-.866-.014-1.701-2.782.605-3.369-1.343-3.369-1.343-.455-1.158-1.11-1.467-1.11-1.467-.907-.62.069-.607.069-.607 1.003.07 1.53 1.031 1.53 1.031.892 1.53 2.341 1.088 2.91.833.091-.647.35-1.088.636-1.338-2.221-.253-4.555-1.112-4.555-4.945 0-1.092.39-1.987 1.029-2.687-.103-.253-.446-1.272.098-2.65 0 0 .84-.269 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.026 2.748-1.026.546 1.378.203 2.397.1 2.65.64.7 1.028 1.595 1.028 2.687 0 3.842-2.337 4.688-4.566 4.937.359.31.678.92.678 1.854 0 1.337-.012 2.416-.012 2.744 0 .266.18.576.688.478A10.02 10.02 0 0022 12.016C22 6.484 17.523 2 12 2z" clipRule="evenodd" /></svg>
-                                </a>
-                            </span>
-                        </nav>
-                        <p className="text-xs text-slate-500 text-center sm:text-right">
-                            Need another language? Switch languages via the header toggle to view pages in supported Indian scripts.
-                        </p>
+                {/* Search */}
+                <div className="px-4 mb-4">
+                    <div className="relative">
+                        <input
+                            type="text"
+                            placeholder="Search docs..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="w-full px-3 py-2 pl-9 text-sm border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                        />
+                        <svg
+                            className="absolute left-3 top-2.5 w-4 h-4 text-slate-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                        </svg>
                     </div>
-                </footer>
-                <AccessibilityWidget />
-            </body>
-        </html>
+                </div>
+
+                <nav className="px-4 pb-8">
+                    {filteredNavItems.map((section) => (
+                        <div key={section.path} className="mb-4">
+                            {section.children ? (
+                                <>
+                                    <button
+                                        onClick={() => toggleSection(section.path)}
+                                        className="w-full flex items-center justify-between py-2 px-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 rounded-lg transition-colors"
+                                    >
+                                        <span>{section.title}</span>
+                                        <svg
+                                            className={`w-4 h-4 transition-transform ${openSections.has(section.path) ? 'rotate-90' : ''
+                                                }`}
+                                            fill="none"
+                                            stroke="currentColor"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                    {openSections.has(section.path) && (
+                                        <div className="ml-4 mt-1 space-y-1">
+                                            {section.children.map((item) => (
+                                                <Link
+                                                    key={item.path}
+                                                    href={item.path}
+                                                    className={`block py-2 px-3 text-sm rounded-lg transition-colors ${pathname === item.path
+                                                        ? 'bg-indigo-50 text-indigo-700 font-medium'
+                                                        : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                                                        }`}
+                                                >
+                                                    {item.title}
+                                                </Link>
+                                            ))}
+                                        </div>
+                                    )}
+                                </>
+                            ) : (
+                                <Link
+                                    href={section.path}
+                                    className={`block py-2 px-3 text-sm font-semibold rounded-lg transition-colors ${pathname === section.path
+                                        ? 'bg-indigo-50 text-indigo-700'
+                                        : 'text-slate-700 hover:bg-slate-100'
+                                        }`}
+                                >
+                                    {section.title}
+                                </Link>
+                            )}
+                        </div>
+                    ))}
+                </nav>
+            </aside>
+
+            {/* Main content */}
+            <main className="flex-1">
+                <div className="max-w-4xl mx-auto px-4 sm:px-6 py-8">
+                    {/* Mobile menu button */}
+                    <button
+                        onClick={() => setSidebarOpen(true)}
+                        className="lg:hidden mb-4 p-2 hover:bg-slate-100 rounded"
+                        aria-label="Open sidebar"
+                    >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                        </svg>
+                    </button>
+                    {children}
+                </div>
+            </main>
+
+            {/* Table of Contents */}
+            <TableOfContents headings={headings} />
+        </div>
     );
 }

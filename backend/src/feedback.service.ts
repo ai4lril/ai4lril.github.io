@@ -1,0 +1,83 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { PrismaService } from './prisma/prisma.service';
+import { NotificationService } from './notifications/notification.service';
+
+@Injectable()
+export class FeedbackService {
+  private readonly logger = new Logger(FeedbackService.name);
+
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationService: NotificationService,
+  ) {}
+
+  async submitFeedback(
+    userId: string | null,
+    type: string,
+    subject: string,
+    message: string,
+  ) {
+    try {
+      return await this.prisma.feedback.create({
+        data: {
+          userId,
+          type,
+          subject,
+          message,
+          status: 'open',
+        },
+      });
+
+      // Notify admins
+      // This would need admin user IDs - for now, we'll skip
+      // await this.notificationService.createNotification(...)
+    } catch (error) {
+      this.logger.error(`Failed to submit feedback: ${error.message}`);
+      throw error;
+    }
+  }
+
+  async getFeedback(userId?: string, status?: string, limit = 50, offset = 0) {
+    const where: any = {};
+    if (userId) {
+      where.userId = userId;
+    }
+    if (status) {
+      where.status = status;
+    }
+
+    return this.prisma.feedback.findMany({
+      where,
+      orderBy: {
+        createdAt: 'desc',
+      },
+      take: limit,
+      skip: offset,
+      include: {
+        user: {
+          select: {
+            id: true,
+            username: true,
+            email: true,
+          },
+        },
+      },
+    });
+  }
+
+  async respondToFeedback(
+    feedbackId: string,
+    adminResponse: string,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    _adminUserId: string,
+  ) {
+    return this.prisma.feedback.update({
+      where: { id: feedbackId },
+      data: {
+        adminResponse,
+        status: 'resolved',
+        respondedAt: new Date(),
+      },
+    });
+  }
+}

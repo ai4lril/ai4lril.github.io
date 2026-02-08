@@ -6,6 +6,7 @@ import BottomBar from "@/components/BottomBar";
 import { useState, useEffect } from "react";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 
 interface Question {
@@ -60,8 +61,11 @@ export default function Answer() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const url = languageCode ? `/api/question-sentences?languageCode=${languageCode}` : '/api/question-sentences';
-            const response = await fetch(url, { headers });
+            const url = new URL(`${API_BASE_URL}/question/sentences`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
+            const response = await fetch(url.toString(), { headers });
 
             if (response.status === 404) {
                 setCurrentQuestion(null);
@@ -112,7 +116,7 @@ export default function Answer() {
                 return;
             }
 
-            const response = await fetch('/api/answer-recording', {
+            const response = await fetch(`${API_BASE_URL}/question/answer-recording`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

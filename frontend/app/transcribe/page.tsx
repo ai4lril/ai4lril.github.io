@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import TextBox from "@/components/TextBox";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface TranscriptionAudio {
     id: string;
@@ -39,8 +40,11 @@ export default function TranscribePage() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const url = languageCode ? `/api/transcribe-audio?languageCode=${languageCode}` : '/api/transcribe-audio';
-            const response = await fetch(url, { headers });
+            const url = new URL(`${API_BASE_URL}/transcription/audio`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
+            const response = await fetch(url.toString(), { headers });
 
             if (response.status === 404) {
                 setCurrentAudio(null);
@@ -93,7 +97,7 @@ export default function TranscribePage() {
                 return;
             }
 
-            const response = await fetch('/api/transcription-submission', {
+            const response = await fetch(`${API_BASE_URL}/transcription/submission`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

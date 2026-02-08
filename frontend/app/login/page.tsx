@@ -3,6 +3,7 @@
 import { useState, FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export default function LoginPage() {
     const [isSignIn, setIsSignIn] = useState(true);
@@ -35,7 +36,7 @@ export default function LoginPage() {
 
             if (isSignIn) {
                 // Call backend login API
-                const response = await fetch('/api/auth/login', {
+                const response = await fetch(`${API_BASE_URL}/auth/login`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -65,7 +66,7 @@ export default function LoginPage() {
                     throw new Error("Please provide your name");
                 }
 
-                const response = await fetch('/api/auth/signup', {
+                const response = await fetch(`${API_BASE_URL}/auth/signup`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -324,7 +325,7 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    window.location.href = '/api/auth/google';
+                                    window.location.href = `${API_BASE_URL}/auth/google`;
                                 }}
                                 className="w-full flex items-center justify-center gap-4 px-6 py-4 border-2 border-gray-200 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
                             >
@@ -339,7 +340,7 @@ export default function LoginPage() {
                             <button
                                 type="button"
                                 onClick={() => {
-                                    window.location.href = '/api/auth/github';
+                                    window.location.href = `${API_BASE_URL}/auth/github`;
                                 }}
                                 className="w-full flex items-center justify-center gap-4 px-6 py-4 border-2 border-gray-200 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
                             >

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import TextBox from "@/components/TextBox";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface ReviewData {
     id: string;
@@ -39,8 +40,11 @@ export default function Review() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const url = languageCode ? `/api/review-transcription?languageCode=${languageCode}` : '/api/review-transcription';
-            const response = await fetch(url, { headers });
+            const url = new URL(`${API_BASE_URL}/transcription/review`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
+            const response = await fetch(url.toString(), { headers });
 
             if (response.status === 404) {
                 setCurrentReview(null);
@@ -93,7 +97,7 @@ export default function Review() {
                 return;
             }
 
-            const response = await fetch('/api/review-submission', {
+            const response = await fetch(`${API_BASE_URL}/transcription/review-submission`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

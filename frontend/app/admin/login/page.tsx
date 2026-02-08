@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { LoginCredentials } from '@/lib/adminAuth';
+import { API_BASE_URL } from '@/lib/api-config';
 
 export default function AdminLoginPage() {
     const [credentials, setCredentials] = useState<LoginCredentials>({
@@ -20,7 +21,7 @@ export default function AdminLoginPage() {
 
         try {
             // Call backend API
-            const response = await fetch('/api/admin/login', {
+            const response = await fetch(`${API_BASE_URL}/admin/login`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

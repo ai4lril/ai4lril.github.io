@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Alert: {{alertType}}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background-color: {{#if (eq severity 'critical')}}#dc2626{{else if (eq severity 'high')}}#ea580c{{else if (eq severity 'medium')}}#f59e0b{{else}}#6366f1{{/if}}; color: white; padding: 20px; text-align: center; border-radius: 8px 8px 0 0;">
+    <h2 style="margin: 0;">Admin Alert: {{alertType}}</h2>
+    <p style="margin: 10px 0 0 0; font-size: 14px;">Severity: {{severity}}</p>
+  </div>
+  <div style="background-color: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px;">
+    <p><strong>Alert Type:</strong> {{alertType}}</p>
+    <p><strong>Severity:</strong> {{severity}}</p>
+    <div style="background-color: white; padding: 15px; border-left: 4px solid {{#if (eq severity 'critical')}}#dc2626{{else if (eq severity 'high')}}#ea580c{{else if (eq severity 'medium')}}#f59e0b{{else}}#6366f1{{/if}}; margin: 20px 0;">
+      <p style="margin: 0;">{{message}}</p>
+    </div>
+    <p style="color: #6b7280; font-size: 12px;">
+      This is an automated alert from the Voice Data Collection Platform monitoring system.
+    </p>
+  </div>
+</body>
+</html>

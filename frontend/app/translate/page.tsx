@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { codeToLabel, LANGUAGES } from "@/lib/languages";
 import { getPreferredLanguage, getPreferredTargetLanguage, setPreferredTargetLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface TranslationSentence {
     id: string;
@@ -27,10 +28,11 @@ export default function TranslatePage() {
     const fetchSentences = async (languageCode?: string) => {
         try {
             setLoading(true);
-            const url = languageCode
-                ? `/api/translation-sentences?languageCode=${languageCode}`
-                : '/api/translation-sentences';
-            const response = await fetch(url);
+            const url = new URL(`${API_BASE_URL}/translation-sentences`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
+            const response = await fetch(url.toString());
             if (!response.ok) {
                 throw new Error('Failed to fetch translation sentences');
             }
@@ -119,18 +121,24 @@ export default function TranslatePage() {
         try {
             setError(""); // Clear any previous errors
 
+            // Get auth token if available
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
             // Submit translation to backend
-            const response = await fetch('/api/translation-submission', {
+            const response = await fetch(`${API_BASE_URL}/translation-submission`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers,
                 body: JSON.stringify({
                     sentenceId: current.id,
                     translation: translation.trim(),
                     targetLang: target,
                     sourceLang: current.languageCode,
-                    // userId: undefined // Will be added when authentication is implemented
                 }),
             });
 

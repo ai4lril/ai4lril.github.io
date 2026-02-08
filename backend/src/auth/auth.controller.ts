@@ -18,6 +18,7 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LinkOAuthDto, UnlinkOAuthDto } from './dto/link-oauth.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { OAuthUser } from './auth.service';
+import { RecoveryService } from './recovery.service';
 
 interface RequestWithUser {
   user: {
@@ -36,7 +37,10 @@ interface RequestWithUser {
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly recoveryService: RecoveryService,
+  ) {}
 
   @Post('signup')
   async signup(@Body(ValidationPipe) signupDto: SignupDto) {
@@ -155,5 +159,27 @@ export class AuthController {
   getProfile(@Req() req: RequestWithUser) {
     // The user object will be available from the JWT guard
     return { user: req.user, message: 'Profile retrieved successfully' };
+  }
+
+  @Post('password-reset/request')
+  @HttpCode(200)
+  async requestPasswordReset(@Body() body: { email: string }) {
+    await this.recoveryService.requestPasswordReset(body.email);
+    return {
+      message: 'If the email exists, a password reset link has been sent',
+    };
+  }
+
+  @Post('password-reset/reset')
+  @HttpCode(200)
+  async resetPassword(@Body() body: { token: string; password: string }) {
+    const success = await this.recoveryService.resetPassword(
+      body.token,
+      body.password,
+    );
+    if (!success) {
+      return { success: false, message: 'Invalid or expired token' };
+    }
+    return { success: true, message: 'Password reset successfully' };
   }
 }

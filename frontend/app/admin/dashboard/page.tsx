@@ -1,5 +1,4 @@
 'use client';
-import { API_BASE_URL } from '@/lib/api-config';
 
 import { useEffect, useState } from 'react';
 import { adminAuth } from '@/lib/adminAuth';
@@ -221,7 +220,7 @@ export default function AdminDashboard() {
 
     const loadRealtimeMetrics = async () => {
         try {
-            const response = await fetch(`${API_BASE_URL}/admin/dashboard/realtime');
+            const response = await fetch(`${API_BASE_URL}/admin/dashboard/stats`);
             if (!response.ok) {
                 throw new Error(`Realtime fetch failed: ${response.status} ${response.statusText}`);
             }

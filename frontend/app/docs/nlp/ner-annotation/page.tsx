@@ -28,7 +28,7 @@ export default function NerAnnotationPage() {
                 </p>
 
                 <h2>Endpoint</h2>
-                <CodeBlock language="http">POST /api/ner-annotation</CodeBlock>
+                <CodeBlock language="http">POST /api/dataset/ner-annotation</CodeBlock>
 
                 <h2>Request Body</h2>
                 <div className="overflow-x-auto my-4">
@@ -79,7 +79,7 @@ export default function NerAnnotationPage() {
                         {
                             language: 'bash',
                             label: 'cURL',
-                            code: `curl -X POST "https://api.example.com/api/ner-annotation" \\
+                            code: `curl -X POST "https://api.example.com/api/dataset/ner-annotation" \\
   -H "Content-Type: application/json" \\
   -H "x-api-key: your-api-key-here" \\
   -d '{
@@ -95,7 +95,7 @@ export default function NerAnnotationPage() {
                         {
                             language: 'javascript',
                             label: 'JavaScript',
-                            code: `const response = await fetch('https://api.example.com/api/ner-annotation', {
+                            code: `const response = await fetch('https://api.example.com/api/dataset/ner-annotation', {
   method: 'POST',
   headers: {
     'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ const result = await response.json();`,
                             code: `import requests
 
 response = requests.post(
-    'https://api.example.com/api/ner-annotation',
+    'https://api.example.com/api/dataset/ner-annotation',
     headers={'x-api-key': 'your-api-key-here'},
     json={
         'sentenceId': 'sentence-id-1',

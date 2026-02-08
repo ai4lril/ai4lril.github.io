@@ -21,6 +21,13 @@ import { SchedulerModule } from './scheduler/scheduler.module';
 import { UsersModule } from './users/users.module';
 import { AnalyticsModule } from './analytics/analytics.module';
 import { MetricsModule } from './metrics/metrics.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { RealtimeModule } from './realtime/realtime.module';
+import { GamificationModule } from './gamification/gamification.module';
+import { ExportModule } from './export/export.module';
+import { QualityModule } from './quality/quality.module';
+import { CommunityModule } from './community/community.module';
+import { SearchModule } from './search/search.module';
 
 @Module({
   imports: [
@@ -52,6 +59,13 @@ import { MetricsModule } from './metrics/metrics.module';
     UsersModule,
     AnalyticsModule,
     MetricsModule,
+    NotificationsModule,
+    RealtimeModule,
+    GamificationModule,
+    ExportModule,
+    QualityModule,
+    CommunityModule,
+    SearchModule,
   ],
   controllers: [AppController],
   providers: [

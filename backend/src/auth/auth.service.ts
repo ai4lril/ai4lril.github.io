@@ -3,6 +3,7 @@ import {
   UnauthorizedException,
   ConflictException,
   BadRequestException,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
@@ -58,6 +59,8 @@ export interface OAuthUser {
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
@@ -148,6 +151,10 @@ export class AuthService {
       { sub: user.id, type: 'refresh' },
       { expiresIn: '7d' },
     );
+
+    // Send verification email (non-blocking)
+    // Note: EmailService will be injected if needed, but for now we'll skip to avoid circular dependency
+    // Verification email can be sent via a separate endpoint call
 
     return {
       user,

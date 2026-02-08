@@ -10,6 +10,8 @@ import { GoogleStrategy } from './google.strategy';
 import { GitHubStrategy } from './github.strategy';
 import { ApiKeyStrategy } from './api-key.strategy';
 import { ApiKeyService } from './api-key.service';
+import { RecoveryService } from './recovery.service';
+import { NotificationsModule } from '../notifications/notifications.module';
 
 @Module({
   imports: [
@@ -19,6 +21,7 @@ import { ApiKeyService } from './api-key.service';
       secret: process.env.JWT_SECRET || 'your-jwt-secret-key',
       signOptions: { expiresIn: '24h' },
     }),
+    NotificationsModule,
   ],
   controllers: [AuthController, ApiKeyController],
   providers: [
@@ -28,7 +31,8 @@ import { ApiKeyService } from './api-key.service';
     GoogleStrategy,
     GitHubStrategy,
     ApiKeyStrategy,
+    RecoveryService,
   ],
-  exports: [AuthService, ApiKeyService],
+  exports: [AuthService, ApiKeyService, RecoveryService],
 })
 export class AuthModule {}

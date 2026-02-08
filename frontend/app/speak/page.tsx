@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
 import { showToast } from "@/lib/toast";
+import { API_BASE_URL } from "@/lib/api-config";
 
 interface SpeechSentence {
     id: string;
@@ -36,9 +37,10 @@ export default function Speak() {
     const fetchSpeechSentences = async (languageCode?: string) => {
         try {
             setLoading(true);
-            const url = languageCode
-                ? `/api/speech-sentences?languageCode=${languageCode}`
-                : '/api/speech-sentences';
+            const url = new URL(`${API_BASE_URL}/speech/sentences`);
+            if (languageCode) {
+                url.searchParams.set('languageCode', languageCode);
+            }
 
             // Get auth token if available
             const token = localStorage.getItem('token');
@@ -49,7 +51,7 @@ export default function Speak() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(url, { headers });
+            const response = await fetch(url.toString(), { headers });
             if (!response.ok) {
                 const errorText = await response.text().catch(() => 'No response body');
                 console.error(`Fetch failed for ${url}: Status ${response.status} (${response.statusText}). Response:`, errorText);
@@ -117,26 +119,28 @@ export default function Speak() {
         }
 
         // Validate media format
-        const allowedAudioFormats = ['audio/webm', 'audio/wav', 'audio/mp3', 'audio/ogg', 'audio/mpeg'];
+        // For audio mode, prioritize WAV (48kHz) format
+        const allowedAudioFormats = ['audio/wav', 'audio/webm', 'audio/mp3', 'audio/ogg', 'audio/mpeg'];
         const allowedVideoFormats = ['video/webm', 'video/mp4'];
         const allowedFormats = mediaType === 'video'
             ? [...allowedVideoFormats, ...allowedAudioFormats]
             : allowedAudioFormats;
 
         if (!allowedFormats.includes(recordedMedia.type)) {
-            showToast(`Unsupported format: ${recordedMedia.type}`, "error");
+            const expectedFormat = mediaType === 'audio' 
+                ? '48kHz WAV format' 
+                : 'WebM or MP4 format';
+            showToast(`Unsupported format: ${recordedMedia.type}. Expected ${expectedFormat}.`, "error");
             return;
+        }
+
+        // For audio mode, warn if not WAV (though it should always be WAV now)
+        if (mediaType === 'audio' && recordedMedia.type !== 'audio/wav') {
+            console.warn('Audio recording is not in WAV format:', recordedMedia.type);
         }
 
         try {
             setSubmitting(true);
-
-            // Use FormData for upload
-            const formData = new FormData();
-            formData.append('audioFile', recordedMedia);
-            formData.append('sentenceId', currentSentence.id);
-            formData.append('audioFormat', recordedMedia.type.split('/')[1] || 'webm');
-            formData.append('mediaType', mediaType);
 
             // Calculate duration using Web Audio API (works for both audio and video)
             let duration = 0;
@@ -157,25 +161,38 @@ export default function Speak() {
                 console.warn('Could not calculate duration:', durationError);
                 showToast("Warning: Could not validate duration. Proceeding anyway.", "warning");
             }
-            formData.append('duration', duration.toString());
+
+            // Convert File to base64 for backend
+            const arrayBuffer = await recordedMedia.arrayBuffer();
+            const bytes = new Uint8Array(arrayBuffer);
+            const binary = bytes.reduce((acc, byte) => acc + String.fromCharCode(byte), '');
+            const base64Audio = btoa(binary);
 
             // Get auth token
             const token = localStorage.getItem('token');
-            const headers: HeadersInit = {};
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
             if (token) {
                 headers['Authorization'] = `Bearer ${token}`;
             }
-            // Don't set Content-Type for FormData - browser will set it with boundary
 
-            // Submit to backend using FormData
-            const response = await fetch('/api/speech-recording', {
+            // Submit to backend using JSON with base64 encoded file
+            const response = await fetch(`${API_BASE_URL}/speech/recording`, {
                 method: 'POST',
                 headers,
-                body: formData,
+                body: JSON.stringify({
+                    sentenceId: currentSentence.id,
+                    audioFile: base64Audio,
+                    audioFormat: recordedMedia.type.split('/')[1] || 'webm',
+                    mediaType: mediaType,
+                    duration: duration,
+                }),
             });
 
             if (!response.ok) {
-                throw new Error('Failed to submit recording');
+                const error = await response.json().catch(() => ({ message: 'Failed to submit recording' }));
+                throw new Error(error.message || 'Failed to submit recording');
             }
 
             const result = await response.json();
@@ -254,8 +271,8 @@ export default function Speak() {
                         <button
                             onClick={() => handleMediaTypeChange('audio')}
                             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${mediaType === 'audio'
-                                ? 'bg-white text-blue-700 shadow-md border border-blue-200'
-                                : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-white text-blue-700 shadow-md border border-blue-200'
+                                    : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
@@ -266,8 +283,8 @@ export default function Speak() {
                         <button
                             onClick={() => handleMediaTypeChange('video')}
                             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${mediaType === 'video'
-                                ? 'bg-white text-blue-700 shadow-md border border-blue-200'
-                                : 'text-gray-500 hover:text-gray-700'
+                                    ? 'bg-white text-blue-700 shadow-md border border-blue-200'
+                                    : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">

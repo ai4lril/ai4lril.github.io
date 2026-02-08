@@ -5,666 +5,1316 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-provider = "prisma-client-js"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-provider = "postgresql"
-url = env("DATABASE_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 enum OAuthProvider {
-GOOGLE
-GITHUB
+  GOOGLE
+  GITHUB
 }
 
 model User {
-id String @id @default(cuid())
-first_name String
-last_name String
-display_name String
-username String @unique
-password String? // Optional for OAuth users
-email String @unique
-phone_number String?
-current_residence_pincode String?
-birth_place_pincode String?
-birth_date DateTime?
-gender String?
-religion String?
-mother String?
-first_language String?
-second_language String?
-third_language String?
-fourth_language String?
-fifth_language String?
-profile_picture_url String?
+  id                        String    @id @default(cuid())
+  first_name                String
+  last_name                 String
+  display_name              String
+  username                  String    @unique
+  password                  String? // Optional for OAuth users
+  email                     String    @unique
+  phone_number              String?
+  current_residence_pincode String?
+  birth_place_pincode       String?
+  birth_date                DateTime?
+  gender                    String?
+  religion                  String?
+  mother                    String?
+  first_language            String?
+  second_language           String?
+  third_language            String?
+  fourth_language           String?
+  fifth_language            String?
+  profile_picture_url       String?
 
-// OAuth fields
-googleId String? @unique @map("google_id")
-githubId String? @unique @map("github_id")
-oauthProvider OAuthProvider? @map("oauth_provider") // Primary OAuth provider
+  // OAuth fields
+  googleId      String?        @unique @map("google_id")
+  githubId      String?        @unique @map("github_id")
+  oauthProvider OAuthProvider? @map("oauth_provider") // Primary OAuth provider
 
-// Profile settings fields
-occupation String?
-education String?
-birthplace_village_city String? @map("birthplace_village_city")
-birthplace_pincode String? @map("birthplace_pincode")
-current_residence_village_city String? @map("current_residence_village_city")
-workplace_college_village_city String? @map("workplace_college_village_city")
-workplace_college_pincode String? @map("workplace_college_pincode")
+  // Profile settings fields
+  occupation                     String?
+  education                      String?
+  birthplace_village_city        String? @map("birthplace_village_city")
+  birthplace_pincode             String? @map("birthplace_pincode")
+  current_residence_village_city String? @map("current_residence_village_city")
+  workplace_college_village_city String? @map("workplace_college_village_city")
+  workplace_college_pincode      String? @map("workplace_college_pincode")
 
-created_at DateTime @default(now())
-updated_at DateTime @updatedAt
-deleted_at DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+  deleted_at DateTime?
 
-// Relations
-nerAnnotations NerAnnotation[]
-nerResults NerResult[]
-posResults PosResult[]
-translationResults TranslationResult[]
-sentimentResults SentimentResult[]
-emotionResults EmotionResult[]
-userActivities UserActivity[]
-contributions Contribution[]
-contributionsReviewed Contribution[] @relation("ContributionReviewer")
-securityEvents SecurityEvent[]
-securityEventsResolved SecurityEvent[] @relation("SecurityResolver")
-auditLogs AuditLog[]
-userProgress UserProgress[]
-validations Validation[]
-audioMetadata AudioMetadata[]
-transcriptionReviews TranscriptionReview[]
-answerRecordings AnswerRecording[]
-apiKeys ApiKey[]
-oauthAccounts OAuthAccount[]
-sentences Sentence[]
-role UserRole @default(USER)
+  // Relations
+  nerAnnotations         NerAnnotation[]
+  nerResults             NerResult[]
+  posResults             PosResult[]
+  translationResults     TranslationResult[]
+  sentimentResults       SentimentResult[]
+  emotionResults         EmotionResult[]
+  userActivities         UserActivity[]
+  contributions          Contribution[]
+  contributionsReviewed  Contribution[]        @relation("ContributionReviewer")
+  securityEvents         SecurityEvent[]
+  securityEventsResolved SecurityEvent[]       @relation("SecurityResolver")
+  auditLogs              AuditLog[]
+  userProgress           UserProgress[]
+  validations            Validation[]
+  audioMetadata          AudioMetadata[]
+  transcriptionReviews   TranscriptionReview[]
+  answerRecordings       AnswerRecording[]
+  apiKeys                ApiKey[]
+  oauthAccounts          OAuthAccount[]
+  sentences              Sentence[]
+  role                   UserRole              @default(USER)
 
-@@index([email])
-@@index([username])
-@@index([created_at])
-@@index([googleId])
-@@index([githubId])
-@@map("users")
+  // Gamification fields
+  points                   Int       @default(0)
+  level                    Int       @default(1)
+  tier                     String    @default("bronze") // bronze, silver, gold, platinum
+  isVerified               Boolean   @default(false) @map("is_verified")
+  verificationToken        String?   @map("verification_token")
+  verificationTokenExpires DateTime? @map("verification_token_expires")
+
+  // Relations for new features
+  notifications           Notification[]
+  notificationPreferences NotificationPreference?
+  badges                  UserBadge[]
+  achievements            UserAchievement[]
+  streaks                 Streak[]
+  userStats               UserStats?
+  pushSubscriptions       PushSubscription[]
+  savedSearches           SavedSearch[]
+  searchHistory           SearchHistory[]
+  contentFlags            ContentFlag[]
+  appeals                 Appeal[]
+  feedback                Feedback[]
+  blogPosts               BlogPost[]
+  audioBlogs              AudioBlog[]
+  videoBlogs              VideoBlog[]
+  forumPosts              ForumPost[]
+  forumReplies            ForumReply[]
+
+  @@index([email])
+  @@index([username])
+  @@index([created_at])
+  @@index([googleId])
+  @@index([githubId])
+  @@index([points])
+  @@index([level])
+  @@index([tier])
+  @@map("users")
 }
 
 enum UserRole {
-USER
-MODERATOR
-ADMIN
-SUPER_ADMIN
+  USER
+  MODERATOR
+  ADMIN
+  SUPER_ADMIN
 }
 
 model Sentence {
-id String @id @default(cuid())
-text String
-languageCode String @map("language_code")
-userId String? @map("user_id")
-isActive Boolean @default(true) @map("is_active")
-difficulty String? // easy, medium, hard
-taskType String @map("task_type") // 'ner', 'translation', 'speech', etc.
-valid Boolean? // null = pending admin validation, true = approved, false = rejected
-citation String? // Source citation for user-submitted sentences
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  text         String
+  languageCode String   @map("language_code")
+  userId       String?  @map("user_id")
+  isActive     Boolean  @default(true) @map("is_active")
+  difficulty   String? // easy, medium, hard
+  taskType     String   @map("task_type") // 'ner', 'translation', 'speech', etc.
+  valid        Boolean? // null = pending admin validation, true = approved, false = rejected
+  citation     String? // Source citation for user-submitted sentences
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sourceMappings TranslationMapping[] @relation("SourceSentence")
-targetMappings TranslationMapping[] @relation("TargetSentence")
-nerAnnotations NerAnnotation[]
-nerResults NerResult[]
-posResults PosResult[]
-translationResults TranslationResult[]
-sentimentResults SentimentResult[]
-emotionResults EmotionResult[]
-speechRecordings SpeechRecording[]
-questionSubmissions QuestionSubmission[]
-sentenceValidations SentenceValidation[]
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sourceMappings      TranslationMapping[] @relation("SourceSentence")
+  targetMappings      TranslationMapping[] @relation("TargetSentence")
+  nerAnnotations      NerAnnotation[]
+  nerResults          NerResult[]
+  posResults          PosResult[]
+  translationResults  TranslationResult[]
+  sentimentResults    SentimentResult[]
+  emotionResults      EmotionResult[]
+  speechRecordings    SpeechRecording[]
+  questionSubmissions QuestionSubmission[]
+  sentenceValidations SentenceValidation[]
+  user                User?                @relation(fields: [userId], references: [id])
 
-@@index([languageCode])
-@@index([taskType])
-@@index([valid])
-@@index([isActive])
-@@index([createdAt])
-@@index([languageCode, taskType, valid, isActive]) // Composite index for common query pattern
-@@index([userId])
-@@map("sentences")
+  @@index([languageCode])
+  @@index([taskType])
+  @@index([valid])
+  @@index([isActive])
+  @@index([createdAt])
+  @@index([languageCode, taskType, valid, isActive]) // Composite index for common query pattern
+  @@index([userId])
+  @@map("sentences")
 }
 
 model TranslationMapping {
-id String @id @default(cuid())
-srcSentenceId String @map("src_sentence_id")
-tgtSentenceId String @map("tgt_sentence_id")
-userId String? @map("user_id")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  srcSentenceId String   @map("src_sentence_id")
+  tgtSentenceId String   @map("tgt_sentence_id")
+  userId        String?  @map("user_id")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-// Relations
-srcSentence Sentence @relation("SourceSentence", fields: [srcSentenceId], references: [id])
-tgtSentence Sentence @relation("TargetSentence", fields: [tgtSentenceId], references: [id])
+  // Relations
+  srcSentence Sentence @relation("SourceSentence", fields: [srcSentenceId], references: [id])
+  tgtSentence Sentence @relation("TargetSentence", fields: [tgtSentenceId], references: [id])
 
-@@unique([srcSentenceId, tgtSentenceId, userId])
-@@map("translation_mappings")
+  @@unique([srcSentenceId, tgtSentenceId, userId])
+  @@map("translation_mappings")
 }
 
 model SpeechRecording {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-userId String? @map("user_id")
-audioFile String @map("audio_file") // File path or URL to audio file (MinIO blob storage link)
-audioFormat String @map("audio_format") // e.g., 'wav', 'webm', 'mp3'
-mediaType String @default("audio") @map("media_type") // 'audio' or 'video'
-duration Float? // Duration in seconds
-fileSize Int? @map("file_size") // File size in bytes
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id          String   @id @default(cuid())
+  sentenceId  String   @map("sentence_id")
+  userId      String?  @map("user_id")
+  audioFile   String   @map("audio_file") // File path or URL to audio file (MinIO blob storage link)
+  audioFormat String   @map("audio_format") // e.g., 'wav', 'webm', 'mp3'
+  mediaType   String   @default("audio") @map("media_type") // 'audio' or 'video'
+  duration    Float? // Duration in seconds
+  fileSize    Int?     @map("file_size") // File size in bytes
+  isValidated Boolean  @default(false) @map("is_validated")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-validations Validation[]
-audioMetadata AudioMetadata?
-transcriptionReviews TranscriptionReview[]
+  // Relations
+  sentence             Sentence              @relation(fields: [sentenceId], references: [id])
+  validations          Validation[]
+  audioMetadata        AudioMetadata?
+  transcriptionReviews TranscriptionReview[]
 
-@@index([sentenceId])
-@@index([userId])
-@@index([isValidated])
-@@index([createdAt])
-@@index([isValidated, createdAt]) // Composite for filtering validated recordings
-@@map("speech_recordings")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([isValidated])
+  @@index([createdAt])
+  @@index([isValidated, createdAt]) // Composite for filtering validated recordings
+  @@map("speech_recordings")
 }
 
 model QuestionSubmission {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id") // Reference to the question sentence
-userId String? @map("user_id")
-submittedText String @map("submitted_text") // The actual question text submitted by user
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-valid Boolean? // null = pending admin validation, true = approved, false = rejected
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id            String   @id @default(cuid())
+  sentenceId    String   @map("sentence_id") // Reference to the question sentence
+  userId        String?  @map("user_id")
+  submittedText String   @map("submitted_text") // The actual question text submitted by user
+  languageCode  String   @map("language_code")
+  isValidated   Boolean  @default(false) @map("is_validated")
+  valid         Boolean? // null = pending admin validation, true = approved, false = rejected
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-questionValidations QuestionValidation[]
-answerRecordings AnswerRecording[]
+  // Relations
+  sentence            Sentence             @relation(fields: [sentenceId], references: [id])
+  questionValidations QuestionValidation[]
+  answerRecordings    AnswerRecording[]
 
-@@index([languageCode])
-@@index([valid])
-@@index([isValidated])
-@@index([createdAt])
-@@index([valid, languageCode]) // Composite for filtering pending questions by language
-@@map("question_submissions")
+  @@index([languageCode])
+  @@index([valid])
+  @@index([isValidated])
+  @@index([createdAt])
+  @@index([valid, languageCode]) // Composite for filtering pending questions by language
+  @@map("question_submissions")
 }
 
 model NerResult {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-userId String? @map("user_id")
-entities Json // Store NER entities as JSON
-confidence Float? // Overall confidence score
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  sentenceId   String   @map("sentence_id")
+  userId       String?  @map("user_id")
+  entities     Json // Store NER entities as JSON
+  confidence   Float? // Overall confidence score
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence @relation(fields: [sentenceId], references: [id])
+  user     User?    @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([languageCode])
-@@index([isValidated])
-@@index([languageCode, isValidated]) // Composite for filtering validated results by language
-@@map("ner_results")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([languageCode])
+  @@index([isValidated])
+  @@index([languageCode, isValidated]) // Composite for filtering validated results by language
+  @@map("ner_results")
 }
 
 model PosResult {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-userId String? @map("user_id")
-tokens Json // Store POS tokens as JSON
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  sentenceId   String   @map("sentence_id")
+  userId       String?  @map("user_id")
+  tokens       Json // Store POS tokens as JSON
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence @relation(fields: [sentenceId], references: [id])
+  user     User?    @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([languageCode])
-@@index([isValidated])
-@@index([languageCode, isValidated]) // Composite for filtering validated results by language
-@@map("pos_results")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([languageCode])
+  @@index([isValidated])
+  @@index([languageCode, isValidated]) // Composite for filtering validated results by language
+  @@map("pos_results")
 }
 
 model TranslationResult {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-userId String? @map("user_id")
-sourceLanguage String @map("source_language")
-targetLanguage String @map("target_language")
-originalText String @map("original_text")
-translatedText String @map("translated_text")
-confidence Float?
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(cuid())
+  sentenceId     String   @map("sentence_id")
+  userId         String?  @map("user_id")
+  sourceLanguage String   @map("source_language")
+  targetLanguage String   @map("target_language")
+  originalText   String   @map("original_text")
+  translatedText String   @map("translated_text")
+  confidence     Float?
+  isValidated    Boolean  @default(false) @map("is_validated")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence @relation(fields: [sentenceId], references: [id])
+  user     User?    @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([sourceLanguage])
-@@index([targetLanguage])
-@@index([isValidated])
-@@index([sourceLanguage, targetLanguage, isValidated]) // Composite for filtering translations
-@@map("translation_results")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([sourceLanguage])
+  @@index([targetLanguage])
+  @@index([isValidated])
+  @@index([sourceLanguage, targetLanguage, isValidated]) // Composite for filtering translations
+  @@map("translation_results")
 }
 
 model SentimentResult {
-id String @id @default(cuid())
-sentenceId String? @map("sentence_id")
-userId String? @map("user_id")
-text String // Text that was analyzed
-sentiment String // positive, negative, neutral
-confidence Float
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  sentenceId   String?  @map("sentence_id")
+  userId       String?  @map("user_id")
+  text         String // Text that was analyzed
+  sentiment    String // positive, negative, neutral
+  confidence   Float
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence? @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence? @relation(fields: [sentenceId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([languageCode])
-@@index([isValidated])
-@@index([languageCode, isValidated]) // Composite for filtering validated results by language
-@@map("sentiment_results")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([languageCode])
+  @@index([isValidated])
+  @@index([languageCode, isValidated]) // Composite for filtering validated results by language
+  @@map("sentiment_results")
 }
 
 model EmotionResult {
-id String @id @default(cuid())
-sentenceId String? @map("sentence_id")
-userId String? @map("user_id")
-text String // Text that was analyzed
-emotion String // joy, sadness, anger, fear, surprise, disgust
-confidence Float
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  sentenceId   String?  @map("sentence_id")
+  userId       String?  @map("user_id")
+  text         String // Text that was analyzed
+  emotion      String // joy, sadness, anger, fear, surprise, disgust
+  confidence   Float
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence? @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence? @relation(fields: [sentenceId], references: [id])
+  user     User?     @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([languageCode])
-@@index([isValidated])
-@@index([languageCode, isValidated]) // Composite for filtering validated results by language
-@@map("emotion_results")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([languageCode])
+  @@index([isValidated])
+  @@index([languageCode, isValidated]) // Composite for filtering validated results by language
+  @@map("emotion_results")
 }
 
 model SystemMetric {
-id String @id @default(cuid())
-metricType String @map("metric_type") // 'response_time', 'error_rate', 'connections', 'cache_hit_rate', 'memory', 'disk'
-value Float
-unit String? // 'ms', '%', 'MB', 'GB', etc.
-timestamp DateTime @default(now())
-metadata Json? // Additional context data
+  id         String   @id @default(cuid())
+  metricType String   @map("metric_type") // 'response_time', 'error_rate', 'connections', 'cache_hit_rate', 'memory', 'disk'
+  value      Float
+  unit       String? // 'ms', '%', 'MB', 'GB', etc.
+  timestamp  DateTime @default(now())
+  metadata   Json? // Additional context data
 
-@@map("system_metrics")
+  @@map("system_metrics")
 }
 
 model UserActivity {
-id String @id @default(cuid())
-userId String? @map("user_id")
-action String // 'login', 'logout', 'contribution', 'validation', etc.
-resource String? // What was acted upon
-metadata Json? // Additional context
-ipAddress String? @map("ip_address")
-userAgent String? @map("user_agent")
-timestamp DateTime @default(now())
+  id        String   @id @default(cuid())
+  userId    String?  @map("user_id")
+  action    String // 'login', 'logout', 'contribution', 'validation', etc.
+  resource  String? // What was acted upon
+  metadata  Json? // Additional context
+  ipAddress String?  @map("ip_address")
+  userAgent String?  @map("user_agent")
+  timestamp DateTime @default(now())
 
-// Relations
-user User? @relation(fields: [userId], references: [id])
-adminUserId String? @map("admin_user_id")
-adminUser AdminUser? @relation("AdminUserActivities", fields: [adminUserId], references: [id])
+  // Relations
+  user        User?      @relation(fields: [userId], references: [id])
+  adminUserId String?    @map("admin_user_id")
+  adminUser   AdminUser? @relation("AdminUserActivities", fields: [adminUserId], references: [id])
 
-@@map("user_activities")
+  @@map("user_activities")
 }
 
 model Contribution {
-id String @id @default(cuid())
-userId String @map("user_id")
-type String // 'audio', 'text', 'translation', 'annotation', 'validation'
-content String // The actual content or reference
-language String
-status String @default("pending") // 'pending', 'approved', 'rejected', 'validated'
-metadata Json? // Duration, quality scores, etc.
-reviewedBy String? @map("reviewed_by")
-reviewedAt DateTime? @map("reviewed_at")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id         String    @id @default(cuid())
+  userId     String    @map("user_id")
+  type       String // 'audio', 'text', 'translation', 'annotation', 'validation'
+  content    String // The actual content or reference
+  language   String
+  status     String    @default("pending") // 'pending', 'approved', 'rejected', 'validated'
+  metadata   Json? // Duration, quality scores, etc.
+  reviewedBy String?   @map("reviewed_by")
+  reviewedAt DateTime? @map("reviewed_at")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-// Relations
-user User @relation(fields: [userId], references: [id])
-reviewer User? @relation("ContributionReviewer", fields: [reviewedBy], references: [id])
+  // Relations
+  user     User  @relation(fields: [userId], references: [id])
+  reviewer User? @relation("ContributionReviewer", fields: [reviewedBy], references: [id])
 
-@@map("contributions")
+  @@map("contributions")
 }
 
 model SecurityEvent {
-id String @id @default(cuid())
-eventType String @map("event_type") // 'login_attempt', 'failed_login', 'suspicious_activity', etc.
-severity String @default("low") // 'low', 'medium', 'high', 'critical'
-userId String? @map("user_id")
-ipAddress String? @map("ip_address")
-userAgent String? @map("user_agent")
-description String
-metadata Json?
-resolved Boolean @default(false)
-resolvedAt DateTime? @map("resolved_at")
-resolvedBy String? @map("resolved_by")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id          String    @id @default(cuid())
+  eventType   String    @map("event_type") // 'login_attempt', 'failed_login', 'suspicious_activity', etc.
+  severity    String    @default("low") // 'low', 'medium', 'high', 'critical'
+  userId      String?   @map("user_id")
+  ipAddress   String?   @map("ip_address")
+  userAgent   String?   @map("user_agent")
+  description String
+  metadata    Json?
+  resolved    Boolean   @default(false)
+  resolvedAt  DateTime? @map("resolved_at")
+  resolvedBy  String?   @map("resolved_by")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
 
-// Relations
-user User? @relation(fields: [userId], references: [id])
-resolver User? @relation("SecurityResolver", fields: [resolvedBy], references: [id])
+  // Relations
+  user     User? @relation(fields: [userId], references: [id])
+  resolver User? @relation("SecurityResolver", fields: [resolvedBy], references: [id])
 
-@@map("security_events")
+  @@map("security_events")
 }
 
 model AuditLog {
-id String @id @default(cuid())
-userId String? @map("user_id")
-action String // What was done
-resource String // What was affected
-resourceId String? @map("resource_id")
-oldValues Json? @map("old_values")
-newValues Json? @map("new_values")
-ipAddress String? @map("ip_address")
-userAgent String? @map("user_agent")
-timestamp DateTime @default(now())
+  id         String   @id @default(cuid())
+  userId     String?  @map("user_id")
+  action     String // What was done
+  resource   String // What was affected
+  resourceId String?  @map("resource_id")
+  oldValues  Json?    @map("old_values")
+  newValues  Json?    @map("new_values")
+  ipAddress  String?  @map("ip_address")
+  userAgent  String?  @map("user_agent")
+  timestamp  DateTime @default(now())
 
-// Relations
-user User? @relation(fields: [userId], references: [id])
-adminUserId String? @map("admin_user_id")
-adminUser AdminUser? @relation("AdminAuditLogs", fields: [adminUserId], references: [id])
+  // Relations
+  user        User?      @relation(fields: [userId], references: [id])
+  adminUserId String?    @map("admin_user_id")
+  adminUser   AdminUser? @relation("AdminAuditLogs", fields: [adminUserId], references: [id])
 
-@@map("audit_logs")
+  @@map("audit_logs")
 }
 
 model NerAnnotation {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-userId String? @map("user_id")
-annotations Json // Store the token-level annotations
-languageCode String @map("language_code")
-isValidated Boolean @default(false) @map("is_validated")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id           String   @id @default(cuid())
+  sentenceId   String   @map("sentence_id")
+  userId       String?  @map("user_id")
+  annotations  Json // Store the token-level annotations
+  languageCode String   @map("language_code")
+  isValidated  Boolean  @default(false) @map("is_validated")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-user User? @relation(fields: [userId], references: [id])
+  // Relations
+  sentence Sentence @relation(fields: [sentenceId], references: [id])
+  user     User?    @relation(fields: [userId], references: [id])
 
-@@index([sentenceId])
-@@index([userId])
-@@index([languageCode])
-@@map("ner_annotations")
+  @@index([sentenceId])
+  @@index([userId])
+  @@index([languageCode])
+  @@map("ner_annotations")
 }
 
 // Admin User model
 model AdminUser {
-id String @id @default(cuid())
-name String
-email String @unique
-password String
-role String // 'admin' or 'super_admin'
-isActive Boolean @default(true) @map("is_active")
-lastLogin DateTime? @map("last_login")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      String // 'admin' or 'super_admin'
+  isActive  Boolean   @default(true) @map("is_active")
+  lastLogin DateTime? @map("last_login")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
 
-// Relations
-sentenceValidations SentenceValidation[]
-questionValidations QuestionValidation[]
-auditLogs AuditLog[] @relation("AdminAuditLogs")
-userActivities UserActivity[] @relation("AdminUserActivities")
+  // Relations
+  sentenceValidations SentenceValidation[]
+  questionValidations QuestionValidation[]
+  auditLogs           AuditLog[]           @relation("AdminAuditLogs")
+  userActivities      UserActivity[]       @relation("AdminUserActivities")
 
-@@index([email])
-@@index([role])
-@@index([isActive])
-@@map("admin_users")
+  @@index([email])
+  @@index([role])
+  @@index([isActive])
+  @@map("admin_users")
 }
 
 // User Progress tracking model
 model UserProgress {
-id String @id @default(cuid())
-userId String @map("user_id")
-resourceType String @map("resource_type") // 'sentence', 'question', 'audio', 'transcription', etc.
-resourceId String @map("resource_id") // ID of the sentence/question/audio/etc.
-featureType String @map("feature_type") // 'speak', 'listen', 'write', 'question', 'answer', 'transcribe', 'review', 'ner', 'pos', 'sentiment', 'emotion', 'translation'
-completedAt DateTime @default(now()) @map("completed_at")
-createdAt DateTime @default(now()) @map("created_at")
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  resourceType String   @map("resource_type") // 'sentence', 'question', 'audio', 'transcription', etc.
+  resourceId   String   @map("resource_id") // ID of the sentence/question/audio/etc.
+  featureType  String   @map("feature_type") // 'speak', 'listen', 'write', 'question', 'answer', 'transcribe', 'review', 'ner', 'pos', 'sentiment', 'emotion', 'translation'
+  completedAt  DateTime @default(now()) @map("completed_at")
+  createdAt    DateTime @default(now()) @map("created_at")
 
-// Relations
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  user User @relation(fields: [userId], references: [id])
 
-@@unique([userId, resourceType, resourceId, featureType])
-@@index([userId])
-@@index([resourceType])
-@@index([featureType])
-@@index([completedAt])
-@@map("user_progress")
+  @@unique([userId, resourceType, resourceId, featureType])
+  @@index([userId])
+  @@index([resourceType])
+  @@index([featureType])
+  @@index([completedAt])
+  @@map("user_progress")
 }
 
 // Validation model for Listen feature (max 25 validations per audio)
 model Validation {
-id String @id @default(cuid())
-speechRecordingId String @map("speech_recording_id")
-userId String @map("user_id")
-isValid Boolean @map("is_valid") // true = audio matches text, false = doesn't match
-createdAt DateTime @default(now()) @map("created_at")
+  id                String   @id @default(cuid())
+  speechRecordingId String   @map("speech_recording_id")
+  userId            String   @map("user_id")
+  isValid           Boolean  @map("is_valid") // true = audio matches text, false = doesn't match
+  createdAt         DateTime @default(now()) @map("created_at")
 
-// Relations
-speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
 
-@@unique([speechRecordingId, userId]) // Prevent duplicate validations by same user
-@@index([speechRecordingId])
-@@index([userId])
-@@index([createdAt])
-@@map("validations")
+  @@unique([speechRecordingId, userId]) // Prevent duplicate validations by same user
+  @@index([speechRecordingId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("validations")
 }
 
 // Sentence Validation model for Write feature (admin validation)
 model SentenceValidation {
-id String @id @default(cuid())
-sentenceId String @map("sentence_id")
-adminUserId String @map("admin_user_id")
-valid Boolean // true = approved, false = rejected
-comment String? // Optional comment from admin
-createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(cuid())
+  sentenceId  String   @map("sentence_id")
+  adminUserId String   @map("admin_user_id")
+  valid       Boolean // true = approved, false = rejected
+  comment     String? // Optional comment from admin
+  createdAt   DateTime @default(now()) @map("created_at")
 
-// Relations
-sentence Sentence @relation(fields: [sentenceId], references: [id])
-adminUser AdminUser @relation(fields: [adminUserId], references: [id])
+  // Relations
+  sentence  Sentence  @relation(fields: [sentenceId], references: [id])
+  adminUser AdminUser @relation(fields: [adminUserId], references: [id])
 
-@@index([sentenceId])
-@@index([adminUserId])
-@@index([valid])
-@@map("sentence_validations")
+  @@index([sentenceId])
+  @@index([adminUserId])
+  @@index([valid])
+  @@map("sentence_validations")
 }
 
 // Question Validation model for Question feature (admin validation)
 model QuestionValidation {
-id String @id @default(cuid())
-questionSubmissionId String @map("question_submission_id")
-adminUserId String @map("admin_user_id")
-valid Boolean // true = approved, false = rejected
-comment String? // Optional comment from admin
-createdAt DateTime @default(now()) @map("created_at")
+  id                   String   @id @default(cuid())
+  questionSubmissionId String   @map("question_submission_id")
+  adminUserId          String   @map("admin_user_id")
+  valid                Boolean // true = approved, false = rejected
+  comment              String? // Optional comment from admin
+  createdAt            DateTime @default(now()) @map("created_at")
 
-// Relations
-questionSubmission QuestionSubmission @relation(fields: [questionSubmissionId], references: [id])
-adminUser AdminUser @relation(fields: [adminUserId], references: [id])
+  // Relations
+  questionSubmission QuestionSubmission @relation(fields: [questionSubmissionId], references: [id])
+  adminUser          AdminUser          @relation(fields: [adminUserId], references: [id])
 
-@@index([questionSubmissionId])
-@@index([adminUserId])
-@@index([valid])
-@@map("question_validations")
+  @@index([questionSubmissionId])
+  @@index([adminUserId])
+  @@index([valid])
+  @@map("question_validations")
 }
 
 // Audio Metadata model for storing blob storage links and metadata
 model AudioMetadata {
-id String @id @default(cuid())
-speechRecordingId String @unique @map("speech_recording_id")
-userId String @map("user_id")
-blobStorageLink String @map("blob_storage_link") // MinIO S3 link
-audioDuration Float @map("audio_duration") // Duration in seconds
-timestamp DateTime @default(now()) // Upload timestamp
-languageCode String @map("language_code")
-gender String? // User gender
-ageGroup String? @map("age_group") // Calculated from birth_date
-region String? // Derived from pincode
-state String? // Derived from pincode
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id                String   @id @default(cuid())
+  speechRecordingId String   @unique @map("speech_recording_id")
+  userId            String   @map("user_id")
+  blobStorageLink   String   @map("blob_storage_link") // MinIO S3 link
+  audioDuration     Float    @map("audio_duration") // Duration in seconds
+  timestamp         DateTime @default(now()) // Upload timestamp
+  languageCode      String   @map("language_code")
+  gender            String? // User gender
+  ageGroup          String?  @map("age_group") // Calculated from birth_date
+  region            String? // Derived from pincode
+  state             String? // Derived from pincode
+  createdAt         DateTime @default(now()) @map("created_at")
+  updatedAt         DateTime @updatedAt @map("updated_at")
 
-// Relations
-speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
 
-@@index([userId])
-@@index([languageCode])
-@@index([gender])
-@@index([ageGroup])
-@@index([region])
-@@index([state])
-@@index([timestamp])
-@@map("audio_metadata")
+  @@index([userId])
+  @@index([languageCode])
+  @@index([gender])
+  @@index([ageGroup])
+  @@index([region])
+  @@index([state])
+  @@index([timestamp])
+  @@map("audio_metadata")
 }
 
 // Dataset Category model for categorizing validated data
 model DatasetCategory {
-id String @id @default(cuid())
-resourceType String @map("resource_type") // 'speech_recording', 'transcription', 'translation', etc.
-resourceId String @map("resource_id")
-category String // 'training', 'evaluation', 'testing', 'discarded'
-voteCount Int @default(0) @map("vote_count") // Total number of votes
-positiveVoteCount Int @default(0) @map("positive_vote_count") // Number of positive votes
-votePercentage Float @map("vote_percentage") // Percentage of positive votes
-categorizedAt DateTime @default(now()) @map("categorized_at")
-createdAt DateTime @default(now()) @map("created_at")
+  id                String   @id @default(cuid())
+  resourceType      String   @map("resource_type") // 'speech_recording', 'transcription', 'translation', etc.
+  resourceId        String   @map("resource_id")
+  category          String // 'training', 'evaluation', 'testing', 'discarded'
+  voteCount         Int      @default(0) @map("vote_count") // Total number of votes
+  positiveVoteCount Int      @default(0) @map("positive_vote_count") // Number of positive votes
+  votePercentage    Float    @map("vote_percentage") // Percentage of positive votes
+  categorizedAt     DateTime @default(now()) @map("categorized_at")
+  createdAt         DateTime @default(now()) @map("created_at")
 
-@@index([resourceType])
-@@index([resourceId])
-@@index([category])
-@@index([categorizedAt])
-@@map("dataset_categories")
+  @@index([resourceType])
+  @@index([resourceId])
+  @@index([category])
+  @@index([categorizedAt])
+  @@map("dataset_categories")
 }
 
 // Transcription Review model linking transcriptions to audio
 model TranscriptionReview {
-id String @id @default(cuid())
-speechRecordingId String @map("speech_recording_id")
-userId String @map("user_id")
-transcriptionText String @map("transcription_text")
-isApproved Boolean @default(false) @map("is_approved")
-reviewedBy String? @map("reviewed_by") // User who reviewed
-reviewedAt DateTime? @map("reviewed_at")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id                String    @id @default(cuid())
+  speechRecordingId String    @map("speech_recording_id")
+  userId            String    @map("user_id")
+  transcriptionText String    @map("transcription_text")
+  isApproved        Boolean   @default(false) @map("is_approved")
+  reviewedBy        String?   @map("reviewed_by") // User who reviewed
+  reviewedAt        DateTime? @map("reviewed_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
 
-// Relations
-speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  speechRecording SpeechRecording @relation(fields: [speechRecordingId], references: [id])
+  user            User            @relation(fields: [userId], references: [id])
 
-@@index([speechRecordingId])
-@@index([userId])
-@@index([isApproved])
-@@index([createdAt])
-@@map("transcription_reviews")
+  @@index([speechRecordingId])
+  @@index([userId])
+  @@index([isApproved])
+  @@index([createdAt])
+  @@map("transcription_reviews")
 }
 
 // Answer Recording model for spontaneous speech answers
 model AnswerRecording {
-id String @id @default(cuid())
-questionSubmissionId String @map("question_submission_id")
-userId String @map("user_id")
-audioFile String @map("audio_file") // MinIO blob storage link
-audioFormat String @map("audio_format")
-duration Float? // Duration in seconds
-fileSize Int? @map("file_size")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id                   String   @id @default(cuid())
+  questionSubmissionId String   @map("question_submission_id")
+  userId               String   @map("user_id")
+  audioFile            String   @map("audio_file") // MinIO blob storage link
+  audioFormat          String   @map("audio_format")
+  duration             Float? // Duration in seconds
+  fileSize             Int?     @map("file_size")
+  createdAt            DateTime @default(now()) @map("created_at")
+  updatedAt            DateTime @updatedAt @map("updated_at")
 
-// Relations
-questionSubmission QuestionSubmission @relation(fields: [questionSubmissionId], references: [id])
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  questionSubmission QuestionSubmission @relation(fields: [questionSubmissionId], references: [id])
+  user               User               @relation(fields: [userId], references: [id])
 
-@@index([questionSubmissionId])
-@@index([userId])
-@@index([createdAt])
-@@map("answer_recordings")
+  @@index([questionSubmissionId])
+  @@index([userId])
+  @@index([createdAt])
+  @@map("answer_recordings")
 }
 
 // API Key model for public API access
 model ApiKey {
-id String @id @default(cuid())
-userId String @map("user_id")
-key String // Hashed API key (never store plain text)
-keyPrefix String @map("key_prefix") // First 16 chars of hashed key for quick lookup
-name String // User-friendly name for the key
-lastUsedAt DateTime? @map("last_used_at")
-expiresAt DateTime? @map("expires_at") // Optional expiration
-isActive Boolean @default(true) @map("is_active")
-createdAt DateTime @default(now()) @map("created_at")
-updatedAt DateTime @updatedAt @map("updated_at")
+  id         String    @id @default(cuid())
+  userId     String    @map("user_id")
+  key        String // Hashed API key (never store plain text)
+  keyPrefix  String    @map("key_prefix") // First 16 chars of hashed key for quick lookup
+  name       String // User-friendly name for the key
+  lastUsedAt DateTime? @map("last_used_at")
+  expiresAt  DateTime? @map("expires_at") // Optional expiration
+  isActive   Boolean   @default(true) @map("is_active")
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime  @updatedAt @map("updated_at")
 
-// Relations
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  user User @relation(fields: [userId], references: [id])
 
-@@index([userId])
-@@index([keyPrefix])
-@@index([isActive])
-@@index([expiresAt])
-@@map("api_keys")
+  @@index([userId])
+  @@index([keyPrefix])
+  @@index([isActive])
+  @@index([expiresAt])
+  @@map("api_keys")
 }
 
 // OAuth Account model for linking multiple OAuth providers to same user
 model OAuthAccount {
-id String @id @default(cuid())
-userId String @map("user_id")
-provider OAuthProvider // GOOGLE or GITHUB
-providerId String @map("provider_id") // OAuth provider's user ID
-email String? // Email from OAuth provider
-createdAt DateTime @default(now()) @map("created_at")
+  id         String        @id @default(cuid())
+  userId     String        @map("user_id")
+  provider   OAuthProvider // GOOGLE or GITHUB
+  providerId String        @map("provider_id") // OAuth provider's user ID
+  email      String? // Email from OAuth provider
+  createdAt  DateTime      @default(now()) @map("created_at")
 
-// Relations
-user User @relation(fields: [userId], references: [id])
+  // Relations
+  user User @relation(fields: [userId], references: [id])
 
-@@unique([provider, providerId]) // One OAuth account per provider ID
-@@index([userId])
-@@index([provider])
-@@index([providerId])
-@@map("oauth_accounts")
+  @@unique([provider, providerId]) // One OAuth account per provider ID
+  @@index([userId])
+  @@index([provider])
+  @@index([providerId])
+  @@map("oauth_accounts")
+}
+
+// Notification Models
+model Notification {
+  id        String    @id @default(cuid())
+  userId    String    @map("user_id")
+  type      String // 'contribution', 'validation', 'achievement', 'system', etc.
+  title     String
+  message   String
+  actionUrl String?   @map("action_url")
+  metadata  Json?
+  read      Boolean   @default(false)
+  readAt    DateTime? @map("read_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([read])
+  @@index([createdAt])
+  @@index([userId, read])
+  @@map("notifications")
+}
+
+model NotificationPreference {
+  id           String   @id @default(cuid())
+  userId       String   @unique @map("user_id")
+  inAppEnabled Boolean  @default(true) @map("in_app_enabled")
+  emailEnabled Boolean  @default(true) @map("email_enabled")
+  pushEnabled  Boolean  @default(false) @map("push_enabled")
+  emailTypes   String[] @default(["contribution", "achievement", "system"]) @map("email_types")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@map("notification_preferences")
+}
+
+model EmailQueue {
+  id        String    @id @default(cuid())
+  to        String
+  subject   String
+  template  String
+  context   Json?
+  status    String    @default("pending") // 'pending', 'sent', 'failed'
+  error     String?
+  sentAt    DateTime? @map("sent_at")
+  createdAt DateTime  @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("email_queue")
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  endpoint  String
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([userId, endpoint])
+  @@index([userId])
+  @@map("push_subscriptions")
+}
+
+// Gamification Models
+model Badge {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String?
+  category    String // 'contribution', 'achievement', 'special', etc.
+  criteria    Json? // Criteria for earning the badge
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userBadges UserBadge[]
+
+  @@index([category])
+  @@map("badges")
+}
+
+model UserBadge {
+  id       String   @id @default(cuid())
+  userId   String   @map("user_id")
+  badgeId  String   @map("badge_id")
+  earnedAt DateTime @default(now()) @map("earned_at")
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id])
+  badge Badge @relation(fields: [badgeId], references: [id])
+
+  @@unique([userId, badgeId])
+  @@index([userId])
+  @@index([badgeId])
+  @@map("user_badges")
+}
+
+model Achievement {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String
+  icon        String?
+  points      Int      @default(0)
+  criteria    Json? // Criteria for earning the achievement
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  userAchievements UserAchievement[]
+
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String    @id @default(cuid())
+  userId        String    @map("user_id")
+  achievementId String    @map("achievement_id")
+  progress      Int       @default(0) // 0-100
+  completed     Boolean   @default(false)
+  completedAt   DateTime? @map("completed_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user        User        @relation(fields: [userId], references: [id])
+  achievement Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+  @@map("user_achievements")
+}
+
+model Leaderboard {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  category     String // 'global', 'language', 'monthly', 'weekly', etc.
+  languageCode String?  @map("language_code")
+  points       Int      @default(0)
+  rank         Int
+  periodStart  DateTime @map("period_start")
+  periodEnd    DateTime @map("period_end")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@unique([userId, category, languageCode, periodStart])
+  @@index([category, languageCode, rank])
+  @@index([periodStart, periodEnd])
+  @@map("leaderboards")
+}
+
+model Streak {
+  id               String    @id @default(cuid())
+  userId           String    @unique @map("user_id")
+  currentStreak    Int       @default(0) @map("current_streak")
+  longestStreak    Int       @default(0) @map("longest_streak")
+  lastActivityDate DateTime? @map("last_activity_date")
+  dailyGoal        Int       @default(5) @map("daily_goal")
+  dailyProgress    Int       @default(0) @map("daily_progress")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([currentStreak])
+  @@map("streaks")
+}
+
+model UserStats {
+  id                   String   @id @default(cuid())
+  userId               String   @unique @map("user_id")
+  totalContributions   Int      @default(0) @map("total_contributions")
+  totalValidations     Int      @default(0) @map("total_validations")
+  totalPoints          Int      @default(0) @map("total_points")
+  audioSeconds         Float    @default(0) @map("audio_seconds")
+  languagesContributed String[] @default([]) @map("languages_contributed")
+  reliabilityScore     Float?   @map("reliability_score")
+  qualityScore         Float?   @map("quality_score")
+  updatedAt            DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([totalPoints])
+  @@index([reliabilityScore])
+  @@map("user_stats")
+}
+
+// Export Models
+model ExportJob {
+  id          String    @id @default(cuid())
+  userId      String?   @map("user_id")
+  type        String // 'dataset', 'contributions', 'analytics', etc.
+  format      String // 'csv', 'json', 'zip'
+  status      String    @default("pending") // 'pending', 'processing', 'completed', 'failed'
+  filters     Json? // Export filters
+  fileUrl     String?   @map("file_url")
+  fileSize    Int?      @map("file_size")
+  error       String?
+  startedAt   DateTime? @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("export_jobs")
+}
+
+model ExportFile {
+  id          String   @id @default(cuid())
+  exportJobId String   @map("export_job_id")
+  fileName    String   @map("file_name")
+  fileUrl     String   @map("file_url")
+  fileSize    Int      @map("file_size")
+  mimeType    String   @map("mime_type")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([exportJobId])
+  @@map("export_files")
+}
+
+// Quality Control Models
+model QualityScore {
+  id           String   @id @default(cuid())
+  userId       String   @map("user_id")
+  score        Float // 0-100
+  category     String // 'overall', 'audio', 'transcription', 'translation', etc.
+  calculatedAt DateTime @default(now()) @map("calculated_at")
+
+  @@unique([userId, category, calculatedAt])
+  @@index([userId])
+  @@index([category])
+  @@index([calculatedAt])
+  @@map("quality_scores")
+}
+
+model InterAnnotatorAgreement {
+  id             String   @id @default(cuid())
+  resourceType   String   @map("resource_type") // 'speech_recording', 'transcription', etc.
+  resourceId     String   @map("resource_id")
+  kappaScore     Float    @map("kappa_score") // Cohen's Kappa or Fleiss' Kappa
+  agreementType  String   @map("agreement_type") // 'cohen', 'fleiss'
+  annotatorCount Int      @map("annotator_count")
+  calculatedAt   DateTime @default(now()) @map("calculated_at")
+
+  @@unique([resourceType, resourceId, calculatedAt])
+  @@index([resourceType, resourceId])
+  @@index([calculatedAt])
+  @@map("inter_annotator_agreements")
+}
+
+model AnomalyDetection {
+  id           String    @id @default(cuid())
+  userId       String?   @map("user_id")
+  resourceType String    @map("resource_type")
+  resourceId   String?   @map("resource_id")
+  anomalyType  String    @map("anomaly_type") // 'spam', 'quality', 'behavior', etc.
+  score        Float // Anomaly score
+  details      Json?
+  detectedAt   DateTime  @default(now()) @map("detected_at")
+  resolved     Boolean   @default(false)
+  resolvedAt   DateTime? @map("resolved_at")
+
+  @@index([userId])
+  @@index([resourceType])
+  @@index([detectedAt])
+  @@index([resolved])
+  @@map("anomaly_detections")
+}
+
+// Community Models
+model BlogPost {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  languageCode String    @map("language_code")
+  script       String
+  title        String
+  content      String
+  excerpt      String?
+  published    Boolean   @default(false)
+  publishedAt  DateTime? @map("published_at")
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([languageCode, script])
+  @@index([published])
+  @@index([publishedAt])
+  @@map("blog_posts")
+}
+
+model AudioBlog {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  languageCode String    @map("language_code")
+  title        String
+  description  String?
+  audioFile    String    @map("audio_file") // MinIO link
+  duration     Float?
+  published    Boolean   @default(false)
+  publishedAt  DateTime? @map("published_at")
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([languageCode])
+  @@index([published])
+  @@map("audio_blogs")
+}
+
+model VideoBlog {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  languageCode String    @map("language_code")
+  title        String
+  description  String?
+  videoFile    String    @map("video_file") // MinIO link
+  thumbnailUrl String?   @map("thumbnail_url")
+  duration     Float?
+  published    Boolean   @default(false)
+  publishedAt  DateTime? @map("published_at")
+  views        Int       @default(0)
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([languageCode])
+  @@index([published])
+  @@map("video_blogs")
+}
+
+model ForumCategory {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  slug        String   @unique
+  order       Int      @default(0)
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  posts ForumPost[]
+
+  @@index([slug])
+  @@map("forum_categories")
+}
+
+model ForumPost {
+  id          String    @id @default(cuid())
+  userId      String    @map("user_id")
+  categoryId  String    @map("category_id")
+  title       String
+  content     String
+  pinned      Boolean   @default(false)
+  locked      Boolean   @default(false)
+  views       Int       @default(0)
+  replyCount  Int       @default(0) @map("reply_count")
+  lastReplyAt DateTime? @map("last_reply_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user     User          @relation(fields: [userId], references: [id])
+  category ForumCategory @relation(fields: [categoryId], references: [id])
+  replies  ForumReply[]
+
+  @@index([userId])
+  @@index([categoryId])
+  @@index([createdAt])
+  @@index([pinned, createdAt])
+  @@map("forum_posts")
+}
+
+model ForumReply {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  postId    String   @map("post_id")
+  content   String
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User      @relation(fields: [userId], references: [id])
+  post ForumPost @relation(fields: [postId], references: [id])
+
+  @@index([userId])
+  @@index([postId])
+  @@index([createdAt])
+  @@map("forum_replies")
+}
+
+model FAQ {
+  id         String   @id @default(cuid())
+  question   String
+  answer     String
+  category   String?
+  order      Int      @default(0)
+  views      Int      @default(0)
+  helpful    Int      @default(0)
+  notHelpful Int      @default(0) @map("not_helpful")
+  createdAt  DateTime @default(now()) @map("created_at")
+  updatedAt  DateTime @updatedAt @map("updated_at")
+
+  @@index([category])
+  @@index([order])
+  @@map("faqs")
+}
+
+model Feedback {
+  id            String    @id @default(cuid())
+  userId        String?   @map("user_id")
+  type          String // 'bug', 'feature', 'general', 'complaint'
+  subject       String
+  message       String
+  status        String    @default("open") // 'open', 'in_progress', 'resolved', 'closed'
+  adminResponse String?   @map("admin_response")
+  respondedAt   DateTime? @map("responded_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User? @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([createdAt])
+  @@map("feedback")
+}
+
+// Real-time Models
+model WebSocketConnection {
+  id             String    @id @default(cuid())
+  userId         String?   @map("user_id")
+  socketId       String    @unique @map("socket_id")
+  connectedAt    DateTime  @default(now()) @map("connected_at")
+  disconnectedAt DateTime? @map("disconnected_at")
+
+  @@index([userId])
+  @@index([connectedAt])
+  @@map("websocket_connections")
+}
+
+model ActivityFeed {
+  id          String   @id @default(cuid())
+  userId      String?  @map("user_id")
+  type        String // 'contribution', 'achievement', 'system', etc.
+  title       String
+  description String?
+  actionUrl   String?  @map("action_url")
+  metadata    Json?
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@index([userId])
+  @@index([createdAt])
+  @@index([type])
+  @@map("activity_feeds")
+}
+
+// Data Versioning Models
+model DataVersion {
+  id                String   @id @default(cuid())
+  resourceType      String   @map("resource_type")
+  resourceId        String   @map("resource_id")
+  version           Int
+  data              Json // Snapshot of data at this version
+  changedBy         String?  @map("changed_by")
+  changeType        String   @map("change_type") // 'create', 'update', 'delete'
+  changeDescription String?  @map("change_description")
+  createdAt         DateTime @default(now()) @map("created_at")
+
+  @@unique([resourceType, resourceId, version])
+  @@index([resourceType, resourceId])
+  @@index([createdAt])
+  @@map("data_versions")
+}
+
+model DataLineage {
+  id           String   @id @default(cuid())
+  sourceType   String   @map("source_type")
+  sourceId     String   @map("source_id")
+  targetType   String   @map("target_type")
+  targetId     String   @map("target_id")
+  relationship String // 'derived_from', 'validated_by', 'translated_from', etc.
+  createdAt    DateTime @default(now()) @map("created_at")
+
+  @@unique([sourceType, sourceId, targetType, targetId, relationship])
+  @@index([sourceType, sourceId])
+  @@index([targetType, targetId])
+  @@map("data_lineages")
+}
+
+// Search Models
+model SavedSearch {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  name      String
+  query     String
+  filters   Json?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@map("saved_searches")
+}
+
+model SearchHistory {
+  id          String   @id @default(cuid())
+  userId      String   @map("user_id")
+  query       String
+  filters     Json?
+  resultCount Int      @default(0) @map("result_count")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([createdAt])
+  @@map("search_history")
+}
+
+// Admin Models
+model ModerationRule {
+  id           String   @id @default(cuid())
+  name         String   @unique
+  description  String?
+  resourceType String   @map("resource_type")
+  conditions   Json // Rule conditions
+  actions      Json // Actions to take when conditions met
+  enabled      Boolean  @default(true)
+  priority     Int      @default(0)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  @@index([enabled])
+  @@index([resourceType])
+  @@map("moderation_rules")
+}
+
+model ContentFlag {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  resourceType String    @map("resource_type")
+  resourceId   String    @map("resource_id")
+  reason       String
+  description  String?
+  status       String    @default("pending") // 'pending', 'reviewed', 'resolved', 'dismissed'
+  reviewedBy   String?   @map("reviewed_by")
+  reviewedAt   DateTime? @map("reviewed_at")
+  createdAt    DateTime  @default(now()) @map("created_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([resourceType, resourceId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("content_flags")
+}
+
+model Appeal {
+  id           String    @id @default(cuid())
+  userId       String    @map("user_id")
+  resourceType String    @map("resource_type")
+  resourceId   String    @map("resource_id")
+  reason       String
+  status       String    @default("pending") // 'pending', 'approved', 'rejected'
+  reviewedBy   String?   @map("reviewed_by")
+  reviewedAt   DateTime? @map("reviewed_at")
+  reviewNotes  String?   @map("review_notes")
+  createdAt    DateTime  @default(now()) @map("created_at")
+  updatedAt    DateTime  @updatedAt @map("updated_at")
+
+  // Relations
+  user User @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@map("appeals")
+}
+
+model BackupJob {
+  id          String    @id @default(cuid())
+  type        String // 'database', 'files', 'full'
+  status      String    @default("pending") // 'pending', 'running', 'completed', 'failed'
+  fileUrl     String?   @map("file_url")
+  fileSize    Int?      @map("file_size")
+  error       String?
+  startedAt   DateTime? @map("started_at")
+  completedAt DateTime? @map("completed_at")
+  expiresAt   DateTime? @map("expires_at")
+  createdAt   DateTime  @default(now()) @map("created_at")
+
+  @@index([status])
+  @@index([createdAt])
+  @@map("backup_jobs")
 }

@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { convertPCMToWAV } from '@/lib/audio-utils';
 
 interface RecordBtnProps {
     mode?: 'audio' | 'video';
@@ -8,82 +9,214 @@ interface RecordBtnProps {
 export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtnProps) {
     const [isRecording, setIsRecording] = useState(false);
     const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+    const audioContextRef = useRef<AudioContext | null>(null);
+    const scriptProcessorRef = useRef<ScriptProcessorNode | null>(null);
+    const audioChunksRef = useRef<Float32Array[]>([]);
     const chunksRef = useRef<Blob[]>([]);
     const videoPreviewRef = useRef<HTMLVideoElement | null>(null);
     const streamRef = useRef<MediaStream | null>(null);
+    const isRecordingRef = useRef<boolean>(false);
+
+    // Get best available video quality
+    const getBestVideoConstraints = async (): Promise<MediaTrackConstraints> => {
+        try {
+            const devices = await navigator.mediaDevices.enumerateDevices();
+            const videoDevices = devices.filter(d => d.kind === 'videoinput');
+            
+            // Try to get capabilities of the first video device
+            if (videoDevices.length > 0) {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: videoDevices[0].deviceId } });
+                const track = stream.getVideoTracks()[0];
+                const capabilities = track.getCapabilities();
+                stream.getTracks().forEach(t => t.stop());
+
+                return {
+                    facingMode: 'user',
+                    width: { ideal: capabilities.width?.max || 1920, min: 1280 },
+                    height: { ideal: capabilities.height?.max || 1080, min: 720 },
+                    frameRate: { ideal: capabilities.frameRate?.max || 30, min: 24 }
+                };
+            }
+        } catch (error) {
+            console.warn('Could not query device capabilities, using defaults:', error);
+        }
+
+        // Fallback to high-quality defaults
+        return {
+            facingMode: 'user',
+            width: { ideal: 1920, min: 1280 },
+            height: { ideal: 1080, min: 720 },
+            frameRate: { ideal: 30 }
+        };
+    };
 
     const startRecording = async () => {
         try {
-            chunksRef.current = [];
+            if (mode === 'audio') {
+                // Audio mode: Use Web Audio API for 48kHz WAV
+                chunksRef.current = [];
+                audioChunksRef.current = [];
 
-            const constraints: MediaStreamConstraints =
-                mode === 'video'
-                    ? { audio: true, video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 720 } } }
-                    : { audio: true };
+                const audioConstraints: MediaTrackConstraints = {
+                    sampleRate: 48000,
+                    channelCount: 1, // Mono
+                    echoCancellation: true,
+                    noiseSuppression: true,
+                    autoGainControl: true
+                };
 
-            const stream = await navigator.mediaDevices.getUserMedia(constraints);
-            streamRef.current = stream;
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: audioConstraints });
+                streamRef.current = stream;
 
-            // Show video preview when in video mode
-            if (mode === 'video' && videoPreviewRef.current) {
-                videoPreviewRef.current.srcObject = stream;
-                videoPreviewRef.current.play();
-            }
+                // Create AudioContext at 48kHz
+                const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext;
+                const audioContext = new AudioContextClass({ sampleRate: 48000 });
+                audioContextRef.current = audioContext;
 
-            const mimeType = mode === 'video'
-                ? (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus') ? 'video/webm;codecs=vp9,opus' : 'video/webm')
-                : (MediaRecorder.isTypeSupported('audio/webm;codecs=opus') ? 'audio/webm;codecs=opus' : 'audio/webm');
+                const source = audioContext.createMediaStreamSource(stream);
+                
+                // Use ScriptProcessorNode to capture PCM samples
+                // Note: ScriptProcessorNode is deprecated but widely supported
+                // AudioWorkletNode would be better but requires separate worklet file
+                const bufferSize = 4096;
+                const scriptProcessor = audioContext.createScriptProcessor(bufferSize, 1, 1);
+                scriptProcessorRef.current = scriptProcessor;
 
-            const mediaRecorder = new MediaRecorder(stream, { mimeType });
-            mediaRecorderRef.current = mediaRecorder;
+                scriptProcessor.onaudioprocess = (e) => {
+                    if (isRecordingRef.current) {
+                        const inputData = e.inputBuffer.getChannelData(0);
+                        audioChunksRef.current.push(new Float32Array(inputData));
+                    }
+                };
 
-            mediaRecorder.ondataavailable = e => e.data.size > 0 && chunksRef.current.push(e.data);
+                source.connect(scriptProcessor);
+                scriptProcessor.connect(audioContext.destination); // Required for ScriptProcessorNode to work
 
-            mediaRecorder.onstop = () => {
-                const isVideo = mode === 'video';
-                const blobType = isVideo ? 'video/webm' : 'audio/wav';
-                const ext = isVideo ? 'webm' : 'wav';
-                const blob = new Blob(chunksRef.current, { type: blobType });
-                const fileName = `recording_${new Date().toISOString()}.${ext}`;
-                const file = new File([blob], fileName, { type: blobType });
-                onAudioRecorded?.(file);
+                isRecordingRef.current = true;
+                setIsRecording(true);
+            } else {
+                // Video mode: Use MediaRecorder with best quality
+                chunksRef.current = [];
 
-                // Stop video preview
+                const videoConstraints = await getBestVideoConstraints();
+                const constraints: MediaStreamConstraints = {
+                    audio: { sampleRate: 48000 },
+                    video: videoConstraints
+                };
+
+                const stream = await navigator.mediaDevices.getUserMedia(constraints);
+                streamRef.current = stream;
+
+                // Show video preview
                 if (videoPreviewRef.current) {
-                    videoPreviewRef.current.srcObject = null;
+                    videoPreviewRef.current.srcObject = stream;
+                    videoPreviewRef.current.play();
                 }
-            };
 
-            mediaRecorder.start();
-            setIsRecording(true);
+                // Determine best codec
+                let mimeType = 'video/webm';
+                if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
+                    mimeType = 'video/webm;codecs=vp9,opus';
+                } else if (MediaRecorder.isTypeSupported('video/webm;codecs=vp8,opus')) {
+                    mimeType = 'video/webm;codecs=vp8,opus';
+                } else if (MediaRecorder.isTypeSupported('video/mp4;codecs=h264,aac')) {
+                    mimeType = 'video/mp4;codecs=h264,aac';
+                }
+
+                const mediaRecorder = new MediaRecorder(stream, { mimeType });
+                mediaRecorderRef.current = mediaRecorder;
+
+                mediaRecorder.ondataavailable = e => e.data.size > 0 && chunksRef.current.push(e.data);
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(chunksRef.current, { type: mimeType });
+                    const ext = mimeType.includes('mp4') ? 'mp4' : 'webm';
+                    const fileName = `recording_${new Date().toISOString()}.${ext}`;
+                    const file = new File([blob], fileName, { type: mimeType });
+                    onAudioRecorded?.(file);
+
+                    // Stop video preview
+                    if (videoPreviewRef.current) {
+                        videoPreviewRef.current.srcObject = null;
+                    }
+                };
+
+                mediaRecorder.start();
+                isRecordingRef.current = true;
+                setIsRecording(true);
+            }
         } catch (error) {
             console.error(`Error accessing ${mode === 'video' ? 'camera/microphone' : 'microphone'}:`, error);
         }
     };
 
-    const stopRecording = () => {
-        if (mediaRecorderRef.current) {
-            mediaRecorderRef.current.stop();
-            if (streamRef.current) {
-                streamRef.current.getTracks().forEach(track => track.stop());
-                streamRef.current = null;
+    const stopRecording = async () => {
+        if (mode === 'audio' && audioContextRef.current && scriptProcessorRef.current) {
+            // Stop audio recording and convert to WAV
+            scriptProcessorRef.current.disconnect();
+            audioContextRef.current.close();
+            
+            if (audioChunksRef.current.length > 0) {
+                // Combine all audio chunks
+                const totalLength = audioChunksRef.current.reduce((sum, chunk) => sum + chunk.length, 0);
+                const combinedAudio = new Float32Array(totalLength);
+                let offset = 0;
+                for (const chunk of audioChunksRef.current) {
+                    combinedAudio.set(chunk, offset);
+                    offset += chunk.length;
+                }
+
+                // Create AudioBuffer from PCM data
+                const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)({ sampleRate: 48000 });
+                const audioBuffer = audioContext.createBuffer(1, combinedAudio.length, 48000);
+                audioBuffer.copyToChannel(combinedAudio, 0);
+
+                // Convert to WAV
+                const wavBlob = await convertPCMToWAV(audioBuffer);
+                const fileName = `recording_${new Date().toISOString()}.wav`;
+                const file = new File([wavBlob], fileName, { type: 'audio/wav' });
+                onAudioRecorded?.(file);
             }
-            setIsRecording(false);
+
+            audioChunksRef.current = [];
+            audioContextRef.current = null;
+            scriptProcessorRef.current = null;
+        } else if (mediaRecorderRef.current) {
+            mediaRecorderRef.current.stop();
         }
+
+        if (streamRef.current) {
+            streamRef.current.getTracks().forEach(track => track.stop());
+            streamRef.current = null;
+        }
+        isRecordingRef.current = false;
+        setIsRecording(false);
     };
 
-    // Cleanup on unmount or mode change
+    // Cleanup on unmount
     useEffect(() => {
         return () => {
-            if (mediaRecorderRef.current && isRecording) {
-                stopRecording();
+            if (isRecordingRef.current) {
+                // Synchronous cleanup - just stop tracks
+                if (streamRef.current) {
+                    streamRef.current.getTracks().forEach(track => track.stop());
+                }
+                if (audioContextRef.current) {
+                    audioContextRef.current.close().catch(console.error);
+                }
+                if (scriptProcessorRef.current) {
+                    scriptProcessorRef.current.disconnect();
+                }
+                if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
+                    mediaRecorderRef.current.stop();
+                }
             }
         };
-    }, [isRecording]);
+    }, []);
 
     // Stop recording if mode changes while recording
     useEffect(() => {
-        if (isRecording) {
+        if (isRecordingRef.current) {
             stopRecording();
         }
     }, [mode]);

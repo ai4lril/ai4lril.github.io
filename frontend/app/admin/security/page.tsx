@@ -1,5 +1,4 @@
 'use client';
-import { API_BASE_URL } from '@/lib/api-config';
 
 import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '@/components/AdminLayout';
@@ -90,12 +89,12 @@ export default function SecurityPage() {
       });
 
       const [eventsResponse, auditResponse] = await Promise.all([
-        fetch(`${API_BASE_URL}/admin/security-events?${eventsParams}`, {
+        fetch(`/api/admin/security-events?${eventsParams}`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
           },
         }),
-        fetch(`${API_BASE_URL}/admin/audit-logs?page=1&limit=20`, {
+        fetch(`/api/admin/audit-logs?page=1&limit=20`, {
           headers: {
             'Authorization': `Bearer ${localStorage.getItem('adminToken')}`,
           },

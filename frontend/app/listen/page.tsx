@@ -5,6 +5,8 @@ import BottomBar from "@/components/BottomBar";
 import { useCallback, useEffect, useState } from "react";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
+import { showToast } from "@/lib/toast";
 
 interface ListenRecording {
     id: string;
@@ -38,12 +40,21 @@ export default function Listen() {
     const fetchAudio = useCallback(async (languageCode?: string) => {
         setLoadingRecording(true);
         try {
-            const params = new URLSearchParams();
+            const url = new URL(`${API_BASE_URL}/speech/listen-audio`);
             if (languageCode) {
-                params.set('languageCode', languageCode);
+                url.searchParams.set('languageCode', languageCode);
             }
 
-            const response = await fetch(`/api/listen-audio${params.toString() ? `?${params}` : ''}`);
+            // Get auth token if available
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(url.toString(), { headers });
 
             if (response.status === 404) {
                 setRecording(null);
@@ -82,6 +93,42 @@ export default function Listen() {
             setLoadingRecording(false);
         }
     }, []);
+
+    const handleValidation = async (isValid: boolean) => {
+        if (!recording) return;
+
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                showToast('Authentication required', 'error');
+                return;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/speech/listen-validation`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    speechRecordingId: recording.id,
+                    isValid,
+                }),
+            });
+
+            if (!response.ok) {
+                const error = await response.json().catch(() => ({ message: 'Failed to save validation' }));
+                throw new Error(error.message || 'Failed to save validation');
+            }
+
+            showToast(`Validation ${isValid ? 'accepted' : 'rejected'} successfully!`, 'success');
+            // Fetch next recording
+            fetchAudio(lang || undefined);
+        } catch (error) {
+            console.error('Error submitting validation:', error);
+            showToast(`Failed to submit validation: ${error instanceof Error ? error.message : 'Unknown error'}`, 'error');
+        }
+    };
 
     useEffect(() => {
         fetchAudio(lang || undefined);
@@ -139,13 +186,17 @@ export default function Listen() {
                         )}
 
                         <div className="flex gap-8">
-                            <button className="group bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-green-400 hover:border-green-500">
+                            <button 
+                                onClick={() => handleValidation(true)}
+                                className="group bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-green-400 hover:border-green-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="size-5 transition-transform group-hover:scale-110">
                                     <path d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
                                 </svg>
                                 <span>Yes</span>
                             </button>
-                            <button className="group bg-linear-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-red-400 hover:border-red-500">
+                            <button 
+                                onClick={() => handleValidation(false)}
+                                className="group bg-linear-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-red-400 hover:border-red-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="size-5 transition-transform group-hover:scale-110">
                                     <path d="M6.633 10.25c.806 0 1.533-.446 2.031-1.08a9.041 9.041 0 0 1 2.861-2.4c.723-.384 1.35-.956 1.653-1.715a4.498 4.498 0 0 0 .322-1.672V2.75a.75.75 0 0 1 .75-.75 2.25 2.25 0 0 1 2.25 2.25c0 1.152-.26 2.243-.723 3.218-.266.558.107 1.282.725 1.282m0 0h3.126c1.026 0 1.945.694 2.054 1.715.045.422.068.85.068 1.285a11.95 11.95 0 0 1-2.649 7.521c-.388.482-.987.729-1.605.729H13.48c-.483 0-.964-.078-1.423-.23l-3.114-1.04a4.501 4.501 0 0 0-1.423-.23H5.904m10.598-9.75H14.25M5.904 18.5c.083.205.173.405.27.602.197.4-.078.898-.523.898h-.908c-.889 0-1.713-.518-1.972-1.368a12 12 0 0 1-.521-3.507c0-1.553.295-3.036.831-4.398C3.387 9.953 4.167 9.5 5 9.5h1.053c.472 0 .745.556.5.96a8.958 8.958 0 0 0-1.302 4.665c0 1.194.232 2.333.654 3.375Z" />
                                 </svg>
@@ -165,7 +216,7 @@ export default function Listen() {
                 audioSrc={recording?.audioFile}
                 mediaType={(recording?.mediaType as 'audio' | 'video') || 'audio'}
                 onSkip={() => fetchAudio(lang || undefined)}
-                onSubmit={() => { }}
+                onSubmit={() => {}}
             />
 
         </div>

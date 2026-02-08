@@ -1,5 +1,4 @@
 'use client';
-import { API_BASE_URL } from '@/lib/api-config';
 
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
@@ -155,7 +154,7 @@ export default function AdminUsersPage() {
                 return;
             }
 
-            const response = await fetch(`${API_BASE_URL}/admin/users/${userId}`, {
+            const response = await fetch(`/api/admin/users/${userId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`,

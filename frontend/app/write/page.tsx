@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { codeToLabel, LANGUAGES } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
 import { showToast } from "@/lib/toast";
+import { API_BASE_URL } from "@/lib/api-config";
 
 export default function AddSentence() {
     const router = useRouter();
@@ -94,7 +95,7 @@ export default function AddSentence() {
                 citation: citation.trim(),
             };
 
-            const response = await fetch('/api/write-submission', {
+            const response = await fetch(`${API_BASE_URL}/write/submission`, {
                 method: 'POST',
                 headers,
                 body: JSON.stringify(payload),

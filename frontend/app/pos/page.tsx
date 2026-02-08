@@ -6,6 +6,7 @@ import { POS_TAGS } from "./pos";
 import { posSentences } from "./sentences";
 import { codeToLabel } from "@/lib/languages";
 import { getPreferredLanguage } from "@/lib/langPreference";
+import { API_BASE_URL } from "@/lib/api-config";
 
 function shuffle<T>(arr: T[]): T[] {
     const a = arr.slice();
@@ -70,7 +71,7 @@ export default function PosPage() {
         setErrorMsg("");
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         const missingIdx = new Set<number>();
         tokens.forEach((_, i) => { if (!tags[i] || !tags[i].trim()) missingIdx.add(i); });
@@ -82,8 +83,58 @@ export default function PosPage() {
         const sentence = pool[index];
         const annotations = tokens.map((tok, i) => ({ token: tok, tag: tags[i] }));
         console.log("POS annotations", { sentenceId: sentence?.id, lang, text, annotations });
-        alert("Submitted POS annotations (check console)");
-        nextSentence();
+
+        try {
+            // Get auth token if available
+            const token = localStorage.getItem('token');
+            const headers: HeadersInit = {
+                'Content-Type': 'application/json',
+            };
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+
+            const response = await fetch(`${API_BASE_URL}/pos-annotation`, {
+                method: 'POST',
+                headers,
+                body: JSON.stringify({
+                    sentenceId: sentence?.id,
+                    annotations: annotations,
+                    languageCode: lang || 'unknown'
+                })
+            });
+
+            if (response.ok) {
+                const result = await response.json();
+                console.log("POS submitted successfully", result);
+                
+                // Show success message
+                const successMsg = document.createElement('div');
+                successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce-in';
+                successMsg.textContent = 'POS annotations submitted successfully!';
+                document.body.appendChild(successMsg);
+                setTimeout(() => {
+                    if (document.body.contains(successMsg)) {
+                        document.body.removeChild(successMsg);
+                    }
+                }, 3000);
+                
+                nextSentence();
+            } else {
+                let errorMessage = "Failed to submit POS annotations";
+                try {
+                    const error = await response.json();
+                    errorMessage = error.error || error.message || errorMessage;
+                } catch (parseError) {
+                    console.error('Error parsing response:', parseError);
+                }
+                console.error('Submission failed:', response.status, errorMessage);
+                setErrorMsg(errorMessage);
+            }
+        } catch (error) {
+            console.error("Error submitting POS:", error);
+            setErrorMsg(`Network error: ${error instanceof Error ? error.message : 'Please check your connection and try again.'}`);
+        }
     };
 
     return (

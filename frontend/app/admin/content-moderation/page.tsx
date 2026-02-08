@@ -1,120 +1,184 @@
 'use client';
 
-import Link from 'next/link';
+import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '@/components/AdminLayout';
-import { FileText, MessageSquare, CheckCircle, XCircle, AlertTriangle, ArrowRight } from 'lucide-react';
+import { FileText, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
 
-export default function ContentModerationPage() {
+interface Sentence {
+    id: string;
+    text: string;
+    languageCode: string;
+    taskType: string;
+    createdAt: string;
+    valid: boolean | null;
+}
+
+export default function PendingSentencesPage() {
+    const [sentences, setSentences] = useState<Sentence[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState(1);
+    const [validatingId, setValidatingId] = useState<string | null>(null);
+
+    const loadPendingSentences = useCallback(async () => {
+        try {
+            setLoading(true);
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            const response = await fetch(`/api/admin/sentences/pending?page=${currentPage}&limit=20`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch pending sentences');
+            }
+
+            const data = await response.json();
+            setSentences(data.sentences || []);
+            setTotalPages(data.pagination?.totalPages || 1);
+        } catch (error) {
+            console.error('Failed to load pending sentences:', error);
+        } finally {
+            setLoading(false);
+        }
+    }, [currentPage]);
+
+    useEffect(() => {
+        loadPendingSentences();
+    }, [currentPage, loadPendingSentences]);
+
+    const handleValidate = async (sentenceId: string, valid: boolean) => {
+        try {
+            setValidatingId(sentenceId);
+            const token = localStorage.getItem('adminToken');
+            if (!token) {
+                window.location.href = '/admin/login';
+                return;
+            }
+
+            const response = await fetch(`/api/admin/sentences/${sentenceId}/validate`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    valid,
+                    comment: valid ? 'Approved by admin' : 'Rejected by admin',
+                }),
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to validate sentence');
+            }
+
+            // Remove from list
+            setSentences(prev => prev.filter(s => s.id !== sentenceId));
+        } catch (error) {
+            console.error('Failed to validate sentence:', error);
+            alert('Failed to validate sentence');
+        } finally {
+            setValidatingId(null);
+        }
+    };
+
+    if (loading) {
+        return (
+            <AdminLayout>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+                </div>
+            </AdminLayout>
+        );
+    }
+
     return (
         <AdminLayout>
-            <div className="py-6">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    {/* Header */}
-                    <div className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">Content Moderation</h1>
-                        <p className="mt-1 text-sm text-gray-500">
-                            Review and validate user-submitted content
-                        </p>
-                    </div>
-
-                    {/* Quick Stats */}
-                    <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 mb-8">
-                        <div className="bg-white overflow-hidden shadow rounded-lg border-l-4 border-blue-500">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="shrink-0">
-                                        <FileText className="h-8 w-8 text-blue-500" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 truncate">
-                                                Pending Sentences
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900">
-                                                Review sentences submitted by users
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                <div className="mt-4">
-                                    <Link
-                                        href="/admin/content-moderation/sentences"
-                                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-800"
-                                    >
-                                        Review Sentences
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="bg-white overflow-hidden shadow rounded-lg border-l-4 border-green-500">
-                            <div className="p-5">
-                                <div className="flex items-center">
-                                    <div className="shrink-0">
-                                        <MessageSquare className="h-8 w-8 text-green-500" />
-                                    </div>
-                                    <div className="ml-5 w-0 flex-1">
-                                        <dl>
-                                            <dt className="text-sm font-medium text-gray-500 truncate">
-                                                Pending Questions
-                                            </dt>
-                                            <dd className="text-lg font-medium text-gray-900">
-                                                Review questions submitted by users
-                                            </dd>
-                                        </dl>
-                                    </div>
-                                </div>
-                                <div className="mt-4">
-                                    <Link
-                                        href="/admin/content-moderation/questions"
-                                        className="inline-flex items-center text-sm font-medium text-green-600 hover:text-green-800"
-                                    >
-                                        Review Questions
-                                        <ArrowRight className="ml-2 h-4 w-4" />
-                                    </Link>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Guidelines */}
-                    <div className="bg-white shadow rounded-lg p-6">
-                        <h2 className="text-lg font-medium text-gray-900 mb-4">Moderation Guidelines</h2>
-                        <div className="space-y-3 text-sm text-gray-600">
-                            <div className="flex items-start">
-                                <CheckCircle className="h-5 w-5 text-green-500 mr-2 mt-0.5 shrink-0" />
-                                <div>
-                                    <strong className="text-gray-900">Approve</strong> content that is:
-                                    <ul className="mt-1 ml-4 list-disc space-y-1">
-                                        <li>Grammatically correct and well-formed</li>
-                                        <li>Appropriate and non-offensive</li>
-                                        <li>In the correct language and script</li>
-                                        <li>Properly formatted and readable</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="flex items-start">
-                                <XCircle className="h-5 w-5 text-red-500 mr-2 mt-0.5 shrink-0" />
-                                <div>
-                                    <strong className="text-gray-900">Reject</strong> content that:
-                                    <ul className="mt-1 ml-4 list-disc space-y-1">
-                                        <li>Contains offensive, inappropriate, or harmful content</li>
-                                        <li>Has grammatical errors or is poorly formatted</li>
-                                        <li>Is in the wrong language or script</li>
-                                        <li>Violates copyright or contains personal information</li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div className="flex items-start">
-                                <AlertTriangle className="h-5 w-5 text-yellow-500 mr-2 mt-0.5 shrink-0" />
-                                <div>
-                                    <strong className="text-gray-900">Note:</strong> All approved content will be made available for users to contribute audio recordings and annotations.
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+            <div className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <h1 className="text-2xl font-bold text-gray-900">Pending Sentences</h1>
+                    <button
+                        onClick={loadPendingSentences}
+                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                    >
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Refresh
+                    </button>
                 </div>
+
+                {sentences.length === 0 ? (
+                    <div className="text-center py-12">
+                        <FileText className="mx-auto h-12 w-12 text-gray-400" />
+                        <h3 className="mt-2 text-sm font-medium text-gray-900">No pending sentences</h3>
+                        <p className="mt-1 text-sm text-gray-500">All sentences have been reviewed.</p>
+                    </div>
+                ) : (
+                    <div className="bg-white shadow overflow-hidden sm:rounded-md">
+                        <ul className="divide-y divide-gray-200">
+                            {sentences.map((sentence) => (
+                                <li key={sentence.id} className="px-6 py-4">
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex-1">
+                                            <p className="text-sm font-medium text-gray-900">{sentence.text}</p>
+                                            <div className="mt-2 flex items-center text-sm text-gray-500">
+                                                <span className="mr-4">Language: {sentence.languageCode}</span>
+                                                <span className="mr-4">Type: {sentence.taskType}</span>
+                                                <Clock className="h-4 w-4 mr-1" />
+                                                <span>{new Date(sentence.createdAt).toLocaleDateString()}</span>
+                                            </div>
+                                        </div>
+                                        <div className="ml-4 flex items-center space-x-2">
+                                            <button
+                                                onClick={() => handleValidate(sentence.id, true)}
+                                                disabled={validatingId === sentence.id}
+                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-green-600 hover:bg-green-700 disabled:opacity-50"
+                                            >
+                                                <CheckCircle className="h-4 w-4 mr-1" />
+                                                Approve
+                                            </button>
+                                            <button
+                                                onClick={() => handleValidate(sentence.id, false)}
+                                                disabled={validatingId === sentence.id}
+                                                className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-red-600 hover:bg-red-700 disabled:opacity-50"
+                                            >
+                                                <XCircle className="h-4 w-4 mr-1" />
+                                                Reject
+                                            </button>
+                                        </div>
+                                    </div>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
+
+                {totalPages > 1 && (
+                    <div className="flex items-center justify-between">
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                            disabled={currentPage === 1}
+                            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        >
+                            Previous
+                        </button>
+                        <span className="text-sm text-gray-700">
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <button
+                            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                            disabled={currentPage === totalPages}
+                            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 disabled:opacity-50"
+                        >
+                            Next
+                        </button>
+                    </div>
+                )}
             </div>
         </AdminLayout>
     );
