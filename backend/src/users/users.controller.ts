@@ -1,5 +1,15 @@
-import { Controller, Get, Put, Body, UseGuards, Request } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Put,
+  Post,
+  Body,
+  UseGuards,
+  Request,
+} from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { UsersService } from './users.service';
+import { VerificationService } from '../verification.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 interface RequestWithUser {
@@ -13,9 +23,13 @@ interface RequestWithUser {
   };
 }
 
+@ApiTags('users')
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly verificationService: VerificationService,
+  ) {}
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -41,5 +55,29 @@ export class UsersController {
     @Request() req: RequestWithUser,
   ) {
     return this.usersService.updateProfile(req.user.id, updateData);
+  }
+
+  @Post('verification/send')
+  @UseGuards(JwtAuthGuard)
+  async sendVerificationEmail(@Request() req: RequestWithUser) {
+    await this.verificationService.sendVerificationEmail(req.user.id);
+    return { message: 'Verification email sent' };
+  }
+
+  @Post('verification/verify')
+  async verifyEmail(@Body() body: { token: string }) {
+    const success = await this.verificationService.verifyEmail(body.token);
+    if (!success) {
+      return { success: false, message: 'Invalid or expired token' };
+    }
+    return { success: true, message: 'Email verified successfully' };
+  }
+
+  @Get('verification/status')
+  @UseGuards(JwtAuthGuard)
+  async getVerificationStatus(@Request() req: RequestWithUser) {
+    const isVerified =
+      await this.verificationService.checkVerificationStatus(req.user.id);
+    return { isVerified };
   }
 }

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../notifications/email.service';
+import { CacheService } from '../cache/cache.service';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 
@@ -11,82 +12,94 @@ export class RecoveryService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
-  ) {}
+    private readonly cacheService: CacheService,
+  ) { }
 
   async requestPasswordReset(email: string): Promise<void> {
+    // Rate limit: max 3 requests per email per hour
+    const rateLimitKey = `password_reset:${email.toLowerCase()}`;
+    const requestCount = (await this.cacheService.get<number>(rateLimitKey)) || 0;
+    if (requestCount >= 3) {
+      this.logger.warn(`Password reset rate limit exceeded for ${email}`);
+      return; // Don't reveal rate limit
+    }
+
+    const user = await this.prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      this.logger.warn(`Password reset requested for non-existent email: ${email}`);
+      return;
+    }
+
+    // OAuth users without password cannot reset
+    if (!user.password) {
+      this.logger.warn(`Password reset requested for OAuth-only user: ${email}`);
+      return;
+    }
+
     try {
-      const user = await this.prisma.user.findUnique({
-        where: { email },
-      });
-
-      if (!user) {
-        // Don't reveal if user exists
-        this.logger.warn(
-          `Password reset requested for non-existent email: ${email}`,
-        );
-        return;
-      }
-
-      // Generate reset token
       const resetToken = randomBytes(32).toString('hex');
       const expiresAt = new Date();
-      expiresAt.setHours(expiresAt.getHours() + 1); // 1 hour expiration
+      expiresAt.setHours(expiresAt.getHours() + 1);
 
-      // Store reset token (in a real implementation, you'd have a separate table)
-      // For now, we'll use a temporary approach
-      await this.prisma.user.update({
-        where: { id: user.id },
+      // Invalidate any existing tokens for this user
+      await this.prisma.passwordResetToken.updateMany({
+        where: { userId: user.id, usedAt: null },
+        data: { usedAt: new Date() },
+      });
+
+      await this.prisma.passwordResetToken.create({
         data: {
-          // Store token temporarily (in production, use a separate PasswordResetToken table)
-          verificationToken: resetToken, // Reusing this field temporarily
-          verificationTokenExpires: expiresAt,
+          userId: user.id,
+          token: resetToken,
+          expiresAt,
         },
       });
 
-      // Send reset email
       await this.emailService.sendPasswordResetEmail(user.email, resetToken);
+      await this.cacheService.set(rateLimitKey, requestCount + 1, 3600);
 
       this.logger.log(`Password reset email sent to ${email}`);
     } catch (error) {
       this.logger.error(
-        `Failed to send password reset email: ${error.message}`,
+        `Failed to send password reset email: ${error instanceof Error ? error.message : 'Unknown error'}`,
       );
       throw error;
     }
   }
 
   async resetPassword(token: string, newPassword: string): Promise<boolean> {
+    const resetRecord = await this.prisma.passwordResetToken.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+
+    if (!resetRecord || resetRecord.usedAt || resetRecord.expiresAt < new Date()) {
+      return false;
+    }
+
     try {
-      const user = await this.prisma.user.findFirst({
-        where: {
-          verificationToken: token,
-          verificationTokenExpires: {
-            gt: new Date(),
-          },
-        },
-      });
-
-      if (!user) {
-        return false;
-      }
-
-      // Hash new password
       const hashedPassword = await bcrypt.hash(newPassword, 12);
 
-      // Update password and clear token
-      await this.prisma.user.update({
-        where: { id: user.id },
-        data: {
-          password: hashedPassword,
-          verificationToken: null,
-          verificationTokenExpires: null,
-        },
-      });
+      await this.prisma.$transaction([
+        this.prisma.user.update({
+          where: { id: resetRecord.userId },
+          data: { password: hashedPassword },
+        }),
+        this.prisma.passwordResetToken.update({
+          where: { id: resetRecord.id },
+          data: { usedAt: new Date() },
+        }),
+      ]);
 
-      this.logger.log(`Password reset successful for user ${user.id}`);
+      this.logger.log(`Password reset successful for user ${resetRecord.userId}`);
       return true;
     } catch (error) {
-      this.logger.error(`Password reset failed: ${error.message}`);
+      this.logger.error(
+        `Password reset failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
+      );
       return false;
     }
   }

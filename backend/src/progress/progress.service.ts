@@ -1,13 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
 
 @Injectable()
 export class ProgressService {
   constructor(
     private prisma: PrismaService,
     private cache: CacheService,
-  ) {}
+    private cacheInvalidation: CacheInvalidationService,
+  ) { }
 
   async markCompleted(
     userId: string,
@@ -37,6 +39,13 @@ export class ProgressService {
     // Also cache for quick lookup (session-based)
     const cacheKey = `progress:${userId}:${resourceType}:${resourceId}:${featureType}`;
     await this.cache.set(cacheKey, '1', 3600); // 1 hour TTL
+
+    // Invalidate related progress caches (completed_ids caches)
+    await this.cacheInvalidation.invalidateUserProgress(
+      userId,
+      resourceType,
+      featureType,
+    );
   }
 
   async isCompleted(
@@ -79,6 +88,16 @@ export class ProgressService {
     featureType: string,
     resourceIds: string[],
   ): Promise<string[]> {
+    // Generate cache key from sorted resource IDs for consistency
+    const resourceIdsKey = resourceIds.sort().join(',');
+    const cacheKey = `progress:completed_ids:${userId}:${resourceType}:${featureType}:${resourceIdsKey}`;
+
+    // Check cache first
+    const cached = await this.cache.get<string[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const progressRecords = await this.prisma.userProgress.findMany({
       where: {
         userId,
@@ -91,7 +110,11 @@ export class ProgressService {
       },
     });
 
-    return progressRecords.map((p) => p.resourceId);
+    const completedIds = progressRecords.map((p) => p.resourceId);
+
+    // Cache for 5 minutes
+    await this.cache.set(cacheKey, completedIds, 300);
+    return completedIds;
   }
 
   async excludeCompleted<T extends { id: string }>(

@@ -1,5 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 // Valid language codes (ISO 639-3 + ISO 15924 format)
 const VALID_LANGUAGE_CODES = [
@@ -35,7 +37,11 @@ const VALID_LANGUAGE_CODES = [
  */
 @Injectable()
 export class WriteService {
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private cacheInvalidation: CacheInvalidationService,
+    private realtimeGateway: RealtimeGateway,
+  ) { }
 
   /**
    * Submit sentences for speech recording
@@ -94,6 +100,20 @@ export class WriteService {
         }),
       ),
     );
+
+    // Invalidate related caches
+    await this.cacheInvalidation.invalidateSentence(
+      createdSentences[0]?.id || '',
+      languageCode,
+    );
+    await this.cacheInvalidation.invalidateSearch(); // New sentences affect search
+
+    // Notify moderators of new pending content
+    this.realtimeGateway.emitToRoom('admin:content', 'update', {
+      type: 'sentence',
+      action: 'created',
+      count: createdSentences.length,
+    });
 
     return {
       success: true,

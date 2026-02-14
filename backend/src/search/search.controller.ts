@@ -10,6 +10,7 @@ import {
   Request,
   BadRequestException,
 } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { SearchService } from './search.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
@@ -19,6 +20,7 @@ interface RequestWithUser {
   };
 }
 
+@ApiTags('search')
 @Controller('search')
 export class SearchController {
   constructor(private readonly searchService: SearchService) { }
@@ -30,18 +32,32 @@ export class SearchController {
     @Query('types') types?: string,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
+    @Query('languageCode') languageCode?: string,
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
+    @Query('orderBy') orderBy?: 'relevance' | 'date',
   ) {
     if (!query) {
       throw new BadRequestException('Query parameter "q" is required');
     }
-    const { id: userId } = req.user as { id: string };
+    const userId = (req.user as { id?: string })?.id;
     const resourceTypes = types ? types.split(',') : [];
+    const filters =
+      languageCode || dateFrom || dateTo || orderBy
+        ? {
+          ...(languageCode && { languageCode }),
+          ...(dateFrom && { dateFrom: new Date(dateFrom) }),
+          ...(dateTo && { dateTo: new Date(dateTo) }),
+          ...(orderBy && { orderBy }),
+        }
+        : undefined;
     return this.searchService.fullTextSearch(
       query,
       resourceTypes,
       userId,
       limit ? parseInt(limit, 10) : 50,
       offset ? parseInt(offset, 10) : 0,
+      filters,
     );
   }
 

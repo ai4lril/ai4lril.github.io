@@ -51,7 +51,19 @@ export default function Speak() {
                 headers['Authorization'] = `Bearer ${token}`;
             }
 
-            const response = await fetch(url.toString(), { headers });
+            console.log('Fetching from:', url.toString());
+            const response = await fetch(url.toString(), {
+                headers,
+                // Add mode and credentials for CORS
+                mode: 'cors',
+                credentials: 'omit',
+            }).catch((fetchError) => {
+                console.error('Network error fetching speech sentences:', fetchError);
+                console.error('API_BASE_URL:', API_BASE_URL);
+                console.error('Full URL:', url.toString());
+                throw new Error(`Network error: ${fetchError.message}. Please check if the backend is running at ${API_BASE_URL}`);
+            });
+
             if (!response.ok) {
                 const errorText = await response.text().catch(() => 'No response body');
                 console.error(`Fetch failed for ${url}: Status ${response.status} (${response.statusText}). Response:`, errorText);
@@ -63,6 +75,12 @@ export default function Speak() {
             setCurrentSentenceIndex(0);
         } catch (err) {
             console.error('Error fetching speech sentences:', err);
+            // Show user-friendly error message
+            if (err instanceof Error) {
+                showToast(`Failed to load sentences: ${err.message}`, "error");
+            } else {
+                showToast('Failed to load sentences. Please check your connection.', "error");
+            }
             setSentences([]);
         } finally {
             setLoading(false);
@@ -127,8 +145,8 @@ export default function Speak() {
             : allowedAudioFormats;
 
         if (!allowedFormats.includes(recordedMedia.type)) {
-            const expectedFormat = mediaType === 'audio' 
-                ? '48kHz WAV format' 
+            const expectedFormat = mediaType === 'audio'
+                ? '48kHz WAV format'
                 : 'WebM or MP4 format';
             showToast(`Unsupported format: ${recordedMedia.type}. Expected ${expectedFormat}.`, "error");
             return;
@@ -271,8 +289,8 @@ export default function Speak() {
                         <button
                             onClick={() => handleMediaTypeChange('audio')}
                             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${mediaType === 'audio'
-                                    ? 'bg-white text-blue-700 shadow-md border border-blue-200'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-blue-700 shadow-md border border-blue-200'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">
@@ -283,8 +301,8 @@ export default function Speak() {
                         <button
                             onClick={() => handleMediaTypeChange('video')}
                             className={`flex items-center gap-1.5 px-4 py-1.5 rounded-full text-xs font-semibold transition-all duration-300 ${mediaType === 'video'
-                                    ? 'bg-white text-blue-700 shadow-md border border-blue-200'
-                                    : 'text-gray-500 hover:text-gray-700'
+                                ? 'bg-white text-blue-700 shadow-md border border-blue-200'
+                                : 'text-gray-500 hover:text-gray-700'
                                 }`}
                         >
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5">

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { convertPCMToWAV } from '@/lib/audio-utils';
+import { encodePCMToWAV } from '@/lib/audio-utils';
 
 interface RecordBtnProps {
     mode?: 'audio' | 'video';
@@ -22,7 +22,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(d => d.kind === 'videoinput');
-            
+
             // Try to get capabilities of the first video device
             if (videoDevices.length > 0) {
                 const stream = await navigator.mediaDevices.getUserMedia({ video: { deviceId: videoDevices[0].deviceId } });
@@ -74,7 +74,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
                 audioContextRef.current = audioContext;
 
                 const source = audioContext.createMediaStreamSource(stream);
-                
+
                 // Use ScriptProcessorNode to capture PCM samples
                 // Note: ScriptProcessorNode is deprecated but widely supported
                 // AudioWorkletNode would be better but requires separate worklet file
@@ -155,7 +155,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
             // Stop audio recording and convert to WAV
             scriptProcessorRef.current.disconnect();
             audioContextRef.current.close();
-            
+
             if (audioChunksRef.current.length > 0) {
                 // Combine all audio chunks
                 const totalLength = audioChunksRef.current.reduce((sum, chunk) => sum + chunk.length, 0);
@@ -166,13 +166,9 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
                     offset += chunk.length;
                 }
 
-                // Create AudioBuffer from PCM data
-                const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: AudioContext }).webkitAudioContext)({ sampleRate: 48000 });
-                const audioBuffer = audioContext.createBuffer(1, combinedAudio.length, 48000);
-                audioBuffer.copyToChannel(combinedAudio, 0);
-
-                // Convert to WAV
-                const wavBlob = await convertPCMToWAV(audioBuffer);
+                // Convert to WAV using encodePCMToWAV
+                // encodePCMToWAV expects: audioBuffers (Float32Array[]), sampleRate, numChannels
+                const wavBlob = encodePCMToWAV([combinedAudio], 48000, 1);
                 const fileName = `recording_${new Date().toISOString()}.wav`;
                 const file = new File([wavBlob], fileName, { type: 'audio/wav' });
                 onAudioRecorded?.(file);
@@ -228,8 +224,8 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
             {/* Video preview - shown when in video mode */}
             {isVideo && (
                 <div className={`relative rounded-2xl overflow-hidden shadow-xl border-2 transition-all duration-500 ${isRecording
-                        ? 'border-red-400 shadow-red-500/30'
-                        : 'border-blue-300 shadow-blue-400/20'
+                    ? 'border-red-400 shadow-red-500/30'
+                    : 'border-blue-300 shadow-blue-400/20'
                     }`}>
                     <video
                         ref={videoPreviewRef}

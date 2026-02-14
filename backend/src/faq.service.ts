@@ -9,7 +9,7 @@ export class FAQService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async getFAQs(category?: string, search?: string) {
     const cacheKey = `faqs:${category || 'all'}:${search || ''}`;
@@ -83,6 +83,6 @@ export class FAQService {
     }
 
     // Invalidate cache
-    await this.cacheService.del(`faqs:*`);
+    await this.cacheService.delPattern(`faqs:*`);
   }
 }

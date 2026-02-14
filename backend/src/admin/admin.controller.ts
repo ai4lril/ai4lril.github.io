@@ -17,8 +17,6 @@ import {
   ValidateSentenceDto,
   ValidateQuestionDto,
 } from './dto/validate-content.dto';
-import { AdminAuthGuard } from './admin-auth.guard';
-import { SuperAdminGuard } from './super-admin.guard';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/rbac.guard';
 
@@ -31,17 +29,17 @@ interface AdminRequest {
 }
 
 @Controller('admin')
-@UseGuards(JwtAuthGuard, RolesGuard)
 export class AdminController {
-  constructor(private readonly adminService: AdminService) {}
+  constructor(private readonly adminService: AdminService) { }
 
   @Post('login')
   async login(@Body() loginDto: AdminLoginDto) {
     return this.adminService.login(loginDto);
   }
 
-  @UseGuards(AdminAuthGuard, SuperAdminGuard)
   @Post('users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async createAdmin(
     @Body() createAdminDto: CreateAdminDto,
     @Request() req: AdminRequest,
@@ -49,38 +47,58 @@ export class AdminController {
     return this.adminService.createAdmin(createAdminDto, req.user.id);
   }
 
-  @UseGuards(AdminAuthGuard, SuperAdminGuard)
   @Get('users')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async getAllAdmins(@Request() req: AdminRequest) {
     return this.adminService.getAllAdmins(req.user.id);
   }
 
-  @UseGuards(AdminAuthGuard, SuperAdminGuard)
   @Delete('users/:id')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('SUPER_ADMIN')
   async deleteAdmin(@Param('id') id: string, @Request() req: AdminRequest) {
     return this.adminService.deleteAdmin(id, req.user.id);
   }
 
   @Get('dashboard/stats')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN', 'SUPER_ADMIN')
   async getDashboardStats() {
     return this.adminService.getDashboardStats();
   }
 
-  @UseGuards(AdminAuthGuard)
   @Get('sentences/pending')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async getPendingSentences(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '20',
+    @Query('search') search?: string,
+    @Query('languageCode') languageCode?: string,
+    @Query('status') status?: 'all' | 'pending' | 'approved' | 'rejected',
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
+    const filters =
+      search || languageCode || status || dateFrom || dateTo
+        ? {
+          ...(search && { search }),
+          ...(languageCode && { languageCode }),
+          ...(status && { status }),
+          ...(dateFrom && { dateFrom: new Date(dateFrom) }),
+          ...(dateTo && { dateTo: new Date(dateTo) }),
+        }
+        : undefined;
     return this.adminService.getPendingSentences(
       parseInt(page),
       parseInt(limit),
+      filters,
     );
   }
 
-  @UseGuards(AdminAuthGuard)
   @Put('sentences/:id/validate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async validateSentence(
     @Param('id') id: string,
@@ -90,20 +108,37 @@ export class AdminController {
     return this.adminService.validateSentence(id, validateDto, req.user.id);
   }
 
-  @UseGuards(AdminAuthGuard)
   @Get('questions/pending')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async getPendingQuestions(
     @Query('page') page: string = '1',
     @Query('limit') limit: string = '20',
+    @Query('search') search?: string,
+    @Query('languageCode') languageCode?: string,
+    @Query('status') status?: 'all' | 'pending' | 'approved' | 'rejected',
+    @Query('dateFrom') dateFrom?: string,
+    @Query('dateTo') dateTo?: string,
   ) {
+    const filters =
+      search || languageCode || status || dateFrom || dateTo
+        ? {
+          ...(search && { search }),
+          ...(languageCode && { languageCode }),
+          ...(status && { status }),
+          ...(dateFrom && { dateFrom: new Date(dateFrom) }),
+          ...(dateTo && { dateTo: new Date(dateTo) }),
+        }
+        : undefined;
     return this.adminService.getPendingQuestions(
       parseInt(page),
       parseInt(limit),
+      filters,
     );
   }
 
-  @UseGuards(AdminAuthGuard)
   @Put('questions/:id/validate')
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async validateQuestion(
     @Param('id') id: string,

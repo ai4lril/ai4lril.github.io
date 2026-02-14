@@ -107,6 +107,7 @@ model User {
   videoBlogs              VideoBlog[]
   forumPosts              ForumPost[]
   forumReplies            ForumReply[]
+  passwordResetTokens     PasswordResetToken[]
 
   @@index([email])
   @@index([username])
@@ -117,6 +118,22 @@ model User {
   @@index([level])
   @@index([tier])
   @@map("users")
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String   @map("user_id")
+  token     String   @unique
+  expiresAt DateTime @map("expires_at")
+  createdAt DateTime @default(now()) @map("created_at")
+  usedAt    DateTime? @map("used_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([token])
+  @@index([userId])
+  @@index([expiresAt])
+  @@map("password_reset_tokens")
 }
 
 enum UserRole {

@@ -1,9 +1,11 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Header } from '@nestjs/common';
+import { ApiTags } from '@nestjs/swagger';
 import { MetricsService } from './metrics.service';
 
+@ApiTags('metrics')
 @Controller('metrics')
 export class MetricsController {
-  constructor(private readonly metricsService: MetricsService) {}
+  constructor(private readonly metricsService: MetricsService) { }
 
   @Get()
   getMetrics() {
@@ -11,7 +13,8 @@ export class MetricsController {
   }
 
   @Get('prometheus')
-  getPrometheusMetrics() {
-    return this.metricsService.getPrometheusMetrics();
+  @Header('Content-Type', 'text/plain')
+  async getPrometheusMetrics() {
+    return await this.metricsService.getPrometheusMetrics();
   }
 }

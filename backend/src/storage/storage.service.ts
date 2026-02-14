@@ -1,12 +1,20 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
+import { Injectable, BadRequestException, Logger } from '@nestjs/common';
 import * as MinIO from 'minio';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileValidator } from './file-validator';
+import { writeFile, unlink } from 'fs/promises';
+import { join } from 'path';
+import { tmpdir } from 'os';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 @Injectable()
 export class StorageService {
   private minioClient: MinIO.Client;
   private bucketName: string;
+  private readonly logger = new Logger(StorageService.name);
 
   constructor(private prisma: PrismaService) {
     this.minioClient = new MinIO.Client({
@@ -219,5 +227,97 @@ export class StorageService {
     // Parameter kept for future implementation
     void pincode; // Mark as intentionally unused
     return null;
+  }
+
+  /**
+   * Extract media duration from buffer using ffprobe
+   * Falls back to null if ffprobe is not available or fails
+   *
+   * @param buffer - Media file buffer
+   * @param format - File format (webm, wav, mp3, mp4, etc.)
+   * @param mediaType - 'audio' or 'video'
+   * @returns Duration in seconds, or null if extraction fails
+   */
+  async extractMediaDuration(
+    buffer: Buffer,
+    format: string,
+    mediaType: string = 'audio',
+  ): Promise<number | null> {
+    try {
+      // Create temporary file for ffprobe
+      const tempFilePath = join(
+        tmpdir(),
+        `media-${Date.now()}-${Math.random().toString(36).substring(7)}.${format}`,
+      );
+
+      try {
+        // Write buffer to temp file
+        await writeFile(tempFilePath, buffer);
+
+        // Use ffprobe command to get duration
+        // ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 <file>
+        const { stdout } = await execAsync(
+          `ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 "${tempFilePath}"`,
+        );
+
+        const duration = parseFloat(stdout.trim());
+        if (duration && isFinite(duration) && duration > 0) {
+          return duration;
+        } else {
+          throw new Error('Invalid duration from ffprobe');
+        }
+      } finally {
+        // Clean up temp file
+        try {
+          await unlink(tempFilePath);
+        } catch (cleanupError) {
+          this.logger.warn('Failed to cleanup temp file:', cleanupError);
+        }
+      }
+    } catch (error: any) {
+      // ffprobe might not be installed - this is acceptable
+      // Frontend already calculates duration, so this is just for validation
+      if (error.code !== 'ENOENT') {
+        this.logger.warn(
+          `Failed to extract ${mediaType} duration using ffprobe:`,
+          error instanceof Error ? error.message : error,
+        );
+      }
+      return null;
+    }
+  }
+
+  /**
+   * Validate duration value
+   * Ensures duration is within acceptable bounds
+   *
+   * @param duration - Duration in seconds
+   * @param mediaType - 'audio' or 'video'
+   * @throws BadRequestException if duration is invalid
+   */
+  validateDuration(duration: number, mediaType: string = 'audio'): void {
+    const MIN_DURATION = 0.5; // 0.5 seconds minimum
+    const MAX_DURATION_AUDIO = 300; // 5 minutes for audio
+    const MAX_DURATION_VIDEO = 600; // 10 minutes for video
+    const MAX_DURATION =
+      mediaType === 'video' ? MAX_DURATION_VIDEO : MAX_DURATION_AUDIO;
+
+    if (!isFinite(duration) || duration <= 0) {
+      throw new BadRequestException(
+        `Invalid duration: ${duration}. Duration must be a positive number.`,
+      );
+    }
+
+    if (duration < MIN_DURATION) {
+      throw new BadRequestException(
+        `Recording too short (${duration.toFixed(1)}s). Minimum duration is ${MIN_DURATION}s.`,
+      );
+    }
+
+    if (duration > MAX_DURATION) {
+      throw new BadRequestException(
+        `Recording too long (${duration.toFixed(1)}s). Maximum duration is ${MAX_DURATION}s for ${mediaType}.`,
+      );
+    }
   }
 }

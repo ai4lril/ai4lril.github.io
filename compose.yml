@@ -19,10 +19,19 @@ services:
       retries: 5
 
   # Dragonfly Cache (High-performance Redis alternative)
+  # BullMQ compatibility: --cluster_mode=emulated --lock_on_hashtags enables
+  # Lua script execution with queue hashtags (see queue.module.ts)
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
     container_name: voice-data-dragonfly
-    command: ["--port=6379", "--cache_mode=yes", "--maxmemory=4GB"]
+    command:
+      [
+        "--port=6379",
+        "--cache_mode=yes",
+        "--maxmemory=64GB",
+        "--cluster_mode=emulated",
+        "--lock_on_hashtags",
+      ]
     ports:
       - "6378:6379" # Dragonfly on port 6378 to avoid conflict with YEDIS
     volumes:
@@ -36,9 +45,9 @@ services:
     deploy:
       resources:
         limits:
-          memory: 4GB
+          memory: 64GB
         reservations:
-          memory: 2GB
+          memory: 32GB
 
   # MinIO for blob storage (S3-compatible)
   minio:
@@ -158,6 +167,8 @@ services:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
       GF_INSTALL_PLUGINS: grafana-clock-panel
+      # Allow provisioning to handle stale datasource refs (fixes "data source not found")
+      GF_PROVISIONING_DATASOURCES_ALLOW_DELETE: "true"
     ports:
       - "3001:3000"
     volumes:
@@ -165,7 +176,8 @@ services:
       - ./grafana/provisioning:/etc/grafana/provisioning
     restart: unless-stopped
     depends_on:
-      - prometheus
+      prometheus:
+        condition: service_healthy
     healthcheck:
       test:
         [
@@ -261,12 +273,44 @@ services:
       - ./backend:/app
       - /app/node_modules
     working_dir: /app
-    command: ["pnpm", "run", "start:dev"]
+    command:
+      ["sh", "-c", "pnpm install && pnpm prisma generate && pnpm run start:dev"]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://backend:3001/api"]
       interval: 30s
       timeout: 10s
       retries: 5
+
+  # Daily database backup (PostgreSQL dump to local volume)
+  backup:
+    image: postgres:15
+    container_name: voice-data-backup
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: voice_data_collection
+      BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-7}"
+    volumes:
+      - ./backups:/backups
+    entrypoint: ["/bin/bash", "-c"]
+    command:
+      - |
+        echo "Backup service started. Running backup every 24 hours."
+        while true; do
+          ts=$$(date +%Y%m%d_%H%M%S)
+          echo "[$$(date)] Creating backup..."
+          pg_dump -h postgres -U postgres voice_data_collection --no-owner --no-acl | gzip > /backups/voice_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
+          find /backups -name "voice_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
+          sleep 86400
+        done
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - backup # Run with: docker compose --profile backup up -d
 
   frontend:
     build:

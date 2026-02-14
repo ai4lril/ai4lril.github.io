@@ -11,11 +11,11 @@ import {
 } from '@nestjs/common';
 import { FeedbackService } from './feedback.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { AdminAuthGuard } from '../admin/admin-auth.guard';
+import { RolesGuard, Roles } from '../auth/rbac.guard';
 
 @Controller('community/feedback')
 export class FeedbackController {
-  constructor(private readonly feedbackService: FeedbackService) {}
+  constructor(private readonly feedbackService: FeedbackService) { }
 
   @Post()
   async submitFeedback(
@@ -49,7 +49,8 @@ export class FeedbackController {
   }
 
   @Get('admin')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async getAllFeedback(
     @Query('status') status?: string,
     @Query('limit') limit?: string,
@@ -64,7 +65,8 @@ export class FeedbackController {
   }
 
   @Put(':id/respond')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async respondToFeedback(
     @Param('id') id: string,
     @Request() req: any,

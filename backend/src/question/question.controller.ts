@@ -7,11 +7,16 @@ import {
   UseGuards,
   Controller,
   ValidationPipe,
+  HttpCode,
+  HttpStatus,
+  Param,
 } from '@nestjs/common';
 import { QuestionService } from './question.service';
 import { CombinedAuthGuard } from '../auth/combined-auth.guard';
 import { SubmitQuestionDto } from './dto/submit-question.dto';
 import { SaveAnswerDto } from './dto/save-answer.dto';
+import { QueueService } from '../queue/queue.service';
+import { MediaUploadJobData } from '../queue/interfaces/media-upload-job.interface';
 
 interface RequestWithUser {
   user?: {
@@ -26,7 +31,10 @@ interface RequestWithUser {
 
 @Controller('question')
 export class QuestionController {
-  constructor(private readonly questionService: QuestionService) {}
+  constructor(
+    private readonly questionService: QuestionService,
+    private readonly queueService: QueueService,
+  ) { }
 
   @Post('submission')
   @UseGuards(CombinedAuthGuard)
@@ -56,6 +64,7 @@ export class QuestionController {
 
   @Post('answer-recording')
   @UseGuards(CombinedAuthGuard)
+  @HttpCode(HttpStatus.ACCEPTED)
   async saveAnswer(
     @Body(ValidationPipe) body: SaveAnswerDto,
     @Request() req: RequestWithUser,
@@ -64,13 +73,34 @@ export class QuestionController {
     if (!userId) {
       throw new Error('User ID is required');
     }
+
     const audioBuffer = Buffer.from(body.audioFile, 'base64');
-    return this.questionService.saveAnswer(
-      body.questionSubmissionId,
-      audioBuffer,
-      body.audioFormat,
-      body.duration || 0,
+
+    // Create job data
+    const jobData: MediaUploadJobData = {
       userId,
-    );
+      mediaBuffer: audioBuffer,
+      fileName: `answer-${body.questionSubmissionId}-${Date.now()}.${body.audioFormat}`,
+      contentType: `audio/${body.audioFormat}`,
+      mediaType: 'audio',
+      duration: body.duration || 0,
+      questionSubmissionId: body.questionSubmissionId,
+      priority: 5, // Default priority
+    };
+
+    // Add job to audio queue
+    const job = await this.queueService.addAudioUploadJob(jobData);
+
+    return {
+      success: true,
+      jobId: job.id,
+      status: 'queued',
+      message: 'Answer recording queued for processing',
+    };
+  }
+
+  @Get('answer-recording/status/:jobId')
+  async getAnswerStatus(@Param('jobId') jobId: string) {
+    return this.queueService.getJobStatus(jobId);
   }
 }

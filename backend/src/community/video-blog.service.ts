@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CacheService } from '../cache/cache.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
 
 @Injectable()
 export class VideoBlogService {
@@ -11,7 +12,8 @@ export class VideoBlogService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly cacheService: CacheService,
-  ) {}
+    private readonly cacheInvalidation: CacheInvalidationService,
+  ) { }
 
   async createVideoBlog(
     userId: string,
@@ -44,8 +46,11 @@ export class VideoBlogService {
         },
       });
 
-      // Invalidate cache
-      await this.cacheService.del(`video_blogs:${languageCode}`);
+      // Invalidate cache using invalidation service
+      await this.cacheInvalidation.invalidateVideoBlog(
+        languageCode,
+        videoBlog.id,
+      );
 
       return videoBlog;
     } catch (error) {
@@ -99,35 +104,37 @@ export class VideoBlogService {
     limit: number = 20,
     offset: number = 0,
   ) {
-    const cacheKey = `video_blogs:${languageCode}:${published}:${limit}:${offset}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    // Cache full list without pagination parameters to reduce key proliferation
+    const cacheKey = `video_blogs:${languageCode}:${published}`;
+    let cached = await this.cacheService.get<any[]>(cacheKey);
 
-    if (cached) {
-      return cached;
-    }
-
-    const videoBlogs = await this.prisma.videoBlog.findMany({
-      where: {
-        languageCode,
-        published,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            display_name: true,
+    if (!cached) {
+      // Fetch full list from database
+      const videoBlogs = await this.prisma.videoBlog.findMany({
+        where: {
+          languageCode,
+          published,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              display_name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        publishedAt: 'desc',
-      },
-      take: limit,
-      skip: offset,
-    });
+        orderBy: {
+          publishedAt: 'desc',
+        },
+      });
 
-    await this.cacheService.set(cacheKey, videoBlogs, 300);
-    return videoBlogs;
+      // Cache full list for 5 minutes
+      await this.cacheService.set(cacheKey, videoBlogs, 300);
+      cached = videoBlogs;
+    }
+
+    // Paginate in-memory from cached full list
+    return cached.slice(offset, offset + limit);
   }
 }

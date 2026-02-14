@@ -9,18 +9,26 @@ import {
   Request,
   UseInterceptors,
   UploadedFile,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { VideoBlogService } from './video-blog.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { QueueService } from '../queue/queue.service';
+import { MediaUploadJobData } from '../queue/interfaces/media-upload-job.interface';
 
 @Controller('community/video-blog')
 export class VideoBlogController {
-  constructor(private readonly videoBlogService: VideoBlogService) {}
+  constructor(
+    private readonly videoBlogService: VideoBlogService,
+    private readonly queueService: QueueService,
+  ) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('video'))
+  @HttpCode(HttpStatus.ACCEPTED)
   async createVideoBlog(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
@@ -34,16 +42,37 @@ export class VideoBlogController {
     },
   ) {
     const userId = req.user.id;
-    return this.videoBlogService.createVideoBlog(
+    const format = file.originalname.split('.').pop() || 'webm';
+
+    // Create job data
+    const jobData: MediaUploadJobData = {
       userId,
-      body.languageCode,
-      body.title,
-      body.description || '',
-      file.buffer,
-      file.originalname,
-      body.thumbnailUrl,
-      body.duration ? parseFloat(body.duration) : undefined,
-    );
+      mediaBuffer: file.buffer,
+      fileName: file.originalname,
+      contentType: file.mimetype || `video/${format}`,
+      mediaType: 'video',
+      duration: body.duration ? parseFloat(body.duration) : undefined,
+      languageCode: body.languageCode,
+      title: body.title,
+      description: body.description,
+      thumbnailUrl: body.thumbnailUrl,
+      priority: 5, // Default priority
+    };
+
+    // Add job to video queue
+    const job = await this.queueService.addVideoUploadJob(jobData);
+
+    return {
+      success: true,
+      jobId: job.id,
+      status: 'queued',
+      message: 'Video blog upload queued for processing',
+    };
+  }
+
+  @Get('status/:jobId')
+  async getVideoBlogStatus(@Param('jobId') jobId: string) {
+    return this.queueService.getJobStatus(jobId);
   }
 
   @Get(':languageCode/:id')

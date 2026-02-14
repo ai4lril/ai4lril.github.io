@@ -9,18 +9,26 @@ import {
   Request,
   UseInterceptors,
   UploadedFile,
+  HttpCode,
+  HttpStatus,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { AudioBlogService } from './audio-blog.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { QueueService } from '../queue/queue.service';
+import { MediaUploadJobData } from '../queue/interfaces/media-upload-job.interface';
 
 @Controller('community/audio-blog')
 export class AudioBlogController {
-  constructor(private readonly audioBlogService: AudioBlogService) {}
+  constructor(
+    private readonly audioBlogService: AudioBlogService,
+    private readonly queueService: QueueService,
+  ) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
   @UseInterceptors(FileInterceptor('audio'))
+  @HttpCode(HttpStatus.ACCEPTED)
   async createAudioBlog(
     @Request() req,
     @UploadedFile() file: Express.Multer.File,
@@ -33,15 +41,36 @@ export class AudioBlogController {
     },
   ) {
     const userId = req.user.id;
-    return this.audioBlogService.createAudioBlog(
+    const format = file.originalname.split('.').pop() || 'webm';
+
+    // Create job data
+    const jobData: MediaUploadJobData = {
       userId,
-      body.languageCode,
-      body.title,
-      body.description || '',
-      file.buffer,
-      file.originalname,
-      body.duration ? parseFloat(body.duration) : undefined,
-    );
+      mediaBuffer: file.buffer,
+      fileName: file.originalname,
+      contentType: file.mimetype || `audio/${format}`,
+      mediaType: 'audio',
+      duration: body.duration ? parseFloat(body.duration) : undefined,
+      languageCode: body.languageCode,
+      title: body.title,
+      description: body.description,
+      priority: 5, // Default priority
+    };
+
+    // Add job to audio queue
+    const job = await this.queueService.addAudioUploadJob(jobData);
+
+    return {
+      success: true,
+      jobId: job.id,
+      status: 'queued',
+      message: 'Audio blog upload queued for processing',
+    };
+  }
+
+  @Get('status/:jobId')
+  async getAudioBlogStatus(@Param('jobId') jobId: string) {
+    return this.queueService.getJobStatus(jobId);
   }
 
   @Get(':languageCode/:id')

@@ -28,6 +28,8 @@ import { ExportModule } from './export/export.module';
 import { QualityModule } from './quality/quality.module';
 import { CommunityModule } from './community/community.module';
 import { SearchModule } from './search/search.module';
+import { QueueModule } from './queue/queue.module';
+import { LanguagesModule } from './languages/languages.module';
 
 @Module({
   imports: [
@@ -66,6 +68,8 @@ import { SearchModule } from './search/search.module';
     QualityModule,
     CommunityModule,
     SearchModule,
+    QueueModule,
+    LanguagesModule,
   ],
   controllers: [AppController],
   providers: [
@@ -84,4 +88,4 @@ import { SearchModule } from './search/search.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

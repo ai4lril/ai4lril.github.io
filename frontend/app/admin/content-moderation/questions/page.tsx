@@ -3,6 +3,8 @@ import { API_BASE_URL } from '@/lib/api-config';
 
 import { useEffect, useState, useCallback } from 'react';
 import AdminLayout from '@/components/AdminLayout';
+import { SearchBar } from '@/components/admin/SearchBar';
+import { FilterPanel, type AdminFilterOptions } from '@/components/admin/FilterPanel';
 import { MessageSquare, CheckCircle, XCircle, Clock, RefreshCw } from 'lucide-react';
 
 interface Question {
@@ -23,6 +25,13 @@ export default function PendingQuestionsPage() {
     const [currentPage, setCurrentPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [validatingId, setValidatingId] = useState<string | null>(null);
+    const [search, setSearch] = useState('');
+    const [filters, setFilters] = useState<AdminFilterOptions>({
+        languageCode: '',
+        status: 'pending',
+        dateFrom: '',
+        dateTo: '',
+    });
 
     const loadPendingQuestions = useCallback(async () => {
         try {
@@ -33,7 +42,17 @@ export default function PendingQuestionsPage() {
                 return;
             }
 
-            const response = await fetch(`${API_BASE_URL}/admin/questions/pending?page=${currentPage}&limit=20`, {
+            const params = new URLSearchParams({
+                page: String(currentPage),
+                limit: '20',
+            });
+            if (search) params.set('search', search);
+            if (filters.languageCode) params.set('languageCode', filters.languageCode);
+            if (filters.status && filters.status !== 'pending') params.set('status', filters.status);
+            if (filters.dateFrom) params.set('dateFrom', filters.dateFrom);
+            if (filters.dateTo) params.set('dateTo', filters.dateTo);
+
+            const response = await fetch(`${API_BASE_URL}/admin/questions/pending?${params}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                 },
@@ -51,11 +70,22 @@ export default function PendingQuestionsPage() {
         } finally {
             setLoading(false);
         }
-    }, [currentPage]);
+    }, [currentPage, search, filters]);
 
     useEffect(() => {
         loadPendingQuestions();
-    }, [currentPage, loadPendingQuestions]);
+    }, [loadPendingQuestions]);
+
+    // Real-time: refetch when another admin validates a question
+    useEffect(() => {
+        const handler = (e: CustomEvent<{ type?: string; id?: string }>) => {
+            if (e.detail?.type === 'question') {
+                loadPendingQuestions();
+            }
+        };
+        window.addEventListener('admin:data-updated', handler as EventListener);
+        return () => window.removeEventListener('admin:data-updated', handler as EventListener);
+    }, [loadPendingQuestions]);
 
     const handleValidate = async (questionId: string, valid: boolean) => {
         try {
@@ -114,6 +144,22 @@ export default function PendingQuestionsPage() {
                         <RefreshCw className="h-4 w-4 mr-2" />
                         Refresh
                     </button>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="max-w-md">
+                        <SearchBar
+                            onSearch={setSearch}
+                            placeholder="Search questions..."
+                        />
+                    </div>
+                    <FilterPanel
+                        onFilter={(f) => {
+                            setFilters(f);
+                            setCurrentPage(1);
+                        }}
+                        showStatus={true}
+                    />
                 </div>
 
                 {questions.length === 0 ? (

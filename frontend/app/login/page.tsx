@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { API_BASE_URL } from "@/lib/api-config";
@@ -15,6 +15,27 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+
+    // Check for OAuth error in URL params
+    useEffect(() => {
+        const params = new URLSearchParams(window.location.search);
+        const errorParam = params.get('error');
+        if (errorParam) {
+            switch (errorParam) {
+                case 'oauth_failed':
+                    setError('OAuth authentication failed. Please try again.');
+                    break;
+                case 'account_linked':
+                    setError('This account is already linked to another user.');
+                    break;
+                case 'email_required':
+                    setError('Email is required. Please ensure your account has a verified email address.');
+                    break;
+                default:
+                    setError('Authentication failed. Please try again.');
+            }
+        }
+    }, []);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
@@ -32,6 +53,9 @@ export default function LoginPage() {
 
             if (password.length < 8) {
                 throw new Error("Password must be at least 8 characters long");
+            }
+            if (!isSignIn && !/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/.test(password)) {
+                throw new Error("Password must contain at least one uppercase letter, one lowercase letter, and one number");
             }
 
             if (isSignIn) {
@@ -277,13 +301,18 @@ export default function LoginPage() {
                                     )}
                                 </button>
                             </div>
+                            {!isSignIn && (
+                                <p className="mt-1 text-xs text-gray-500">
+                                    At least 8 characters, with uppercase, lowercase, and a number
+                                </p>
+                            )}
                         </div>
 
                         {/* Forgot Password Link */}
                         {isSignIn && (
                             <div className="flex justify-end animate-fade-in-up delay-800">
                                 <Link
-                                    href="/forgot-password"
+                                    href="/auth/forgot-password"
                                     className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200"
                                 >
                                     Forgot your password?

@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 import * as bcrypt from 'bcryptjs';
 import { AdminLoginDto } from './dto/login.dto';
 import { CreateAdminDto, AdminRole } from './dto/create-admin.dto';
@@ -24,6 +26,8 @@ export class AdminService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private cacheInvalidation: CacheInvalidationService,
+    private realtimeGateway: RealtimeGateway,
   ) {}
 
   /**
@@ -291,6 +295,37 @@ export class AdminService {
       },
     });
 
+    // Invalidate related caches when sentence validation changes
+    await this.cacheInvalidation.invalidateSentence(
+      sentenceId,
+      sentence.languageCode,
+    );
+    await this.cacheInvalidation.invalidateSearch(); // Validation affects search results
+
+    // Emit real-time update to admin room
+    this.realtimeGateway.emitToRoom('admin:content', 'update', {
+      type: 'sentence',
+      id: sentenceId,
+      action: 'validated',
+      valid: finalValid,
+    });
+
+    // Notify submitter if they have an account
+    if (sentence.userId) {
+      this.realtimeGateway.emitNotification(sentence.userId, {
+        type: 'sentence_validated',
+        sentenceId,
+        valid: finalValid,
+        message: finalValid
+          ? 'Your sentence was approved'
+          : 'Your sentence was rejected',
+      });
+    }
+
+    // Emit updated stats to admin room
+    const stats = await this.getDashboardStats();
+    this.realtimeGateway.emitToRoom('admin:content', 'admin:stats', stats);
+
     return {
       success: true,
       valid: finalValid,
@@ -414,6 +449,36 @@ export class AdminService {
       },
     });
 
+    // Invalidate related caches when question validation changes
+    await this.cacheInvalidation.invalidateQuestionAnswer(
+      questionSubmissionId,
+    );
+    await this.cacheInvalidation.invalidateSearch(); // Validation affects search results
+
+    // Emit real-time update to admin room
+    this.realtimeGateway.emitToRoom('admin:content', 'update', {
+      type: 'question',
+      id: questionSubmissionId,
+      action: 'validated',
+      valid: finalValid,
+    });
+
+    // Notify submitter if they have an account
+    if (question.userId) {
+      this.realtimeGateway.emitNotification(question.userId, {
+        type: 'question_validated',
+        questionId: questionSubmissionId,
+        valid: finalValid,
+        message: finalValid
+          ? 'Your question was approved'
+          : 'Your question was rejected',
+      });
+    }
+
+    // Emit updated stats to admin room
+    const stats = await this.getDashboardStats();
+    this.realtimeGateway.emitToRoom('admin:content', 'admin:stats', stats);
+
     return {
       success: true,
       valid: finalValid,
@@ -427,21 +492,65 @@ export class AdminService {
    *
    * @param page - Page number for pagination (default: 1)
    * @param limit - Number of sentences per page (default: 20)
+   * @param filters - Optional filters (search, languageCode, status, dateFrom, dateTo)
    * @returns Object with sentences array and pagination metadata
    */
-  async getPendingSentences(page: number = 1, limit: number = 20) {
+  async getPendingSentences(
+    page: number = 1,
+    limit: number = 20,
+    filters?: {
+      search?: string;
+      languageCode?: string;
+      status?: 'all' | 'pending' | 'approved' | 'rejected';
+      dateFrom?: Date;
+      dateTo?: Date;
+    },
+  ) {
     const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+
+    // Status filter: pending = valid null, approved = true, rejected = false, all = no filter
+    if (filters?.status === 'all') {
+      // No valid filter - show all
+    } else if (filters?.status === 'approved') {
+      where.valid = true;
+    } else if (filters?.status === 'rejected') {
+      where.valid = false;
+    } else {
+      // Default: pending (valid null)
+      where.valid = null;
+    }
+
+    if (filters?.search?.trim()) {
+      where.text = {
+        contains: filters.search.trim(),
+        mode: 'insensitive',
+      };
+    }
+
+    if (filters?.languageCode) {
+      where.languageCode = filters.languageCode;
+    }
+
+    if (filters?.dateFrom || filters?.dateTo) {
+      where.createdAt = {};
+      if (filters.dateFrom) {
+        (where.createdAt as Record<string, Date>).gte = filters.dateFrom;
+      }
+      if (filters.dateTo) {
+        (where.createdAt as Record<string, Date>).lte = filters.dateTo;
+      }
+    }
 
     const [sentences, total] = await Promise.all([
       this.prisma.sentence.findMany({
-        where: { valid: null },
+        where,
         skip,
         take: limit,
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.sentence.count({
-        where: { valid: null },
-      }),
+      this.prisma.sentence.count({ where }),
     ]);
 
     return {
@@ -460,14 +569,58 @@ export class AdminService {
    *
    * @param page - Page number for pagination (default: 1)
    * @param limit - Number of questions per page (default: 20)
+   * @param filters - Optional filters (search, languageCode, status, dateFrom, dateTo)
    * @returns Object with questions array and pagination metadata
    */
-  async getPendingQuestions(page: number = 1, limit: number = 20) {
+  async getPendingQuestions(
+    page: number = 1,
+    limit: number = 20,
+    filters?: {
+      search?: string;
+      languageCode?: string;
+      status?: 'all' | 'pending' | 'approved' | 'rejected';
+      dateFrom?: Date;
+      dateTo?: Date;
+    },
+  ) {
     const skip = (page - 1) * limit;
+
+    const where: Record<string, unknown> = {};
+
+    if (filters?.status === 'all') {
+      // No valid filter
+    } else if (filters?.status === 'approved') {
+      where.valid = true;
+    } else if (filters?.status === 'rejected') {
+      where.valid = false;
+    } else {
+      where.valid = null;
+    }
+
+    if (filters?.search?.trim()) {
+      where.submittedText = {
+        contains: filters.search.trim(),
+        mode: 'insensitive',
+      };
+    }
+
+    if (filters?.languageCode) {
+      where.languageCode = filters.languageCode;
+    }
+
+    if (filters?.dateFrom || filters?.dateTo) {
+      where.createdAt = {};
+      if (filters.dateFrom) {
+        (where.createdAt as Record<string, Date>).gte = filters.dateFrom;
+      }
+      if (filters.dateTo) {
+        (where.createdAt as Record<string, Date>).lte = filters.dateTo;
+      }
+    }
 
     const [questions, total] = await Promise.all([
       this.prisma.questionSubmission.findMany({
-        where: { valid: null },
+        where,
         skip,
         take: limit,
         include: {
@@ -475,9 +628,7 @@ export class AdminService {
         },
         orderBy: { createdAt: 'desc' },
       }),
-      this.prisma.questionSubmission.count({
-        where: { valid: null },
-      }),
+      this.prisma.questionSubmission.count({ where }),
     ]);
 
     return {

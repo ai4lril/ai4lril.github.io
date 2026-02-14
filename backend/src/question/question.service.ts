@@ -6,6 +6,7 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressService } from '../progress/progress.service';
 import { StorageService } from '../storage/storage.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
 import { sanitizeInput } from '../common/utils/sanitize';
 
 /**
@@ -18,7 +19,8 @@ export class QuestionService {
     private prisma: PrismaService,
     private progress: ProgressService,
     private storage: StorageService,
-  ) {}
+    private cacheInvalidation: CacheInvalidationService,
+  ) { }
 
   /**
    * Submit a new question for admin validation
@@ -120,6 +122,9 @@ export class QuestionService {
     duration: number,
     userId?: string,
   ) {
+    // Validate duration
+    this.storage.validateDuration(duration, 'audio');
+
     // Verify question exists and is validated
     const question = await this.prisma.questionSubmission.findUnique({
       where: { id: questionSubmissionId },
@@ -150,6 +155,30 @@ export class QuestionService {
       }
     }
 
+    // Optionally extract and verify duration from buffer (if ffprobe available)
+    let verifiedDuration = duration;
+    try {
+      const extractedDuration = await this.storage.extractMediaDuration(
+        audioBuffer,
+        audioFormat,
+        'audio',
+      );
+      if (extractedDuration !== null) {
+        // Verify extracted duration is within 10% of provided duration
+        const durationDiff = Math.abs(extractedDuration - duration);
+        const durationPercentDiff = (durationDiff / duration) * 100;
+        if (durationPercentDiff > 10) {
+          // Use extracted duration if difference is significant
+          verifiedDuration = extractedDuration;
+          console.warn(
+            `Duration mismatch: provided=${duration.toFixed(2)}s, extracted=${extractedDuration.toFixed(2)}s`,
+          );
+        }
+      }
+    } catch (error) {
+      // ffprobe not available or failed - use provided duration
+    }
+
     // Upload to MinIO
     let blobStorageLink: string;
     try {
@@ -178,7 +207,7 @@ export class QuestionService {
         userId,
         audioFile: blobStorageLink,
         audioFormat,
-        duration,
+        duration: verifiedDuration,
         fileSize: audioBuffer.length,
       },
     });
@@ -192,6 +221,12 @@ export class QuestionService {
         'answer',
       );
     }
+
+    // Invalidate related caches
+    await this.cacheInvalidation.invalidateQuestionAnswer(
+      questionSubmissionId,
+      userId,
+    );
 
     return { success: true, id: answer.id, answerId: answer.id };
   }

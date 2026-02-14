@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { adminAuth } from '@/lib/adminAuth';
@@ -11,7 +11,11 @@ interface NavItem {
     icon: string;
     description: string;
     superAdminOnly?: boolean;
+    adminOnly?: boolean;
+    moderatorOnly?: boolean;
 }
+
+type UserRole = 'USER' | 'MODERATOR' | 'ADMIN' | 'SUPER_ADMIN';
 
 const navigationItems: NavItem[] = [
     {
@@ -78,14 +82,61 @@ const navigationItems: NavItem[] = [
     }
 ];
 
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5566/api';
+
+interface UserProfile {
+    role: UserRole;
+    name?: string;
+    display_name?: string;
+    username?: string;
+    email?: string;
+}
+
 export default function AdminNavbar() {
     const [isOpen, setIsOpen] = useState(false);
+    const [userRole, setUserRole] = useState<UserRole | null>(null);
+    const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
     const pathname = usePathname();
-    const isSuperAdmin = adminAuth.isSuperAdmin();
 
-    const visibleItems = navigationItems.filter(item =>
-        !item.superAdminOnly || isSuperAdmin
-    );
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/users/profile`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+
+                if (response.ok) {
+                    const profileData = await response.json();
+                    setUserRole(profileData.role || 'USER');
+                    setUserProfile({
+                        role: profileData.role || 'USER',
+                        name: profileData.display_name || profileData.username || profileData.name,
+                        email: profileData.email,
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to fetch user role:', error);
+            }
+        };
+
+        fetchUserRole();
+    }, []);
+
+    const isSuperAdmin = userRole === 'SUPER_ADMIN';
+    const isAdmin = userRole === 'ADMIN' || isSuperAdmin;
+    const isModerator = userRole === 'MODERATOR' || isAdmin;
+
+    const visibleItems = navigationItems.filter(item => {
+        if (item.superAdminOnly && !isSuperAdmin) return false;
+        if (item.adminOnly && !isAdmin) return false;
+        if (item.moderatorOnly && !isModerator) return false;
+        return true;
+    });
 
     const currentItem = visibleItems.find(item => item.href === pathname);
 
@@ -188,21 +239,22 @@ export default function AdminNavbar() {
                         <div className="flex items-center space-x-3 mb-4">
                             <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
                                 <span className="text-sm font-medium text-gray-700">
-                                    {adminAuth.getCurrentUser()?.name?.charAt(0)?.toUpperCase() || 'A'}
+                                    {userProfile?.name?.charAt(0)?.toUpperCase() || adminAuth.getCurrentUser()?.name?.charAt(0)?.toUpperCase() || 'A'}
                                 </span>
                             </div>
                             <div className="flex-1 min-w-0">
                                 <p className="text-sm font-medium text-gray-900 truncate">
-                                    {adminAuth.getCurrentUser()?.name}
+                                    {userProfile?.name || adminAuth.getCurrentUser()?.name || 'Admin User'}
                                 </p>
                                 <p className="text-xs text-gray-500 truncate">
-                                    {adminAuth.getCurrentUser()?.email}
+                                    {userProfile?.email || adminAuth.getCurrentUser()?.email || ''}
                                 </p>
                             </div>
                         </div>
 
                         <button
                             onClick={() => {
+                                localStorage.removeItem('token');
                                 adminAuth.logout();
                                 window.location.href = '/admin/login';
                             }}

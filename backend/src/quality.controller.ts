@@ -2,7 +2,8 @@ import { Controller, Get, Post, Param, Query, UseGuards } from '@nestjs/common';
 import { QualityService } from './quality.service';
 import { IAAService } from './iaa.service';
 import { AnomalyDetectionService } from './anomaly-detection.service';
-import { AdminAuthGuard } from './admin/admin-auth.guard';
+import { JwtAuthGuard } from './auth/jwt-auth.guard';
+import { RolesGuard, Roles } from './auth/rbac.guard';
 
 @Controller('quality')
 export class QualityController {
@@ -10,10 +11,11 @@ export class QualityController {
     private readonly qualityService: QualityService,
     private readonly iaaService: IAAService,
     private readonly anomalyService: AnomalyDetectionService,
-  ) {}
+  ) { }
 
   @Get('score/:userId')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async getQualityScore(
     @Param('userId') userId: string,
     @Query('category') category?: string,
@@ -26,14 +28,16 @@ export class QualityController {
   }
 
   @Get('reliability/:userId')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async getReliabilityScore(@Param('userId') userId: string) {
     const score = await this.qualityService.calculateReliabilityScore(userId);
     return { userId, score };
   }
 
   @Get('trends/:userId')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async getQualityTrends(
     @Param('userId') userId: string,
     @Query('days') days?: string,
@@ -45,7 +49,8 @@ export class QualityController {
   }
 
   @Post('iaa/cohen/:resourceId')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async calculateCohensKappa(@Param('resourceId') resourceId: string) {
     const kappa = await this.iaaService.calculateCohensKappa(
       'speech_recording',
@@ -55,7 +60,8 @@ export class QualityController {
   }
 
   @Post('iaa/fleiss/:resourceId')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async calculateFleissKappa(@Param('resourceId') resourceId: string) {
     const kappa = await this.iaaService.calculateFleissKappa(
       'speech_recording',
@@ -65,7 +71,8 @@ export class QualityController {
   }
 
   @Get('anomalies')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async getAnomalies(
     @Query('userId') userId?: string,
     @Query('resolved') resolved?: string,
@@ -74,7 +81,8 @@ export class QualityController {
   }
 
   @Post('anomalies/:id/resolve')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async resolveAnomaly(@Param('id') id: string) {
     await this.anomalyService.resolveAnomaly(id);
     return { success: true };

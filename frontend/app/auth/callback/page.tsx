@@ -10,10 +10,29 @@ function CallbackHandler() {
 
     useEffect(() => {
         const token = searchParams.get('token');
+        const refreshToken = searchParams.get('refreshToken');
+        const emailWarning = searchParams.get('emailWarning');
+        const error = searchParams.get('error');
+
+        if (error) {
+            // Handle OAuth errors
+            router.push(`/login?error=${error}`);
+            return;
+        }
 
         if (token) {
             // Store token in localStorage
             localStorage.setItem('token', token);
+
+            if (refreshToken) {
+                localStorage.setItem('refreshToken', refreshToken);
+            }
+
+            // Show email warning if present (for GitHub users who hid their email)
+            if (emailWarning) {
+                // Store warning to show in a toast/notification later
+                sessionStorage.setItem('oauthEmailWarning', emailWarning);
+            }
 
             // Redirect to dashboard
             router.push('/speak');

@@ -8,7 +8,10 @@ import {
   Controller,
   ValidationPipe,
   HttpCode,
+  ConflictException,
+  BadRequestException,
 } from '@nestjs/common';
+import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FastifyReply } from 'fastify';
 import { AuthService } from './auth.service';
@@ -16,6 +19,7 @@ import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LinkOAuthDto, UnlinkOAuthDto } from './dto/link-oauth.dto';
+import { RequestPasswordResetDto, ResetPasswordDto } from './dto/password-reset.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
 import { OAuthUser } from './auth.service';
 import { RecoveryService } from './recovery.service';
@@ -35,20 +39,28 @@ interface RequestWithUser {
   };
 }
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly recoveryService: RecoveryService,
-  ) {}
+  ) { }
 
   @Post('signup')
+  @ApiOperation({ summary: 'Register a new user' })
+  @ApiResponse({ status: 201, description: 'User created successfully' })
+  @ApiResponse({ status: 400, description: 'Invalid input' })
+  @ApiResponse({ status: 409, description: 'Email or username already exists' })
   async signup(@Body(ValidationPipe) signupDto: SignupDto) {
     return this.authService.signup(signupDto);
   }
 
   @Post('login')
   @HttpCode(200)
+  @ApiOperation({ summary: 'Login with email and password' })
+  @ApiResponse({ status: 200, description: 'Login successful' })
+  @ApiResponse({ status: 401, description: 'Invalid credentials' })
   async login(@Body(ValidationPipe) loginDto: LoginDto) {
     return this.authService.login(loginDto);
   }
@@ -77,10 +89,21 @@ export class AuthController {
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}&refreshToken=${result.refreshToken}&provider=google`;
       return res.redirect(redirectUrl);
-    } catch {
-      // Log error but don't expose details to user
+    } catch (error: any) {
+      // Log error for debugging
+      console.error('Google OAuth error:', error);
+
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
-      return res.redirect(`${frontendUrl}/login?error=oauth_failed`);
+      let errorParam = 'oauth_failed';
+
+      // Map specific errors to user-friendly messages
+      if (error instanceof ConflictException) {
+        errorParam = 'account_linked';
+      } else if (error instanceof BadRequestException) {
+        errorParam = 'email_required';
+      }
+
+      return res.redirect(`${frontendUrl}/login?error=${errorParam}`);
     }
   }
 
@@ -104,15 +127,33 @@ export class AuthController {
         lastName?: string;
         username?: string;
         picture?: string;
+        accessToken?: string;
       };
       const result = await this.authService.githubLogin(user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
-      const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}&refreshToken=${result.refreshToken}&provider=github`;
+      let redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}&refreshToken=${result.refreshToken}&provider=github`;
+
+      // Add email warning if present
+      if (result.emailWarning) {
+        redirectUrl += `&emailWarning=${encodeURIComponent(result.emailWarning)}`;
+      }
+
       return res.redirect(redirectUrl);
-    } catch {
-      // Log error but don't expose details to user
+    } catch (error: any) {
+      // Log error for debugging
+      console.error('GitHub OAuth error:', error);
+
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
-      return res.redirect(`${frontendUrl}/login?error=oauth_failed`);
+      let errorParam = 'oauth_failed';
+
+      // Map specific errors to user-friendly messages
+      if (error instanceof ConflictException) {
+        errorParam = 'account_linked';
+      } else if (error instanceof BadRequestException) {
+        errorParam = 'email_required';
+      }
+
+      return res.redirect(`${frontendUrl}/login?error=${errorParam}`);
     }
   }
 
@@ -163,7 +204,9 @@ export class AuthController {
 
   @Post('password-reset/request')
   @HttpCode(200)
-  async requestPasswordReset(@Body() body: { email: string }) {
+  @ApiOperation({ summary: 'Request password reset email' })
+  @ApiResponse({ status: 200, description: 'If email exists, reset link sent' })
+  async requestPasswordReset(@Body(ValidationPipe) body: RequestPasswordResetDto) {
     await this.recoveryService.requestPasswordReset(body.email);
     return {
       message: 'If the email exists, a password reset link has been sent',
@@ -172,7 +215,10 @@ export class AuthController {
 
   @Post('password-reset/reset')
   @HttpCode(200)
-  async resetPassword(@Body() body: { token: string; password: string }) {
+  @ApiOperation({ summary: 'Reset password with token' })
+  @ApiResponse({ status: 200, description: 'Password reset' })
+  @ApiResponse({ status: 200, description: 'Invalid or expired token', schema: { properties: { success: { type: 'boolean' }, message: { type: 'string' } } } })
+  async resetPassword(@Body(ValidationPipe) body: ResetPasswordDto) {
     const success = await this.recoveryService.resetPassword(
       body.token,
       body.password,

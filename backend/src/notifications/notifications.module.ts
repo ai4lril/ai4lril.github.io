@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 import { EmailService } from './email.service';
@@ -34,11 +34,11 @@ import { LoggerModule } from '../logger/logger.module';
       },
     }),
     PrismaModule,
-    CacheModule,
+    forwardRef(() => CacheModule),
     LoggerModule,
   ],
   providers: [EmailService, NotificationService],
   controllers: [NotificationController],
   exports: [EmailService, NotificationService],
 })
-export class NotificationsModule {}
+export class NotificationsModule { }

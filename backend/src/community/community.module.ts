@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { BlogController } from './blog.controller';
 import { AudioBlogService } from './audio-blog.service';
@@ -16,15 +16,17 @@ import { StorageModule } from '../storage/storage.module';
 import { CacheModule } from '../cache/cache.module';
 import { LoggerModule } from '../logger/logger.module';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { QueueModule } from '../queue/queue.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
     PrismaModule,
     StorageModule,
-    CacheModule,
+    forwardRef(() => CacheModule),
     LoggerModule,
-    NotificationsModule,
+    forwardRef(() => NotificationsModule),
+    forwardRef(() => QueueModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },
@@ -55,4 +57,4 @@ import { JwtModule } from '@nestjs/jwt';
     FeedbackService,
   ],
 })
-export class CommunityModule {}
+export class CommunityModule { }

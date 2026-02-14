@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { API_BASE_URL } from '@/lib/api-config';
 import { adminAuth } from '@/lib/adminAuth';
 import AdminLayout from '@/components/AdminLayout';
 import { Line, Bar, Pie } from 'react-chartjs-2';
@@ -122,9 +123,24 @@ export default function AdminDashboard() {
 
     useEffect(() => {
         loadDashboardData();
-        // Set up real-time updates
-        const interval = setInterval(loadRealtimeMetrics, 30000); // Every 30 seconds
+        const interval = setInterval(loadRealtimeMetrics, 30000);
         return () => clearInterval(interval);
+    }, []);
+
+    // Real-time: refresh stats when admin:stats event received
+    useEffect(() => {
+        const handler = (e: CustomEvent<{ pendingSentences?: number; pendingQuestions?: number }>) => {
+            const stats = e.detail;
+            if (stats) {
+                setStats((prev) => ({
+                    ...prev,
+                    pendingReviews: (stats.pendingSentences ?? 0) + (stats.pendingQuestions ?? 0),
+                }));
+            }
+            loadRealtimeMetrics();
+        };
+        window.addEventListener('admin:stats-updated', handler as EventListener);
+        return () => window.removeEventListener('admin:stats-updated', handler as EventListener);
     }, []);
 
     const loadDashboardData = async () => {

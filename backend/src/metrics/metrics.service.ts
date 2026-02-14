@@ -1,4 +1,6 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { QueueService } from '../queue/queue.service';
+import { CacheService } from '../cache/cache.service';
 
 @Injectable()
 export class MetricsService {
@@ -8,6 +10,13 @@ export class MetricsService {
   private responseTimeCount = 0;
   private userActivityCount = 0;
   private contributionCount = 0;
+
+  constructor(
+    @Inject(forwardRef(() => QueueService))
+    private readonly queueService?: QueueService,
+    @Inject(forwardRef(() => CacheService))
+    private readonly cacheService?: CacheService,
+  ) { }
 
   incrementRequestCount() {
     this.requestCount++;
@@ -58,10 +67,10 @@ export class MetricsService {
     };
   }
 
-  getPrometheusMetrics(): string {
+  async getPrometheusMetrics(): Promise<string> {
     const metrics = this.getMetrics();
 
-    return `# HELP http_requests_total Total number of HTTP requests
+    let prometheusMetrics = `# HELP http_requests_total Total number of HTTP requests
 # TYPE http_requests_total counter
 http_requests_total ${metrics.requests.total}
 
@@ -89,5 +98,29 @@ user_activity_total ${metrics.activity.userActivity}
 # TYPE contributions_total counter
 contributions_total ${metrics.activity.contributions}
 `;
+
+    // Add queue metrics if queue service is available
+    if (this.queueService) {
+      try {
+        const queueMetrics = await this.queueService.getPrometheusMetrics();
+        prometheusMetrics += '\n' + queueMetrics;
+      } catch (error) {
+        // Queue service might not be initialized yet, skip queue metrics
+        console.warn('Failed to get queue metrics:', error);
+      }
+    }
+
+    // Add cache metrics if cache service is available
+    if (this.cacheService) {
+      try {
+        const cacheMetrics = await this.cacheService.getPrometheusMetrics();
+        prometheusMetrics += '\n' + cacheMetrics;
+      } catch (error) {
+        // Cache service might not be initialized yet, skip cache metrics
+        console.warn('Failed to get cache metrics:', error);
+      }
+    }
+
+    return prometheusMetrics;
   }
 }

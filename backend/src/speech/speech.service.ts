@@ -6,6 +6,9 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { ProgressService } from '../progress/progress.service';
+import { CacheService } from '../cache/cache.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { RealtimeGateway } from '../realtime/realtime.gateway';
 
 /**
  * Service for handling speech recording (Scripted Speech feature)
@@ -17,7 +20,10 @@ export class SpeechService {
     private prisma: PrismaService,
     private storage: StorageService,
     private progress: ProgressService,
-  ) {}
+    private cache: CacheService,
+    private cacheInvalidation: CacheInvalidationService,
+    private realtimeGateway: RealtimeGateway,
+  ) { }
 
   /**
    * Get validated sentences available for speech recording
@@ -135,6 +141,36 @@ export class SpeechService {
       }
     }
 
+    // Validate duration
+    this.storage.validateDuration(duration, mediaType);
+
+    // Optionally extract and verify duration from buffer (if ffprobe available)
+    // This provides additional validation but is optional
+    let verifiedDuration = duration;
+    try {
+      const extractedDuration = await this.storage.extractMediaDuration(
+        mediaBuffer,
+        audioFormat,
+        mediaType,
+      );
+      if (extractedDuration !== null) {
+        // Verify extracted duration is within 10% of provided duration
+        const durationDiff = Math.abs(extractedDuration - duration);
+        const durationPercentDiff = (durationDiff / duration) * 100;
+        if (durationPercentDiff > 10) {
+          // Use extracted duration if difference is significant
+          verifiedDuration = extractedDuration;
+          // Log warning but don't fail - frontend calculation may be slightly off
+          console.warn(
+            `Duration mismatch: provided=${duration.toFixed(2)}s, extracted=${extractedDuration.toFixed(2)}s`,
+          );
+        }
+      }
+    } catch (error) {
+      // ffprobe not available or failed - use provided duration
+      // This is acceptable as frontend already calculates duration
+    }
+
     // Upload to MinIO using the generic uploadMedia method
     const contentTypePrefix = mediaType === 'video' ? 'video' : 'audio';
     const fileName = `speech-${sentenceId}-${Date.now()}.${audioFormat}`;
@@ -145,7 +181,7 @@ export class SpeechService {
       mediaType,
     );
 
-    // Save recording
+    // Save recording with verified duration
     const recording = await this.prisma.speechRecording.create({
       data: {
         sentenceId,
@@ -153,18 +189,18 @@ export class SpeechService {
         audioFile: blobStorageLink,
         audioFormat,
         mediaType,
-        duration,
+        duration: verifiedDuration,
         fileSize: mediaBuffer.length,
       },
     });
 
-    // Save audio metadata
+    // Save audio metadata with verified duration
     if (userId && sentence.languageCode) {
       await this.storage.saveAudioMetadata(
         recording.id,
         userId,
         blobStorageLink,
-        duration,
+        verifiedDuration,
         sentence.languageCode,
       );
     }
@@ -179,6 +215,23 @@ export class SpeechService {
       );
     }
 
+    // Invalidate related caches
+    await this.cacheInvalidation.invalidateSpeechRecording(
+      sentenceId,
+      sentence.languageCode,
+      userId,
+    );
+
+    // Notify user of successful recording (if authenticated)
+    if (userId) {
+      this.realtimeGateway.emitToUser(userId, 'activity', {
+        type: 'recording',
+        action: 'saved',
+        recordingId: recording.id,
+        sentenceId,
+      });
+    }
+
     return { success: true, recordingId: recording.id };
   }
 
@@ -191,6 +244,15 @@ export class SpeechService {
    * @returns Array of recording objects with validation count
    */
   async getAudioForValidation(languageCode?: string, userId?: string) {
+    // Generate cache key
+    const cacheKey = `recordings:validation:${languageCode || 'all'}:${userId || 'anonymous'}`;
+
+    // Check cache first
+    const cached = await this.cache.get<any>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     const where: {
       isValidated: boolean;
     } = {
@@ -243,12 +305,15 @@ export class SpeechService {
     );
 
     if (availableRecordings.length === 0) {
-      return null;
+      const result = null;
+      // Cache null result for shorter time (1 minute) to allow retry
+      await this.cache.set(cacheKey, result, 60);
+      return result;
     }
 
     // Return first available recording
     const selected = availableRecordings[0];
-    return {
+    const result = {
       id: selected.id,
       audioFile: selected.audioFile,
       audioFormat: selected.audioFormat,
@@ -260,6 +325,10 @@ export class SpeechService {
         languageCode: selected.sentence.languageCode,
       },
     };
+
+    // Cache result for 5 minutes
+    await this.cache.set(cacheKey, result, 300);
+    return result;
   }
 
   /**

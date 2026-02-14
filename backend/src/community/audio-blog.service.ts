@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CacheService } from '../cache/cache.service';
+import { CacheInvalidationService } from '../cache/cache-invalidation.service';
 
 @Injectable()
 export class AudioBlogService {
@@ -11,7 +12,8 @@ export class AudioBlogService {
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
     private readonly cacheService: CacheService,
-  ) {}
+    private readonly cacheInvalidation: CacheInvalidationService,
+  ) { }
 
   async createAudioBlog(
     userId: string,
@@ -42,8 +44,11 @@ export class AudioBlogService {
         },
       });
 
-      // Invalidate cache
-      await this.cacheService.del(`audio_blogs:${languageCode}`);
+      // Invalidate cache using invalidation service
+      await this.cacheInvalidation.invalidateAudioBlog(
+        languageCode,
+        audioBlog.id,
+      );
 
       return audioBlog;
     } catch (error) {
@@ -97,35 +102,37 @@ export class AudioBlogService {
     limit: number = 20,
     offset: number = 0,
   ) {
-    const cacheKey = `audio_blogs:${languageCode}:${published}:${limit}:${offset}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    // Cache full list without pagination parameters to reduce key proliferation
+    const cacheKey = `audio_blogs:${languageCode}:${published}`;
+    let cached = await this.cacheService.get<any[]>(cacheKey);
 
-    if (cached) {
-      return cached;
-    }
-
-    const audioBlogs = await this.prisma.audioBlog.findMany({
-      where: {
-        languageCode,
-        published,
-      },
-      include: {
-        user: {
-          select: {
-            id: true,
-            username: true,
-            display_name: true,
+    if (!cached) {
+      // Fetch full list from database
+      const audioBlogs = await this.prisma.audioBlog.findMany({
+        where: {
+          languageCode,
+          published,
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              username: true,
+              display_name: true,
+            },
           },
         },
-      },
-      orderBy: {
-        publishedAt: 'desc',
-      },
-      take: limit,
-      skip: offset,
-    });
+        orderBy: {
+          publishedAt: 'desc',
+        },
+      });
 
-    await this.cacheService.set(cacheKey, audioBlogs, 300);
-    return audioBlogs;
+      // Cache full list for 5 minutes
+      await this.cacheService.set(cacheKey, audioBlogs, 300);
+      cached = audioBlogs;
+    }
+
+    // Paginate in-memory from cached full list
+    return cached.slice(offset, offset + limit);
   }
 }

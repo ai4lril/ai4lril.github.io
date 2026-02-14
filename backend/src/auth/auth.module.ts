@@ -11,11 +11,14 @@ import { GitHubStrategy } from './github.strategy';
 import { ApiKeyStrategy } from './api-key.strategy';
 import { ApiKeyService } from './api-key.service';
 import { RecoveryService } from './recovery.service';
+import { VerificationService } from '../verification.service';
 import { NotificationsModule } from '../notifications/notifications.module';
+import { CacheModule } from '../cache/cache.module';
 
 @Module({
   imports: [
     PrismaModule,
+    CacheModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-jwt-secret-key',
@@ -32,6 +35,7 @@ import { NotificationsModule } from '../notifications/notifications.module';
     GitHubStrategy,
     ApiKeyStrategy,
     RecoveryService,
+    VerificationService,
   ],
   exports: [AuthService, ApiKeyService, RecoveryService],
 })

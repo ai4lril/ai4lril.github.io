@@ -5,10 +5,14 @@ import { AdminController } from './admin.controller';
 import { AdminService } from './admin.service';
 import { AdminStrategy } from './admin.strategy';
 import { PrismaModule } from '../prisma/prisma.module';
+import { CacheModule } from '../cache/cache.module';
+import { RealtimeModule } from '../realtime/realtime.module';
 
 @Module({
   imports: [
     PrismaModule,
+    CacheModule,
+    RealtimeModule,
     PassportModule,
     JwtModule.register({
       secret:

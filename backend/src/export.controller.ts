@@ -11,7 +11,7 @@ import {
 import { ExportService } from './export.service';
 import { DatasetExportService } from './dataset-export.service';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
-import { AdminAuthGuard } from './admin/admin-auth.guard';
+import { RolesGuard, Roles } from './auth/rbac.guard';
 import { Response } from 'express';
 
 @Controller('export')
@@ -19,7 +19,7 @@ export class ExportController {
   constructor(
     private readonly exportService: ExportService,
     private readonly datasetExportService: DatasetExportService,
-  ) {}
+  ) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
@@ -64,7 +64,8 @@ export class ExportController {
   }
 
   @Post('dataset')
-  @UseGuards(AdminAuthGuard)
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('ADMIN', 'SUPER_ADMIN')
   async exportDataset(
     @Body()
     filters: {
