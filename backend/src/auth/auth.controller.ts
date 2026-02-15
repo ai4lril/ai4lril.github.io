@@ -11,6 +11,7 @@ import {
   ConflictException,
   BadRequestException,
 } from '@nestjs/common';
+import { Throttle } from '@nestjs/throttler';
 import { ApiTags, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { FastifyReply } from 'fastify';
@@ -48,6 +49,7 @@ export class AuthController {
   ) { }
 
   @Post('signup')
+  @Throttle({ auth: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Register a new user' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 400, description: 'Invalid input' })
@@ -58,6 +60,7 @@ export class AuthController {
 
   @Post('login')
   @HttpCode(200)
+  @Throttle({ auth: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Login with email and password' })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Invalid credentials' })
@@ -91,7 +94,10 @@ export class AuthController {
       return res.redirect(redirectUrl);
     } catch (error: any) {
       // Log error for debugging
-      console.error('Google OAuth error:', error);
+      console.error(
+        'Google OAuth error:',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       let errorParam = 'oauth_failed';
@@ -141,7 +147,10 @@ export class AuthController {
       return res.redirect(redirectUrl);
     } catch (error: any) {
       // Log error for debugging
-      console.error('GitHub OAuth error:', error);
+      console.error(
+        'GitHub OAuth error:',
+        error instanceof Error ? error.message : 'Unknown error',
+      );
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       let errorParam = 'oauth_failed';
@@ -204,6 +213,7 @@ export class AuthController {
 
   @Post('password-reset/request')
   @HttpCode(200)
+  @Throttle({ auth: { limit: 3, ttl: 60000 } })
   @ApiOperation({ summary: 'Request password reset email' })
   @ApiResponse({ status: 200, description: 'If email exists, reset link sent' })
   async requestPasswordReset(@Body(ValidationPipe) body: RequestPasswordResetDto) {
@@ -215,6 +225,7 @@ export class AuthController {
 
   @Post('password-reset/reset')
   @HttpCode(200)
+  @Throttle({ auth: { limit: 5, ttl: 60000 } })
   @ApiOperation({ summary: 'Reset password with token' })
   @ApiResponse({ status: 200, description: 'Password reset' })
   @ApiResponse({ status: 200, description: 'Invalid or expired token', schema: { properties: { success: { type: 'boolean' }, message: { type: 'string' } } } })

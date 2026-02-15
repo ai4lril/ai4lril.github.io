@@ -34,7 +34,7 @@ export class SearchService {
       const cacheKey = `search:${query}:${resourceTypesKey}:${filtersKey}`;
 
       // Check cache first
-      let cached = await this.cacheService.get<{ results: any[]; total: number }>(cacheKey);
+      const cached = await this.cacheService.get<{ results: any[]; total: number }>(cacheKey);
       if (cached) {
         // Still track search history even for cached results
         if (userId) {

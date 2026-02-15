@@ -7,7 +7,7 @@ import {
   UseGuards,
   Request,
 } from '@nestjs/common';
-import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import { UsersService } from './users.service';
 import { VerificationService } from '../verification.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';

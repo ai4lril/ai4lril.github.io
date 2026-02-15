@@ -3,10 +3,17 @@ import { AppModule } from './app.module';
 import { AllExceptionsFilter } from './common/filters/http-exception.filter';
 import { ExceptionFilter } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import helmet from 'helmet';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.use(helmet());
+  app.enableCors({
+    origin: process.env.CORS_ORIGIN?.split(',').map((o) => o.trim()) ?? [
+      'http://localhost:5577',
+    ],
+    credentials: true,
+  });
   app.useGlobalFilters(new AllExceptionsFilter() as ExceptionFilter); // Typed cast
   app.setGlobalPrefix('api');
 

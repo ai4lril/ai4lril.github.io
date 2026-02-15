@@ -28,7 +28,7 @@ export class AdminService {
     private prisma: PrismaService,
     private cacheInvalidation: CacheInvalidationService,
     private realtimeGateway: RealtimeGateway,
-  ) {}
+  ) { }
 
   /**
    * Admin login with email and password
@@ -117,7 +117,7 @@ export class AdminService {
     }
 
     // Hash password
-    const hashedPassword = await bcrypt.hash(createAdminDto.password, 10);
+    const hashedPassword = await bcrypt.hash(createAdminDto.password, 12);
 
     // Create admin
     return await this.prisma.adminUser.create({

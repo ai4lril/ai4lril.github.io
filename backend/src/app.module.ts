@@ -43,6 +43,11 @@ import { LanguagesModule } from './languages/languages.module';
         ttl: 1000, // 1 second
         limit: 10, // 10 requests per second
       },
+      {
+        name: 'auth',
+        ttl: 60000, // 1 minute
+        limit: 5, // 5 attempts per minute for auth endpoints
+      },
     ]),
     PrismaModule,
     AuthModule,
@@ -76,7 +81,10 @@ import { LanguagesModule } from './languages/languages.module';
     AppService,
     {
       provide: APP_PIPE,
-      useClass: ValidationPipe,
+      useValue: new ValidationPipe({
+        whitelist: true,
+        forbidNonWhitelisted: true,
+      }),
     },
     {
       provide: APP_GUARD,

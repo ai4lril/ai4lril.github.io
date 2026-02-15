@@ -60,18 +60,18 @@ export class QueueService {
   }> {
     // Try to find job in audio queue
     let job = await this.audioQueue.getJob(jobId);
-    let queue = this.audioQueue;
+    // let queue = this.audioQueue;
 
     // If not found, try video queue
     if (!job) {
       job = await this.videoQueue.getJob(jobId);
-      queue = this.videoQueue;
+      // queue = this.videoQueue;
     }
 
     // If still not found, try processing queue
     if (!job) {
       job = await this.processingQueue.getJob(jobId);
-      queue = this.processingQueue;
+      // queue = this.processingQueue;
     }
 
     if (!job) {
@@ -79,17 +79,17 @@ export class QueueService {
     }
 
     const state = await job.getState();
-    const progress = job.progress;
+    const { id,progress, returnvalue, failedReason, timestamp, processedOn, finishedOn } = job;
 
     return {
-      id: job.id!,
+      id: id!,
       status: state,
       progress: typeof progress === 'number' ? progress : undefined,
-      result: job.returnvalue || undefined,
-      error: job.failedReason || undefined,
-      createdAt: new Date(job.timestamp),
-      processedAt: job.processedOn ? new Date(job.processedOn) : undefined,
-      finishedAt: job.finishedOn ? new Date(job.finishedOn) : undefined,
+      result: returnvalue || undefined,
+      error: failedReason || undefined,
+      createdAt: new Date(timestamp),
+      processedAt: processedOn ? new Date(processedOn) : undefined,
+      finishedAt: finishedOn ? new Date(finishedOn) : undefined,
     };
   }
 
@@ -148,7 +148,7 @@ export class QueueService {
    */
   async getPrometheusMetrics(): Promise<string> {
     const stats = await this.getQueueStats();
-    const timestamp = Date.now();
+    // const timestamp = Date.now();
 
     let metrics = '# Queue Metrics\n';
     metrics += '# TYPE queue_jobs_waiting gauge\n';

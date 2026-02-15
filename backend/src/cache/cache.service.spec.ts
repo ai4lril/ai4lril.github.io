@@ -105,10 +105,11 @@ describe('CacheService', () => {
 
   describe('delPattern', () => {
     it('should delete keys matching pattern', async () => {
-      async function* asyncGen() {
+      const asyncGen = async function* () {
+        await Promise.resolve();
         yield 'key1';
         yield 'key2';
-      }
+      };
       mockRedisClient.scanIterator.mockReturnValue(asyncGen());
       mockRedisClient.del.mockResolvedValue(1);
 

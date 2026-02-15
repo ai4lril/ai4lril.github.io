@@ -24,7 +24,7 @@ export interface ApiKeyInfo {
 
 @Injectable()
 export class ApiKeyService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   /**
    * Generate a new API key for a user
@@ -45,7 +45,7 @@ export class ApiKeyService {
     const plainKey = `${crypto.randomBytes(32).toString('hex')}`;
 
     // Hash the key before storing
-    const hashedKey = await bcrypt.hash(plainKey, 10);
+    const hashedKey = await bcrypt.hash(plainKey, 12);
 
     // Create API key record
     const apiKey = await this.prisma.apiKey.create({

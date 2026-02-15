@@ -142,6 +142,7 @@ export class AudioUploadProcessor extends WorkerHost {
     format: string,
   ): Promise<MediaUploadJobResult> {
     const { data } = job;
+    console.log('format', format);
 
     if (!data.userId) {
       throw new BadRequestException('userId is required for audio blogs');
@@ -283,6 +284,7 @@ export class VideoUploadProcessor extends WorkerHost {
     format: string,
   ): Promise<MediaUploadJobResult> {
     const { data } = job;
+    console.log('format', format);
 
     if (!data.userId) {
       throw new BadRequestException('userId is required for video blogs');
@@ -348,6 +350,7 @@ export class MediaProcessingProcessor extends WorkerHost {
     this.logger.log(`Processing media processing job ${job.id}`);
 
     try {
+      await Promise.resolve(); // Placeholder for future async processing
       // For now, this is a placeholder for future processing tasks
       // Examples: video transcoding, thumbnail generation, audio normalization
       // This can be extended based on requirements

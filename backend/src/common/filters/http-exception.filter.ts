@@ -54,7 +54,10 @@ export class AllExceptionsFilter implements ExceptionFilter {
       },
     };
 
-    console.error('Exception:', exception);
+    // Log only message to avoid exposing passwords, tokens, or request body
+    const safeMessage =
+      exception instanceof Error ? exception.message : String(exception);
+    console.error('Exception:', safeMessage);
 
     response.status(status).json(errorResponse);
   }

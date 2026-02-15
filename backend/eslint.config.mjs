@@ -11,6 +11,8 @@ export default tseslint.config(
       'generated/**',
       'node_modules/**',
       'dist/**',
+      'coverage/**',
+      'prisma/seed.ts',
       '*.js',
     ],
   },

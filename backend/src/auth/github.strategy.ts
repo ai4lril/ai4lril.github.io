@@ -55,7 +55,8 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
             const verifiedEmail = emailData.find((e: any) => e.verified)?.email;
             email = primaryEmail || verifiedEmail || emailData[0]?.email;
           }
-        } catch (error) {
+        } catch (err) {
+          console.warn('Failed to fetch email from GitHub API:', err instanceof Error ? err.message : err);
           // Email fetching failed, will be handled in auth.service
         }
       }

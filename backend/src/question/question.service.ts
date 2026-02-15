@@ -176,6 +176,7 @@ export class QuestionService {
         }
       }
     } catch (error) {
+      console.warn('Failed to extract duration:', error instanceof Error ? error.message : error);
       // ffprobe not available or failed - use provided duration
     }
 

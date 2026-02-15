@@ -132,7 +132,7 @@ export class CacheWarmingService {
         totalItemsCached += itemsCached;
       }
 
-      return activeLanguages.length;
+      return activeLanguages.length, totalItemsCached;
     } catch (error) {
       this.logger.error('Error warming cache for active languages:', error);
       return 0;
@@ -342,7 +342,7 @@ export class CacheWarmingService {
           }
           break;
 
-        case 'search':
+        case 'search': {
           const popularQueries = await this.getPopularSearchQueries(languageCode);
           for (const query of popularQueries.slice(0, 20)) {
             await this.searchService.fullTextSearch(
@@ -355,6 +355,7 @@ export class CacheWarmingService {
             itemsCached++;
           }
           break;
+        }
       }
 
       this.logger.log(`Warmed ${cacheType} cache: ${itemsCached} items`);

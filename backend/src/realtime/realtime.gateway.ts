@@ -44,7 +44,7 @@ export class RealtimeGateway
         return;
       }
 
-      const payload = this.jwtService.verify(token) as { id: string; sub: string };
+      const payload = this.jwtService.verify(token);
       const userId = payload.id || payload.sub;
 
       if (!userId) {
