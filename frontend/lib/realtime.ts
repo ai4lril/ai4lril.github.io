@@ -4,7 +4,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5566';
 
 class RealtimeClient {
   private socket: Socket | null = null;
-  private listeners: Map<string, Set<(data: any) => void>> = new Map();
+  private listeners: Map<string, Set<(data: unknown) => void>> = new Map();
   private reconnectAttempts = 0;
   private maxReconnectAttempts = 5;
 
@@ -50,7 +50,7 @@ class RealtimeClient {
     }
   }
 
-  on(event: string, callback: (data: any) => void): void {
+  on(event: string, callback: (data: unknown) => void): void {
     if (!this.socket) {
       console.warn('Socket not connected. Call connect() first.');
       return;
@@ -64,7 +64,7 @@ class RealtimeClient {
     this.socket.on(event, callback);
   }
 
-  off(event: string, callback?: (data: any) => void): void {
+  off(event: string, callback?: (data: unknown) => void): void {
     if (!this.socket) {
       return;
     }

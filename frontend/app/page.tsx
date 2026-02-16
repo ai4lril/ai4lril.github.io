@@ -163,7 +163,7 @@ export default function HomePage() {
                             Ready to Make a Difference?
                         </h2>
                         <p className="text-lg text-gray-600 mb-8 max-w-2xl mx-auto">
-                            Join our community of contributors and help preserve India's linguistic heritage for future generations.
+                            Join our community of contributors and help preserve India&apos;s linguistic heritage for future generations.
                         </p>
                         <div className="flex flex-col sm:flex-row gap-4 justify-center">
                             <Link

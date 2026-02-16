@@ -15,11 +15,12 @@ export function RealtimeNotificationListener() {
 
     realtimeClient.connect(token);
 
-    const onNotification = (data: { message?: string; type?: string }) => {
-      if (data?.message) {
+    const onNotification = (data: unknown) => {
+      const d = data as { message?: string; type?: string };
+      if (d?.message) {
         showToast(
-          data.message,
-          data.type === 'error' ? 'error' : 'success',
+          d.message,
+          d.type === 'error' ? 'error' : 'success',
           6000,
         );
       }

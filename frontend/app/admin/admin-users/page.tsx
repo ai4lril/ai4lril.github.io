@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/AdminLayout';
 import { adminAuth, AdminUser } from '@/lib/adminAuth';
+import { API_BASE_URL } from '@/lib/api-config';
 
 interface CreateUserForm {
     name: string;

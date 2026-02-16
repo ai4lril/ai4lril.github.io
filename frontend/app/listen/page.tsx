@@ -20,6 +20,14 @@ interface ListenRecording {
     };
 }
 
+interface ListenAudioResponse {
+    id?: string;
+    audioFile?: string;
+    mediaType?: string;
+    duration?: number;
+    sentence?: { id?: string; text?: string; languageCode?: string };
+}
+
 export default function Listen() {
     const [lang, setLang] = useState<string | null>(null);
     const [recording, setRecording] = useState<ListenRecording | null>(null);
@@ -66,7 +74,20 @@ export default function Listen() {
                 throw new Error(`Failed to fetch recording (${response.status})`);
             }
 
-            const data = await response.json();
+            const text = await response.text();
+            if (!text?.trim()) {
+                setRecording(null);
+                setError('No recordings available right now.');
+                return;
+            }
+            let data: ListenAudioResponse;
+            try {
+                data = JSON.parse(text) as ListenAudioResponse;
+            } catch {
+                setRecording(null);
+                setError('Invalid response from server.');
+                return;
+            }
             if (!data) {
                 setRecording(null);
                 setError('No recordings available right now.');
@@ -74,10 +95,10 @@ export default function Listen() {
             }
 
             setRecording({
-                id: data.id,
-                audioFile: data.audioFile,
-                mediaType: data.mediaType || 'audio',
-                duration: data.duration,
+                id: data.id ?? '',
+                audioFile: data.audioFile ?? '',
+                mediaType: data.mediaType ?? 'audio',
+                duration: typeof data.duration === 'number' ? data.duration : undefined,
                 sentence: {
                     id: data.sentence?.id ?? '',
                     text: data.sentence?.text ?? 'Sentence not available',
@@ -158,8 +179,8 @@ export default function Listen() {
                     <span className="inline-block text-xs px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium animate-bounce-in">{codeToLabel(lang)}</span>
                     {recording?.mediaType && (
                         <span className={`inline-block text-xs px-3 py-2 rounded-full font-medium animate-bounce-in ${isVideo
-                                ? 'bg-purple-50 text-purple-700 border border-purple-200'
-                                : 'bg-blue-50 text-blue-700 border border-blue-200'
+                            ? 'bg-purple-50 text-purple-700 border border-purple-200'
+                            : 'bg-blue-50 text-blue-700 border border-blue-200'
                             }`}>
                             {isVideo ? 'Video' : 'Audio'}
                         </span>
@@ -186,7 +207,7 @@ export default function Listen() {
                         )}
 
                         <div className="flex gap-8">
-                            <button 
+                            <button
                                 onClick={() => handleValidation(true)}
                                 className="group bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-green-400 hover:border-green-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="size-5 transition-transform group-hover:scale-110">
@@ -194,7 +215,7 @@ export default function Listen() {
                                 </svg>
                                 <span>Yes</span>
                             </button>
-                            <button 
+                            <button
                                 onClick={() => handleValidation(false)}
                                 className="group bg-linear-to-r from-red-500 to-pink-600 hover:from-red-600 hover:to-pink-700 text-white shadow-lg hover:shadow-xl rounded-full px-8 py-4 font-semibold transition-all duration-300 flex items-center gap-2 hover:scale-105 active:scale-95 border-2 border-red-400 hover:border-red-500">
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="size-5 transition-transform group-hover:scale-110">
@@ -216,7 +237,7 @@ export default function Listen() {
                 audioSrc={recording?.audioFile}
                 mediaType={(recording?.mediaType as 'audio' | 'video') || 'audio'}
                 onSkip={() => fetchAudio(lang || undefined)}
-                onSubmit={() => {}}
+                onSubmit={() => { }}
             />
 
         </div>

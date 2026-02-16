@@ -3,7 +3,6 @@
 import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '@/lib/api-config';
-import { API_BASE_URL } from '@/lib/api-config';
 
 interface ApiKey {
     id: string;

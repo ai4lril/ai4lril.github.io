@@ -249,6 +249,7 @@ services:
       GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET:-dummy-github-secret}"
       GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL:-http://localhost:5566/api/auth/github/callback}"
       FRONTEND_URL: "${FRONTEND_URL:-http://localhost:5577}"
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:5577}"
       # Email configuration
       SMTP_HOST: "${SMTP_HOST:-smtp.gmail.com}"
       SMTP_PORT: "${SMTP_PORT:-587}"
@@ -274,7 +275,11 @@ services:
       - /app/node_modules
     working_dir: /app
     command:
-      ["sh", "-c", "pnpm install && pnpm prisma generate && pnpm run start:dev"]
+      [
+        "sh",
+        "-c",
+        "pnpm install && pnpm prisma generate && pnpm exec prisma migrate deploy && pnpm run start:dev",
+      ]
     healthcheck:
       test: ["CMD", "curl", "-f", "http://backend:3001/api"]
       interval: 30s

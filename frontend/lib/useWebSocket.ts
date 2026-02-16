@@ -1,10 +1,10 @@
 'use client';
 
 import { useEffect, useCallback, useRef } from 'react';
-import { realtimeClient } from '../realtime';
+import { realtimeClient } from './realtime';
 
 export function useWebSocket(token: string | null) {
-  const listenersRef = useRef<Map<string, Set<(data: any) => void>>>(new Map());
+  const listenersRef = useRef<Map<string, Set<(data: unknown) => void>>>(new Map());
 
   useEffect(() => {
     if (!token) {
@@ -24,7 +24,7 @@ export function useWebSocket(token: string | null) {
     };
   }, [token]);
 
-  const on = useCallback((event: string, callback: (data: any) => void) => {
+  const on = useCallback((event: string, callback: (data: unknown) => void) => {
     if (!token) {
       return;
     }
@@ -37,7 +37,7 @@ export function useWebSocket(token: string | null) {
     realtimeClient.on(event, callback);
   }, [token]);
 
-  const off = useCallback((event: string, callback?: (data: any) => void) => {
+  const off = useCallback((event: string, callback?: (data: unknown) => void) => {
     if (callback) {
       listenersRef.current.get(event)?.delete(callback);
     } else {
