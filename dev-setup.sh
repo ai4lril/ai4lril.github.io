@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# Development setup script for Voice Data Collection
+# Development setup script for ILHRF Data Collection Platform
 
-echo "🚀 Setting up Voice Data Collection for Development"
+echo "🚀 Setting up ILHRF Data Collection Platform for Development"
 
 # Navigate to backend directory
 cd backend

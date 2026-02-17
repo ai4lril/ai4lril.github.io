@@ -1,4 +1,4 @@
-# Voice Data Collection Platform
+# ILHRF Data Collection Platform
 
 A comprehensive platform for collecting and processing voice data with support for multiple Indian languages, featuring a modern web interface and powerful NLP processing capabilities.
 
@@ -91,7 +91,7 @@ pnpm prisma migrate   # Run migrations
 cd backend
 pnpm test            # Unit tests
 pnpm test:cov        # Unit tests with coverage
-pnpm test:integration # Integration tests (requires Postgres, Redis, SeaweedFS)
+pnpm test:integration # Integration tests (requires YugaByteDB, Redis, SeaweedFS)
 pnpm test:e2e        # E2E tests
 pnpm test:load       # Load tests (requires backend running)
 ```
@@ -140,7 +140,7 @@ environment:
 
 ### PostgreSQL Setup (Alternative)
 
-To use PostgreSQL instead, comment out the `yugabytedb` service in `compose.yml` and uncomment the `postgres` service.
+To use PostgreSQL instead, comment out the `yugabytedb` service in `compose.yml`, uncomment the `postgres` service and its volume, and update the backend `DATABASE_URL` and `depends_on` to use `postgres`.
 
 ### Prisma Schema
 

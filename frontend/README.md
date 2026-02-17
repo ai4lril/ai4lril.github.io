@@ -1,10 +1,10 @@
-# Voice Data Collection Frontend
+# ILHRF Data Collection Frontend
 
 A Next.js web application for collecting voice data to train AI models.
 
 ## Overview
 
-This is the frontend application for the voice data collection platform. It provides a user-friendly interface for gathering high-quality voice recordings from users. The collected data can be used to train and improve speech recognition systems, voice assistants, and other AI applications that rely on voice input.
+This is the frontend application for the ILHRF Data Collection Platform. It provides a user-friendly interface for gathering high-quality voice recordings from users. The collected data can be used to train and improve speech recognition systems, voice assistants, and other AI applications that rely on voice input.
 
 ## Features
 

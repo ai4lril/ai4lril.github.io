@@ -23,7 +23,7 @@ import { LoggerModule } from '../logger/logger.module';
       defaults: {
         from:
           process.env.SMTP_FROM ||
-          '"Voice Data Collection" <noreply@voice-data-collection.com>',
+          '"ILHRF Data Collection" <noreply@ilhrf.org>',
       },
       template: {
         dir: process.cwd() + '/backend/src/notifications/templates',

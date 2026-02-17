@@ -1,22 +1,22 @@
 services:
   # PostgreSQL database (alternative - uncomment if you prefer PostgreSQL)
-  postgres:
-    image: postgres:15
-    container_name: voice-data-postgres
-    environment:
-      POSTGRES_DB: voice_data_collection
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+  # postgres:
+  #   image: postgres:15
+  #   container_name: voice-data-postgres
+  #   environment:
+  #     POSTGRES_DB: voice_data_collection
+  #     POSTGRES_USER: postgres
+  #     POSTGRES_PASSWORD: postgres
+  #   ports:
+  #     - "5432:5432"
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
 
   # Dragonfly Cache (High-performance Redis alternative)
   # BullMQ compatibility: --cluster_mode=emulated --lock_on_hashtags enables
@@ -235,7 +235,8 @@ services:
   # YugaByteDB (default database)
   yugabytedb:
     image: yugabytedb/yugabyte:latest
-    container_name: voice-data-yugabyte
+    container_name: ilhrf-yugabyte-node1
+    hostname: ilhrf-yugabyte-node1
     environment:
       YSQL_DB: voice_data_collection
       YSQL_USER: yugabyte
@@ -249,6 +250,11 @@ services:
     volumes:
       - yugabyte_data:/opt/yugabyte/data
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U yugabyte -h localhost -p 5433 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
     command:
       ["bin/yugabyted", "start", "--background=false", "--listen=0.0.0.0"]
 
@@ -258,7 +264,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: voice-data-backend
     environment:
-      DATABASE_URL: "postgresql://postgres:postgres@postgres:5432/voice_data_collection?schema=public"
+      DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb:5433/voice_data_collection?schema=public"
       REDIS_URL: "redis://dragonfly:6379"
       CACHE_URL: "redis://dragonfly:6379"
       JWT_SECRET: "${JWT_SECRET:-Ovc5Gigy1KBQiVsNr51tow1fTNojj8aQ2Fwv1JLn+uE=}"
@@ -305,10 +311,14 @@ services:
     ports:
       - "5566:3001"
     depends_on:
-      - postgres
-      - dragonfly
-      - seaweedfs-s3
-      - timescaledb
+      yugabytedb:
+        condition: service_healthy
+      dragonfly:
+        condition: service_started
+      seaweedfs-s3:
+        condition: service_started
+      timescaledb:
+        condition: service_started
     restart: unless-stopped
     volumes:
       - ./backend:/app
@@ -326,15 +336,15 @@ services:
       timeout: 10s
       retries: 5
 
-  # Daily database backup (PostgreSQL dump to local volume)
+  # Daily database backup (YugaByteDB/PostgreSQL dump to local volume)
   backup:
     image: postgres:15
     container_name: voice-data-backup
     environment:
-      PGHOST: postgres
-      PGPORT: 5432
-      PGUSER: postgres
-      PGPASSWORD: postgres
+      PGHOST: yugabytedb
+      PGPORT: 5433
+      PGUSER: yugabyte
+      PGPASSWORD: yugabyte
       PGDATABASE: voice_data_collection
       BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-7}"
     volumes:
@@ -346,12 +356,12 @@ services:
         while true; do
           ts=$$(date +%Y%m%d_%H%M%S)
           echo "[$$(date)] Creating backup..."
-          pg_dump -h postgres -U postgres voice_data_collection --no-owner --no-acl | gzip > /backups/voice_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
+          pg_dump -h yugabytedb -p 5433 -U yugabyte voice_data_collection --no-owner --no-acl | gzip > /backups/voice_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
           find /backups -name "voice_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
           sleep 86400
         done
     depends_on:
-      postgres:
+      yugabytedb:
         condition: service_healthy
     restart: unless-stopped
     profiles:
@@ -387,7 +397,7 @@ services:
       retries: 5
 
 volumes:
-  postgres_data:
+  # postgres_data:  # Uncomment if using PostgreSQL
   yugabyte_data:
   dragonfly_data:
   seaweedfs_master_data:

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Database backup script for Voice Data Collection Platform
+# Database backup script for ILHRF Data Collection Platform
 # Backs up PostgreSQL to SeaweedFS S3 (or any S3-compatible storage)
 # Usage: ./scripts/backup.sh [backup_dir]
 # Run via cron: 0 2 * * * /path/to/scripts/backup.sh

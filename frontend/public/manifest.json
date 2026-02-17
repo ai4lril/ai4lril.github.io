@@ -1,6 +1,6 @@
 {
-  "name": "Voice Data Collection Platform",
-  "short_name": "Voice Data",
+  "name": "ILHRF Data Collection Platform",
+  "short_name": "ILHRF",
   "description": "Crowdsourcing platform for linguistic data collection",
   "start_url": "/",
   "display": "standalone",
@@ -21,7 +21,10 @@
       "purpose": "any maskable"
     }
   ],
-  "categories": ["education", "productivity"],
+  "categories": [
+    "education",
+    "productivity"
+  ],
   "screenshots": [],
   "shortcuts": [
     {
@@ -29,14 +32,24 @@
       "short_name": "Record",
       "description": "Record audio for data collection",
       "url": "/speak",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Dashboard",
       "short_name": "Dashboard",
       "description": "View your contributions",
       "url": "/dashboard",
-      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/icon-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ]
 }

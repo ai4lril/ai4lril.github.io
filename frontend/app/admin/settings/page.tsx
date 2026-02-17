@@ -53,7 +53,7 @@ export default function SettingsPage() {
         // Mock settings data
         const mockSettings: SystemSettings = {
             general: {
-                siteName: 'Voice Data Collection Platform',
+                siteName: 'ILHRF Data Collection Platform',
                 siteDescription: 'A comprehensive platform for collecting and annotating voice data across Indian languages',
                 contactEmail: 'admin@voicedata.com',
                 maintenanceMode: false
@@ -187,8 +187,8 @@ export default function SettingsPage() {
                                         key={tab.key}
                                         onClick={() => setActiveTab(tab.key as 'general' | 'security' | 'data' | 'notifications')}
                                         className={`py-2 px-1 border-b-2 font-medium text-sm ${activeTab === tab.key
-                                                ? 'border-indigo-500 text-indigo-600'
-                                                : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                                            ? 'border-indigo-500 text-indigo-600'
+                                            : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                             }`}
                                     >
                                         {tab.label}

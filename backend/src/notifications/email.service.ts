@@ -86,7 +86,7 @@ export class EmailService {
     const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
     await this.sendEmail({
       to,
-      subject: 'Welcome to Voice Data Collection Platform',
+      subject: 'Welcome to ILHRF Data Collection Platform',
       template: 'welcome',
       context: { name, frontendUrl },
     });

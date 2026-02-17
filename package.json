@@ -1,7 +1,7 @@
 {
     "name": "voice-data-collection",
     "version": "1.0.0",
-    "description": "Voice data collection application with frontend and backend",
+    "description": "ILHRF Data Collection Platform application with frontend and backend",
     "private": true,
     "scripts": {
         "dev": "npm run dev:both",

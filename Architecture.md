@@ -1,13 +1,13 @@
-# Voice Data Collection Platform — Architecture
+# ILHRF Data Collection Platform — Architecture
 
-**Document Version:** 1.0  
+**Document Version:** 1.1
 **Last Updated:** February 16, 2026
 
 ---
 
 ## Executive Summary
 
-The Voice Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across 23+ Indian languages. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, PostgreSQL/YugaByteDB, Dragonfly (Redis-compatible cache/queue), SeaweedFS, and optional analytics stores.
+The ILHRF Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across 23+ Indian languages. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, YugaByteDB (default, PostgreSQL-compatible), Dragonfly (Redis-compatible cache/queue), SeaweedFS, and optional analytics stores.
 
 ---
 
@@ -59,9 +59,9 @@ The Voice Data Collection Platform is a **crowdsourcing web application** for co
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                              DATA & INFRASTRUCTURE LAYER                                           │
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │
-│  │ PostgreSQL   │ │ Dragonfly    │ │ SeaweedFS   │ │ TimeScaleDB  │ │ Backup       │              │
+│  │ YugaByteDB   │ │ Dragonfly    │ │ SeaweedFS   │ │ TimeScaleDB  │ │ Backup       │              │
 │  │ (Primary DB) │ │ (Cache/Queue)│ │ (Blob Store) │ │ (Time-series)│ │ (pg_dump)    │              │
-│  │ Port: 5432   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │              │
+│  │ Port: 5433   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │              │
 │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘              │
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                                                │
 │  │ Prometheus   │ │ Grafana      │ │ Qdrant/Neo4j │  (Optional: vector/graph storage)              │
@@ -112,7 +112,7 @@ flowchart TB
     end
 
     subgraph Data["Data Stores"]
-        PG[(PostgreSQL)]
+        YB[(YugaByteDB)]
         DF[(Dragonfly)]
         SeaweedFS[(SeaweedFS)]
         TS[(TimeScaleDB)]
@@ -123,7 +123,7 @@ flowchart TB
     Frontend --> WS
     API --> Modules
     WS --> Modules
-    Modules --> PG
+    Modules --> YB
     Modules --> DF
     Modules --> SeaweedFS
     Modules --> TS
@@ -151,7 +151,7 @@ flowchart LR
     end
 
     subgraph Store["Storage"]
-        C1[(PostgreSQL)]
+        C1[(YugaByteDB)]
         C2[(Dragonfly)]
         C3[(SeaweedFS)]
     end
@@ -240,8 +240,8 @@ flowchart LR
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
 | Store           | Purpose                                                      | Port                       |
 | --------------- | ------------------------------------------------------------ | -------------------------- |
-| **PostgreSQL**  | Primary relational data (users, sentences, recordings, etc.) | 5432                       |
-| **YugaByteDB**  | Alternative PostgreSQL-compatible DB                         | 5433                       |
+| **YugaByteDB**  | Primary relational data (users, sentences, recordings, etc.) | 5433                       |
+| **PostgreSQL**  | Alternative (commented out in compose; uncomment to use)    | 5432                       |
 | **Dragonfly**   | Redis-compatible cache + BullMQ job queue                    | 6378                       |
 | **SeaweedFS**   | S3-compatible blob storage (audio, video, exports)           | 8333 (S3 API), 8888 (Filer)|
 | **TimeScaleDB** | Time-series analytics                                        | 5434                       |
@@ -263,6 +263,7 @@ flowchart LR
 | **Backend Metrics** | Custom counters, histograms, gauges                 |
 └───────────────────────────────────────────────────────────────────────────┘
 ```
+
 ---
 
 ## 5. Authentication & Authorization Flow
@@ -272,7 +273,7 @@ sequenceDiagram
     participant U as User
     participant F as Frontend
     participant B as Backend
-    participant DB as PostgreSQL
+    participant DB as YugaByteDB
 
     U->>F: Login / OAuth
     F->>B: POST /api/auth/login or OAuth callback
@@ -314,7 +315,7 @@ flowchart TB
 
     subgraph Storage["Storage"]
         SeaweedFS[(SeaweedFS)]
-        PG[(PostgreSQL)]
+        YB[(YugaByteDB)]
     end
 
     SpeechAPI --> Q1
@@ -327,7 +328,7 @@ flowchart TB
     Q3 --> W3
     W1 --> SeaweedFS
     W2 --> SeaweedFS
-    W3 --> PG
+    W3 --> YB
 ```
 
 **Note:** Hashtags `{name}` in queue names enable Dragonfly cluster-mode compatibility.
@@ -346,6 +347,7 @@ flowchart TB
 | **Compression** | Gzip                  | Values > 1KB                 |
 └────────────────────────────────────────────────────────────────────────┘
 ```
+
 ---
 
 ## 8. Database Schema (Core Entities)
@@ -376,7 +378,7 @@ erDiagram
 ┌──────────────────────────────────────────────────────────────────────────────────┐
 │                         Docker Compose Stack                                     │
 ├──────────────────────────────────────────────────────────────────────────────────┤
-│  postgres      │ Primary database                                                │
+│  yugabytedb    │ Primary database (ilhrf-yugabyte-node1); PostgreSQL commented   │
 │  dragonfly     │ Cache + BullMQ                                                  │
 │  seaweedfs     │ Blob storage                                                    │
 │  timescaledb   │ Time-series                                                     │
@@ -384,9 +386,9 @@ erDiagram
 │  neo4j         │ Graph (optional)                                                │
 │  prometheus    │ Metrics                                                         │
 │  grafana       │ Dashboards                                                      │
-│  backend       │ NestJS API (depends: postgres, dragonfly, seaweedfs, timescale) │
+│  backend       │ NestJS API (depends: yugabytedb, dragonfly, seaweedfs, timescale)│
 │  frontend      │ Next.js (depends: backend)                                      │
-│  backup        │ pg_dump daily (profile: backup)                                 │
+│  backup        │ pg_dump daily (profile: backup)                                │
 └──────────────────────────────────────────────────────────────────────────────────┘
 ```
 

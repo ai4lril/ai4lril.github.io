@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Voice Data Collection Backend Test Suite
+# ILHRF Data Collection Backend Test Suite
 # Comprehensive testing script for unit, integration, performance, and e2e tests
 
 set -e  # Exit on any error

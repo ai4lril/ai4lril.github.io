@@ -1,13 +1,13 @@
 # Faster Throughput & 99.99% SLA Implementation Strategy
 
-**Document Version:** 1.2  
+**Document Version:** 1.3
 **Last Updated:** February 16, 2026
 
 ---
 
 ## Executive Summary
 
-This document outlines a step-by-step implementation strategy to achieve **faster throughput** and **99.99% SLA** for the International Linguistic Heritage Research Foundation's Crowdsourcing Linguistics Data Collection Platform. It is based on learnings from the current architecture, where media uploads flow through the backend API → BullMQ (Redis/Dragonfly) → workers → SeaweedFS, causing bottlenecks at multiple stages.
+This document outlines a step-by-step implementation strategy to achieve **faster throughput** and **99.99% SLA** for the ILHRF Data Collection Platform. It is based on learnings from the current architecture, where media uploads flow through the backend API → BullMQ (Redis/Dragonfly) → workers → SeaweedFS, causing bottlenecks at multiple stages.
 
 **Target Scale:** 7,100+ languages, 71,000–710,000 uploads/hour at peak, 4 TB–385 TB/day bandwidth.
 
@@ -131,7 +131,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 | 4.1  | Tune worker concurrency    | `AUDIO_UPLOAD_CONCURRENCY=15`, `VIDEO_UPLOAD_CONCURRENCY=8`, `MEDIA_PROCESSING_CONCURRENCY=5` |
 | 4.2  | HPA for backend            | Scale on `queue_jobs_waiting` (e.g., target 50–100 per queue)                                 |
 | 4.3  | SeaweedFS distributed mode | 4+ nodes for production; document setup                                                       |
-| 4.4  | Connection pooling         | PgBouncer for PostgreSQL; tune Redis/Dragonfly pool size                                      |
+| 4.4  | Connection pooling         | PgBouncer for YugaByteDB/PostgreSQL; tune Redis/Dragonfly pool size                           |
 | 4.5  | Load testing               | Simulate 1,200–12,000 uploads/min; validate throughput                                        |
 
 **Deliverables:** Concurrency config, HPA manifests, SeaweedFS dist mode docs, load test results.
@@ -144,7 +144,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 | Step | Action              | Details                                                                  |
 | ---- | ------------------- | ------------------------------------------------------------------------ |
-| 5.1  | Multi-AZ deployment | PostgreSQL primary + standby; Dragonfly Sentinel or Cluster              |
+| 5.1  | Multi-AZ deployment | YugaByteDB multi-node (primary); Dragonfly Sentinel or Cluster           |
 | 5.2  | Health checks       | Liveness (process alive), readiness (DB, Redis, SeaweedFS reachable)     |
 | 5.3  | Circuit breakers    | Wrap external calls (DB, Redis, SeaweedFS); fail fast on repeated errors |
 | 5.4  | Graceful shutdown   | Drain queues; finish in-flight jobs; then exit                           |
@@ -162,7 +162,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 | ---- | ---------------- | --------------------------------------------------------- |
 | 6.1  | Multipart upload | For video > 5 MB; presigned multipart URLs                |
 | 6.2  | CDN              | CloudFront/Cloudflare in front of SeaweedFS for read path |
-| 6.3  | Read replicas    | PostgreSQL read replicas for analytics/search             |
+| 6.3  | Read replicas    | YugaByteDB read replicas for analytics/search             |
 | 6.4  | Request tracing  | OpenTelemetry for end-to-end latency                      |
 
 ---
@@ -198,7 +198,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 - [ ] Tune worker concurrency (e.g. audio: 15, video: 8, processing: 5)
 - [ ] HPA manifests: scale on `queue_jobs_waiting` (target 50–100)
 - [ ] SeaweedFS distributed mode: 4+ nodes; document setup
-- [ ] YugaByteDB: add nodes for horizontal scale (3+ for HA); configure sharding for hot tables
+- [ ] YugaByteDB: add nodes for horizontal scale (3+ for HA, e.g. ilhrf-yugabyte-node1/2/3); configure sharding for hot tables
 - [ ] Connection pooling: PgBouncer for YugaByteDB/PostgreSQL; tune Redis/Dragonfly pool
 - [ ] Load testing: simulate 1,200–12,000 uploads/min
 - [ ] Optional: dedicated worker deployment (API vs workers)
@@ -506,7 +506,7 @@ const client = new S3Client({
 
 ### 7.5 Scaling Database (YugaByteDB)
 
-**Purpose:** The platform uses YugaByteDB (PostgreSQL-compatible) as the default database. YugaByteDB provides built-in horizontal scaling and reduces operational overhead compared to vanilla PostgreSQL.
+**Purpose:** The platform uses YugaByteDB (PostgreSQL-compatible) as the default database. YugaByteDB provides built-in horizontal scaling and reduces operational overhead compared to vanilla PostgreSQL. Node names follow the `ilhrf-yugabyte-node*` convention (e.g. `ilhrf-yugabyte-node1`, `ilhrf-yugabyte-node2`, `ilhrf-yugabyte-node3`).
 
 #### How YugaByteDB Helps With Scaling
 
@@ -535,7 +535,7 @@ const client = new S3Client({
 
 #### Production Checklist
 
-- [ ] Add YugaByteDB nodes for horizontal scale (3+ nodes for HA)
+- [ ] Add YugaByteDB nodes for horizontal scale (3+ nodes for HA, e.g. ilhrf-yugabyte-node1, ilhrf-yugabyte-node2, ilhrf-yugabyte-node3)
 - [ ] Configure range sharding for `SpeechRecording` by `languageCode` or date if hot
 - [ ] Use PgBouncer or connection pooling; YugaByteDB scales but connections still need management
 - [ ] Route read-heavy queries (analytics, search) to read replicas

@@ -1,4 +1,4 @@
-# Voice Data Collection Backend
+# ILHRF Data Collection Backend
 
 A NestJS backend API for voice data collection with NLP processing capabilities.
 

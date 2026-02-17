@@ -18,7 +18,7 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const config = new DocumentBuilder()
-    .setTitle('Voice Data Collection API')
+    .setTitle('ILHRF Data Collection API')
     .setDescription('API for linguistic voice data collection, speech recordings, and crowdsourcing')
     .setVersion('1.0')
     .addBearerAuth()

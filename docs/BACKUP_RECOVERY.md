@@ -2,7 +2,7 @@
 
 ## Overview
 
-The ILHRF's Linguistic Data Collection Platform uses automated PostgreSQL backups with optional SeaweedFS (S3-compatible) storage and configurable retention.
+The ILHRF Data Collection Platform uses automated YugaByteDB (PostgreSQL-compatible) backups with optional SeaweedFS (S3-compatible) storage and configurable retention.
 
 ## Backup Strategy
 
@@ -17,37 +17,42 @@ The ILHRF's Linguistic Data Collection Platform uses automated PostgreSQL backup
 
 ```bash
 # From project root (with Docker)
-docker compose exec postgres pg_dump -U postgres voice_data_collection | gzip > backup_$(date +%Y%m%d).sql.gz
+docker compose exec yugabytedb pg_dump -U yugabyte -h localhost -p 5433 voice_data_collection | gzip > backup_$(date +%Y%m%d).sql.gz
 
 # Or use the backup script (run from host with postgres client)
-POSTGRES_HOST=localhost POSTGRES_PORT=5432 ./scripts/backup.sh
+PGHOST=localhost PGPORT=5433 PGUSER=yugabyte PGPASSWORD=yugabyte ./scripts/backup.sh
 ```
 
 ### Docker Compose Backup Service
 
-Add to `compose.yml` to run backups daily:
+The backup service in `compose.yml` runs daily (with `--profile backup`). It targets YugaByteDB:
 
 ```yaml
 backup:
   image: postgres:15
   container_name: voice-data-backup
   environment:
-    POSTGRES_HOST: postgres
-    POSTGRES_PASSWORD: postgres
+    PGHOST: yugabytedb
+    PGPORT: 5433
+    PGUSER: yugabyte
+    PGPASSWORD: yugabyte
+    PGDATABASE: voice_data_collection
     BACKUP_RETENTION_DAYS: 7
   volumes:
     - ./backups:/backups
-  entrypoint: ["/bin/sh", "-c"]
+  entrypoint: ["/bin/bash", "-c"]
   command:
     - |
-      apk add --no-cache postgresql-client
       while true; do
-        pg_dump -h postgres -U postgres voice_data_collection | gzip > /backups/backup_$$(date +%Y%m%d_%H%M%S).sql.gz
-        find /backups -name "backup_*.sql.gz" -mtime +7 -delete
+        pg_dump -h yugabytedb -p 5433 -U yugabyte voice_data_collection --no-owner --no-acl | gzip > /backups/voice_data_collection_$$(date +%Y%m%d_%H%M%S).sql.gz
+        find /backups -name "voice_data_collection_*.sql.gz" -mtime +7 -delete
         sleep 86400
       done
   depends_on:
-    - postgres
+    yugabytedb:
+      condition: service_healthy
+  profiles:
+    - backup
 ```
 
 ## Recovery
@@ -60,10 +65,10 @@ docker compose stop backend
 
 # 2. Restore (from host)
 gunzip -c backups/voice_data_collection_20260208_020000.sql.gz | \
-  docker compose exec -T postgres psql -U postgres voice_data_collection
+  docker compose exec -T yugabytedb psql -U yugabyte -h localhost -p 5433 voice_data_collection
 
 # Or use the restore script
-POSTGRES_HOST=localhost ./scripts/restore.sh backups/voice_data_collection_20260208_020000.sql.gz
+PGHOST=localhost PGPORT=5433 PGUSER=yugabyte PGPASSWORD=yugabyte ./scripts/restore.sh backups/voice_data_collection_20260208_020000.sql.gz
 
 # 3. Restart backend
 docker compose start backend
@@ -80,20 +85,20 @@ mc cp backup/backups/voice_data_collection_20260208_020000.sql.gz ./
 
 ## Environment Variables
 
-| Variable                | Default               | Description              |
-| ----------------------- | --------------------- | ------------------------ |
-| `POSTGRES_HOST`         | postgres              | Database host            |
-| `POSTGRES_PORT`         | 5432                  | Database port            |
-| `POSTGRES_USER`         | postgres              | Database user            |
-| `POSTGRES_PASSWORD`     | postgres              | Database password        |
-| `POSTGRES_DB`           | voice_data_collection | Database name            |
-| `BACKUP_RETENTION_DAYS` | 7                     | Days to keep backups     |
-| `SEAWEEDFS_BACKUP_BUCKET` | backups             | SeaweedFS S3 bucket for backups |
+| Variable                  | Default                             | Description                     |
+| ------------------------- | ----------------------------------- | ------------------------------- |
+| `PGHOST`                  | yugabytedb (or localhost from host) | Database host                   |
+| `PGPORT`                  | 5433                                | Database port (YugaByteDB YSQL) |
+| `PGUSER`                  | yugabyte                            | Database user                   |
+| `PGPASSWORD`              | yugabyte                            | Database password               |
+| `PGDATABASE`              | voice_data_collection               | Database name                   |
+| `BACKUP_RETENTION_DAYS`   | 7                                   | Days to keep backups            |
+| `SEAWEEDFS_BACKUP_BUCKET` | backups                             | SeaweedFS S3 bucket for backups |
 
 ## SeaweedFS Data
 
 SeaweedFS stores media files (audio, video). For full disaster recovery:
 
-1. Backup PostgreSQL (database)
+1. Backup YugaByteDB (database)
 2. Backup SeaweedFS volumes: `docker run --rm -v seaweedfs_master_data:/data -v seaweedfs_volume_data:/vol -v $(pwd):/backup alpine tar czf /backup/seaweedfs_backup.tar.gz -C /data . -C /vol .` (or use S3-compatible tools)
 3. Backup Dragonfly cache is optional (cache can be rebuilt)

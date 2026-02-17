@@ -1,6 +1,6 @@
 # Functional API Testing Framework
 
-This directory contains comprehensive functional tests for all APIs in the voice data collection platform.
+This directory contains comprehensive functional tests for all APIs in the ILHRF Data Collection Platform.
 
 ## Structure
 

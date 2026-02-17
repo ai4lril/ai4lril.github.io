@@ -1,5 +1,5 @@
 #!/bin/bash
-# Database restore script for Voice Data Collection Platform
+# Database restore script for ILHRF Data Collection Platform
 # Usage: ./scripts/restore.sh <backup_file.sql.gz>
 # Example: ./scripts/restore.sh ./backups/voice_data_collection_20260208_020000.sql.gz
 

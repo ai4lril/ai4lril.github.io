@@ -1,13 +1,36 @@
 # Changelog
 
-All notable changes to the Voice Data Collection Platform will be documented in this file.
+All notable changes to the ILHRF Data Collection Platform will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
 
-### Changed (2026-02-09)
+### Changed (2026-02-18)
+
+#### Documentation
+
+- **CRITICAL_ANALYSIS_REPORT.md cleanup** — Removed implemented items from the report:
+  - Removed: Audio Duration Calculation (implemented in speak page with calculateMediaDuration)
+  - Removed: Admin Dashboard Error Handling (error state, retry, try/catch)
+  - Removed: Error Handling / AllExceptionsFilter (implemented globally)
+  - Removed: Search/Filter (SearchBar, FilterPanel in admin content-moderation)
+  - Removed: Review Validation Count Logic (submitReview creates Validation, 25-threshold)
+  - Removed: API Key Rate Limiting (ApiKeyRateLimitGuard, ThrottlerModule)
+  - Removed: RBAC (UserRole, RolesGuard, @Roles decorator)
+  - Removed: Chart.js optimization (tree-shaking with specific module imports)
+  - Removed: API Documentation (Swagger at /api/docs)
+  - Kept: OAuth error handling (pending), API key entropy (optional)
+  - Updated Executive Summary and Priority Recommendations
+- **Merged CRITICAL_ANALYSIS_REPORT.md into REMAINING_FEATURES.md**
+  - Added Critical & Security Issues section (OAuth error handling, API key entropy)
+  - Added completion status and implemented features list
+  - Updated Feature Completeness Matrix with OAuth and API key items
+  - Updated Next Steps with immediate, short-term, and future priorities
+- **Removed** `CRITICAL_ANALYSIS_REPORT.md` (content consolidated into REMAINING_FEATURES.md)
+
+### Changed (2026-02-17)
 
 #### MinIO to SeaweedFS Migration
 
