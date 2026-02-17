@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-The Voice Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across 23+ Indian languages. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, PostgreSQL/YugaByteDB, Dragonfly (Redis-compatible cache/queue), MinIO, and optional analytics stores.
+The Voice Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across 23+ Indian languages. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, PostgreSQL/YugaByteDB, Dragonfly (Redis-compatible cache/queue), SeaweedFS, and optional analytics stores.
 
 ---
 
@@ -59,9 +59,9 @@ The Voice Data Collection Platform is a **crowdsourcing web application** for co
 ┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
 │                              DATA & INFRASTRUCTURE LAYER                                           │
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │
-│  │ PostgreSQL   │ │ Dragonfly    │ │ MinIO        │ │ TimeScaleDB  │ │ Backup       │              │
+│  │ PostgreSQL   │ │ Dragonfly    │ │ SeaweedFS   │ │ TimeScaleDB  │ │ Backup       │              │
 │  │ (Primary DB) │ │ (Cache/Queue)│ │ (Blob Store) │ │ (Time-series)│ │ (pg_dump)    │              │
-│  │ Port: 5432   │ │ Port: 6378   │ │ Port: 9002   │ │ Port: 5434   │ │ Profile      │              │
+│  │ Port: 5432   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │              │
 │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘              │
 │  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                                                │
 │  │ Prometheus   │ │ Grafana      │ │ Qdrant/Neo4j │  (Optional: vector/graph storage)              │
@@ -114,7 +114,7 @@ flowchart TB
     subgraph Data["Data Stores"]
         PG[(PostgreSQL)]
         DF[(Dragonfly)]
-        MinIO[(MinIO)]
+        SeaweedFS[(SeaweedFS)]
         TS[(TimeScaleDB)]
     end
 
@@ -125,7 +125,7 @@ flowchart TB
     WS --> Modules
     Modules --> PG
     Modules --> DF
-    Modules --> MinIO
+    Modules --> SeaweedFS
     Modules --> TS
 ```
 
@@ -153,7 +153,7 @@ flowchart LR
     subgraph Store["Storage"]
         C1[(PostgreSQL)]
         C2[(Dragonfly)]
-        C3[(MinIO)]
+        C3[(SeaweedFS)]
     end
 
     A1 --> B1
@@ -207,12 +207,12 @@ flowchart LR
 | ----------------------- | ----------------------------------------------------- |
 | **AuthModule**          | JWT, OAuth (Google, GitHub), API keys, password reset |
 | **UsersModule**         | User profiles, verification, preferences              |
-| **SpeechModule**        | Speech recording CRUD, validation, MinIO upload       |
+| **SpeechModule**        | Speech recording CRUD, validation, SeaweedFS upload   |
 | **QuestionModule**      | Question submissions, answer recordings               |
 | **WriteModule**         | Sentence submissions                                  |
 | **TranscriptionModule** | Transcription submit/review                           |
 | **NlpModule**           | NER, POS, translation, sentiment, emotion             |
-| **StorageModule**       | MinIO S3-compatible blob storage                      |
+| **StorageModule**       | SeaweedFS S3-compatible blob storage                  |
 | **CacheModule**         | L1 in-memory + L2 Dragonfly, cache warming            |
 | **QueueModule**         | BullMQ (media-upload-audio/video, media-processing)   |
 | **ProgressModule**      | User progress tracking                                |
@@ -243,7 +243,7 @@ flowchart LR
 | **PostgreSQL**  | Primary relational data (users, sentences, recordings, etc.) | 5432                       |
 | **YugaByteDB**  | Alternative PostgreSQL-compatible DB                         | 5433                       |
 | **Dragonfly**   | Redis-compatible cache + BullMQ job queue                    | 6378                       |
-| **MinIO**       | S3-compatible blob storage (audio, video, exports)           | 9002 (API), 9001 (Console) |
+| **SeaweedFS**   | S3-compatible blob storage (audio, video, exports)           | 8333 (S3 API), 8888 (Filer)|
 | **TimeScaleDB** | Time-series analytics                                        | 5434                       |
 | **Qdrant**      | Vector storage (optional)                                    | 6333                       |
 | **Neo4j**       | Graph storage (optional)                                     | 7474, 7687                 |
@@ -313,7 +313,7 @@ flowchart TB
     end
 
     subgraph Storage["Storage"]
-        MinIO[(MinIO)]
+        SeaweedFS[(SeaweedFS)]
         PG[(PostgreSQL)]
     end
 
@@ -325,8 +325,8 @@ flowchart TB
     W1 --> Q3
     W2 --> Q3
     Q3 --> W3
-    W1 --> MinIO
-    W2 --> MinIO
+    W1 --> SeaweedFS
+    W2 --> SeaweedFS
     W3 --> PG
 ```
 
@@ -373,21 +373,21 @@ erDiagram
 ## 9. Deployment Topology (Docker Compose)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────┐
-│                         Docker Compose Stack                                 │
-├──────────────────────────────────────────────────────────────────────────────┤
-│  postgres      │ Primary database                                            │
-│  dragonfly     │ Cache + BullMQ                                              │
-│  minio         │ Blob storage                                                │
-│  timescaledb   │ Time-series                                                 │
-│  qdrant        │ Vector (optional)                                           │
-│  neo4j         │ Graph (optional)                                            │
-│  prometheus    │ Metrics                                                     │
-│  grafana       │ Dashboards                                                  │
-│  backend       │ NestJS API (depends: postgres, dragonfly, minio, timescale) │
-│  frontend      │ Next.js (depends: backend)                                  │
-│  backup        │ pg_dump daily (profile: backup)                             │
-└──────────────────────────────────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────────────────────────┐
+│                         Docker Compose Stack                                     │
+├──────────────────────────────────────────────────────────────────────────────────┤
+│  postgres      │ Primary database                                                │
+│  dragonfly     │ Cache + BullMQ                                                  │
+│  seaweedfs     │ Blob storage                                                    │
+│  timescaledb   │ Time-series                                                     │
+│  qdrant        │ Vector (optional)                                               │
+│  neo4j         │ Graph (optional)                                                │
+│  prometheus    │ Metrics                                                         │
+│  grafana       │ Dashboards                                                      │
+│  backend       │ NestJS API (depends: postgres, dragonfly, seaweedfs, timescale) │
+│  frontend      │ Next.js (depends: backend)                                      │
+│  backup        │ pg_dump daily (profile: backup)                                 │
+└──────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -414,7 +414,7 @@ erDiagram
 - **Queue:** BullMQ + Dragonfly for async media processing
 - **Cache:** L1 + L2 for read-heavy endpoints (e.g. languages)
 - **Database:** Connection pooling, read replicas, partitioning (see REMAINING_FEATURES.md)
-- **Storage:** MinIO distributed mode or S3 at scale
+- **Storage:** SeaweedFS distributed mode or S3 at scale
 - **Target:** 7,100+ languages, ~710K–7.1M daily uploads (see REMAINING_FEATURES.md)
 
 ---

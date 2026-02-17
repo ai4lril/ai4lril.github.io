@@ -7,7 +7,7 @@
 
 ## Executive Summary
 
-This document outlines a step-by-step implementation strategy to achieve **faster throughput** and **99.99% SLA** for the International Linguistics Heritage Research Foundation's Crowdsourcing Linguistics Data Collection Platform. It is based on learnings from the current architecture, where media uploads flow through the backend API → BullMQ (Redis/Dragonfly) → workers → MinIO, causing bottlenecks at multiple stages.
+This document outlines a step-by-step implementation strategy to achieve **faster throughput** and **99.99% SLA** for the International Linguistic Heritage Research Foundation's Crowdsourcing Linguistics Data Collection Platform. It is based on learnings from the current architecture, where media uploads flow through the backend API → BullMQ (Redis/Dragonfly) → workers → SeaweedFS, causing bottlenecks at multiple stages.
 
 **Target Scale:** 7,100+ languages, 71,000–710,000 uploads/hour at peak, 4 TB–385 TB/day bandwidth.
 
@@ -19,22 +19,22 @@ This document outlines a step-by-step implementation strategy to achieve **faste
 
 ```
 Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer in Redis)
-         → Worker (reads buffer from Redis) → MinIO (putObject)
+         → Worker (reads buffer from Redis) → SeaweedFS (putObject)
 ```
 
-| Bottleneck                     | Impact                                                                              |
-| ------------------------------ | ----------------------------------------------------------------------------------- |
-| **mediaBuffer in job payload** | Full audio/video bytes serialized into Redis; bloats memory, slows queue throughput |
-| **Backend as proxy**           | All media traffic flows through NestJS; doubles bandwidth, adds latency             |
-| **Blob storage writes**        | MinIO `putObject` from worker is sequential; no multipart, no direct client upload  |
-| **Single MinIO instance**      | No distributed mode; limited I/O at scale                                           |
-| **Worker concurrency**         | Default 5 audio / 3 video; may underutilize or overload depending on load           |
+| Bottleneck                     | Impact                                                                                 |
+| ------------------------------ | -------------------------------------------------------------------------------------- |
+| **mediaBuffer in job payload** | Full audio/video bytes serialized into Redis; bloats memory, slows queue throughput    |
+| **Backend as proxy**           | All media traffic flows through NestJS; doubles bandwidth, adds latency                |
+| **Blob storage writes**        | SeaweedFS `putObject` from worker is sequential; no multipart, no direct client upload |
+| **Single SeaweedFS instance**  | No distributed mode; limited I/O at scale                                              |
+| **Worker concurrency**         | Default 5 audio / 3 video; may underutilize or overload depending on load              |
 
 ### 1.2 Proven Improvements
 
 | Improvement                        | Benefit                                                             |
 | ---------------------------------- | ------------------------------------------------------------------- |
-| **Direct upload (presigned URLs)** | Frontend → MinIO directly; backend never touches media bytes        |
+| **Direct upload (presigned URLs)** | Frontend → SeaweedFS directly; backend never touches media bytes    |
 | **Metadata-only jobs**             | Jobs contain `objectKey`, `userId`, etc.; no `mediaBuffer` in Redis |
 | **Staging bucket**                 | Client uploads to staging; worker validates, moves to final bucket  |
 | **Multipart upload**               | Large files (video) use S3 multipart; faster, resumable             |
@@ -53,7 +53,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 ### Tier 2: Infrastructure for Scale
 
 4. **Worker auto-scaling** — HPA based on queue depth (e.g., scale when waiting > 100)
-5. **MinIO distributed mode** — Multiple nodes for higher I/O
+5. **SeaweedFS distributed mode** — Multiple nodes for higher I/O
 6. **YugaByteDB horizontal scaling** — Add nodes; automatic sharding and rebalancing (see Section 7.5)
 7. **Connection pooling** — PgBouncer for YugaByteDB/PostgreSQL, Redis connection pool tuning
 
@@ -66,7 +66,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 ### Tier 4: Optional Optimizations
 
 10. **Multipart upload** — For video files > 5 MB
-11. **CDN for media delivery** — CloudFront/Cloudflare in front of MinIO
+11. **CDN for media delivery** — CloudFront/Cloudflare in front of SeaweedFS
 12. **Read replicas** — YugaByteDB read replicas for analytics/search
 13. **Geo-scaling** — YugaByteDB multi-region; geo-partitioning; read replicas per region (see Section 7.6)
 
@@ -76,15 +76,15 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 ### Phase 1: Direct Upload (Presigned URLs) — Weeks 1–2
 
-**Goal:** Frontend uploads media directly to MinIO; backend only issues presigned URLs and enqueues metadata.
+**Goal:** Frontend uploads media directly to SeaweedFS; backend only issues presigned URLs and enqueues metadata.
 
-| Step | Action                      | Details                                                                            |
-| ---- | --------------------------- | ---------------------------------------------------------------------------------- |
-| 1.1  | Add presigned PUT endpoint  | `POST /api/storage/presigned-upload` returns `{ uploadUrl, objectKey, expiresIn }` |
-| 1.2  | Create staging bucket       | `voice-audio-staging` (or `voice-audio/incoming/`) for client uploads              |
-| 1.3  | Update frontend             | Replace base64/multipart upload with: 1) GET presigned URL, 2) PUT file to MinIO   |
-| 1.4  | Add `objectKey` to job data | Job includes `stagingObjectKey` instead of `mediaBuffer`                           |
-| 1.5  | Deprecate buffer path       | Keep legacy path for backward compatibility; feature-flag new flow                 |
+| Step | Action                      | Details                                                                              |
+| ---- | --------------------------- | ------------------------------------------------------------------------------------ |
+| 1.1  | Add presigned PUT endpoint  | `POST /api/storage/presigned-upload` returns `{ uploadUrl, objectKey, expiresIn }`   |
+| 1.2  | Create staging bucket       | `voice-audio-staging` (or `voice-audio/incoming/`) for client uploads                |
+| 1.3  | Update frontend             | Replace base64/multipart upload with: 1) GET presigned URL, 2) PUT file to SeaweedFS |
+| 1.4  | Add `objectKey` to job data | Job includes `stagingObjectKey` instead of `mediaBuffer`                             |
+| 1.5  | Deprecate buffer path       | Keep legacy path for backward compatibility; feature-flag new flow                   |
 
 **Deliverables:** Presigned upload API, staging bucket, frontend integration, updated job interface.
 
@@ -92,12 +92,12 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 ### Phase 2: Metadata-Only Jobs — Weeks 3–4
 
-**Goal:** Queue jobs contain only metadata; workers read media from MinIO staging.
+**Goal:** Queue jobs contain only metadata; workers read media from SeaweedFS staging.
 
 | Step | Action                              | Details                                                                                                  |
 | ---- | ----------------------------------- | -------------------------------------------------------------------------------------------------------- |
 | 2.1  | Define `MediaUploadJobDataV2`       | `{ userId, objectKey, fileName, contentType, mediaType, duration, sentenceId?, ... }` — no `mediaBuffer` |
-| 2.2  | Update workers                      | Fetch object from MinIO by `objectKey`; validate; move to final path; create DB records                  |
+| 2.2  | Update workers                      | Fetch object from SeaweedFS by `objectKey`; validate; move to final path; create DB records              |
 | 2.3  | Add `getObject` to StorageService   | `getObject(bucket, objectKey)` returns stream/buffer for worker                                          |
 | 2.4  | Migrate producers                   | Speech, Question, AudioBlog, VideoBlog controllers use V2 job data                                       |
 | 2.5  | Remove `mediaBuffer` from interface | Delete `MediaUploadJobData` V1; use V2 everywhere                                                        |
@@ -126,15 +126,15 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 **Goal:** Scale workers and storage for peak load.
 
-| Step | Action                  | Details                                                                                       |
-| ---- | ----------------------- | --------------------------------------------------------------------------------------------- |
-| 4.1  | Tune worker concurrency | `AUDIO_UPLOAD_CONCURRENCY=15`, `VIDEO_UPLOAD_CONCURRENCY=8`, `MEDIA_PROCESSING_CONCURRENCY=5` |
-| 4.2  | HPA for backend         | Scale on `queue_jobs_waiting` (e.g., target 50–100 per queue)                                 |
-| 4.3  | MinIO distributed mode  | 4+ nodes for production; document setup                                                       |
-| 4.4  | Connection pooling      | PgBouncer for PostgreSQL; tune Redis/Dragonfly pool size                                      |
-| 4.5  | Load testing            | Simulate 1,200–12,000 uploads/min; validate throughput                                        |
+| Step | Action                     | Details                                                                                       |
+| ---- | -------------------------- | --------------------------------------------------------------------------------------------- |
+| 4.1  | Tune worker concurrency    | `AUDIO_UPLOAD_CONCURRENCY=15`, `VIDEO_UPLOAD_CONCURRENCY=8`, `MEDIA_PROCESSING_CONCURRENCY=5` |
+| 4.2  | HPA for backend            | Scale on `queue_jobs_waiting` (e.g., target 50–100 per queue)                                 |
+| 4.3  | SeaweedFS distributed mode | 4+ nodes for production; document setup                                                       |
+| 4.4  | Connection pooling         | PgBouncer for PostgreSQL; tune Redis/Dragonfly pool size                                      |
+| 4.5  | Load testing               | Simulate 1,200–12,000 uploads/min; validate throughput                                        |
 
-**Deliverables:** Concurrency config, HPA manifests, MinIO dist mode docs, load test results.
+**Deliverables:** Concurrency config, HPA manifests, SeaweedFS dist mode docs, load test results.
 
 ---
 
@@ -142,15 +142,15 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 **Goal:** 99.99% uptime (~52 min downtime/year).
 
-| Step | Action              | Details                                                               |
-| ---- | ------------------- | --------------------------------------------------------------------- |
-| 5.1  | Multi-AZ deployment | PostgreSQL primary + standby; Dragonfly Sentinel or Cluster           |
-| 5.2  | Health checks       | Liveness (process alive), readiness (DB, Redis, MinIO reachable)      |
-| 5.3  | Circuit breakers    | Wrap external calls (DB, Redis, MinIO); fail fast on repeated errors  |
-| 5.4  | Graceful shutdown   | Drain queues; finish in-flight jobs; then exit                        |
-| 5.5  | Retry & backoff     | Exponential backoff for transient failures; idempotent operations     |
-| 5.6  | Alerting            | PagerDuty/Slack on queue depth > 1000, error rate > 1%, DB/Redis down |
-| 5.7  | Runbooks            | Document recovery for common failures                                 |
+| Step | Action              | Details                                                                  |
+| ---- | ------------------- | ------------------------------------------------------------------------ |
+| 5.1  | Multi-AZ deployment | PostgreSQL primary + standby; Dragonfly Sentinel or Cluster              |
+| 5.2  | Health checks       | Liveness (process alive), readiness (DB, Redis, SeaweedFS reachable)     |
+| 5.3  | Circuit breakers    | Wrap external calls (DB, Redis, SeaweedFS); fail fast on repeated errors |
+| 5.4  | Graceful shutdown   | Drain queues; finish in-flight jobs; then exit                           |
+| 5.5  | Retry & backoff     | Exponential backoff for transient failures; idempotent operations        |
+| 5.6  | Alerting            | PagerDuty/Slack on queue depth > 1000, error rate > 1%, DB/Redis down    |
+| 5.7  | Runbooks            | Document recovery for common failures                                    |
 
 **Deliverables:** Multi-AZ config, health endpoints, circuit breakers, runbooks.
 
@@ -158,12 +158,12 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 ### Phase 6: Optional Enhancements — Weeks 13+
 
-| Step | Action           | Details                                               |
-| ---- | ---------------- | ----------------------------------------------------- |
-| 6.1  | Multipart upload | For video > 5 MB; presigned multipart URLs            |
-| 6.2  | CDN              | CloudFront/Cloudflare in front of MinIO for read path |
-| 6.3  | Read replicas    | PostgreSQL read replicas for analytics/search         |
-| 6.4  | Request tracing  | OpenTelemetry for end-to-end latency                  |
+| Step | Action           | Details                                                   |
+| ---- | ---------------- | --------------------------------------------------------- |
+| 6.1  | Multipart upload | For video > 5 MB; presigned multipart URLs                |
+| 6.2  | CDN              | CloudFront/Cloudflare in front of SeaweedFS for read path |
+| 6.3  | Read replicas    | PostgreSQL read replicas for analytics/search             |
+| 6.4  | Request tracing  | OpenTelemetry for end-to-end latency                      |
 
 ---
 
@@ -173,7 +173,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 - [ ] Add presigned PUT endpoint (`POST /api/storage/presigned-upload`)
 - [ ] Create staging bucket (`voice-audio-staging` or `voice-audio/incoming/`)
-- [ ] Update frontend: request presigned URL, then PUT file directly to MinIO
+- [ ] Update frontend: request presigned URL, then PUT file directly to SeaweedFS
 - [ ] Add `objectKey` to job data (replace `mediaBuffer`)
 - [ ] Deprecate buffer path; feature-flag new flow for backward compatibility
 
@@ -181,7 +181,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 - [ ] Define `MediaUploadJobDataV2` interface (no `mediaBuffer`)
 - [ ] Add `getObject(bucket, objectKey)` to StorageService
-- [ ] Update workers: fetch from MinIO by `objectKey`, validate, move, create DB records
+- [ ] Update workers: fetch from SeaweedFS by `objectKey`, validate, move, create DB records
 - [ ] Migrate producers: Speech, Question, AudioBlog, VideoBlog controllers
 - [ ] Remove `mediaBuffer` from interface; delete V1
 
@@ -197,7 +197,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 
 - [ ] Tune worker concurrency (e.g. audio: 15, video: 8, processing: 5)
 - [ ] HPA manifests: scale on `queue_jobs_waiting` (target 50–100)
-- [ ] MinIO distributed mode: 4+ nodes; document setup
+- [ ] SeaweedFS distributed mode: 4+ nodes; document setup
 - [ ] YugaByteDB: add nodes for horizontal scale (3+ for HA); configure sharding for hot tables
 - [ ] Connection pooling: PgBouncer for YugaByteDB/PostgreSQL; tune Redis/Dragonfly pool
 - [ ] Load testing: simulate 1,200–12,000 uploads/min
@@ -206,8 +206,8 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 ### Phase 5: SLA 99.99% Hardening (Weeks 10–12)
 
 - [ ] Multi-AZ deployment: YugaByteDB multi-node (built-in replication); Dragonfly Sentinel/Cluster
-- [ ] Health checks: liveness (process alive), readiness (DB, Redis, MinIO)
-- [ ] Circuit breakers: wrap DB, Redis, MinIO calls; fail fast on repeated errors
+- [ ] Health checks: liveness (process alive), readiness (DB, Redis, SeaweedFS)
+- [ ] Circuit breakers: wrap DB, Redis, SeaweedFS calls; fail fast on repeated errors
 - [ ] Graceful shutdown: drain queues; finish in-flight jobs; then exit
 - [ ] Retry & backoff: BullMQ `attempts: 3`, exponential backoff; `isRetryableError()` helper
 - [ ] Frontend retry: 3x on 5xx/network error (1s, 2s, 4s backoff)
@@ -219,7 +219,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 - [ ] Multipart upload: `createMultipartUpload`, `getPresignedPartUrl`, `completeMultipartUpload`
 - [ ] `POST /presigned-multipart/init`, `POST /presigned-multipart/complete`
 - [ ] Frontend: split file into 5–10 MB parts; parallel upload; complete
-- [ ] CDN: CloudFront/Cloudflare in front of MinIO for read path
+- [ ] CDN: CloudFront/Cloudflare in front of SeaweedFS for read path
 - [ ] Read replicas: YugaByteDB read replicas for analytics/search
 - [ ] Request tracing: OpenTelemetry for end-to-end latency
 - [ ] **Geo-scaling:** YugaByteDB multi-region; geo-partitioning by `languageCode`/region; read replicas per region (see Section 7.6)
@@ -265,7 +265,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 | ------------------------- | --------------------------------------------------------------------------------- |
 | Presigned URL abuse       | Short expiry (15 min); validate `objectKey` format; rate limit presigned requests |
 | Staging bucket growth     | Lifecycle policy; delete objects > 24h                                            |
-| Worker/MinIO overload     | HPA; queue backpressure; rate limiting                                            |
+| Worker/SeaweedFS overload | HPA; queue backpressure; rate limiting                                            |
 | Data loss on worker crash | Idempotent jobs; retry with same objectKey; staging retention                     |
 
 ---
@@ -289,7 +289,7 @@ This section provides detailed implementation guidance for the four core concept
 2. Frontend: PUT each chunk to partUrls[i] (parallel, 5–10 MB per part)
 
 3. Frontend: POST /api/storage/presigned-multipart-complete
-   → Backend calls MinIO completeMultipartUpload; enqueues metadata job
+   → Backend calls SeaweedFS completeMultipartUpload; enqueues metadata job
 ```
 
 #### Implementation Steps
@@ -311,29 +311,42 @@ This section provides detailed implementation guidance for the four core concept
 | 50–500 MB | 10 MB      | 5–50 parts                   |
 | 500 MB+   | 100 MB     | 5–100 parts                  |
 
-#### MinIO/S3 API
+#### SeaweedFS/S3 API
 
 ```typescript
-// MinIO client supports multipart
-await minioClient.initiateNewMultipartUpload(bucket, objectKey, meta);
-await minioClient.presignedPutObject(bucket, objectKey, 3600); // per-part
-await minioClient.completeMultipartUpload(bucket, objectKey, uploadId, parts);
+// SeaweedFS S3-compatible API supports multipart (use @aws-sdk/client-s3 or similar)
+await s3Client.send(
+  new CreateMultipartUploadCommand({ Bucket: bucket, Key: objectKey }),
+);
+await getSignedUrl(
+  s3Client,
+  new PutObjectCommand({ Bucket: bucket, Key: objectKey }),
+  { expiresIn: 3600 },
+);
+await s3Client.send(
+  new CompleteMultipartUploadCommand({
+    Bucket: bucket,
+    Key: objectKey,
+    UploadId: uploadId,
+    MultipartUpload: { Parts: parts },
+  }),
+);
 ```
 
 ---
 
 ### 7.2 Retries
 
-**Purpose:** Retry transient failures (network, DB, MinIO) with exponential backoff; avoid thundering herd.
+**Purpose:** Retry transient failures (network, DB, SeaweedFS) with exponential backoff; avoid thundering herd.
 
 #### Retry Layers
 
-| Layer              | Scope                     | Strategy                                                       |
-| ------------------ | ------------------------- | -------------------------------------------------------------- |
-| **BullMQ job**     | Failed jobs               | `attempts: 3`, `backoff: { type: 'exponential', delay: 2000 }` |
-| **HTTP client**    | Frontend → Backend        | Retry 3x on 5xx/network error; 1s, 2s, 4s backoff              |
-| **StorageService** | MinIO putObject/getObject | `@nestjs/axios` retry or custom wrapper                        |
-| **Database**       | Prisma queries            | Connection retry; transient error handling                     |
+| Layer              | Scope                         | Strategy                                                       |
+| ------------------ | ----------------------------- | -------------------------------------------------------------- |
+| **BullMQ job**     | Failed jobs                   | `attempts: 3`, `backoff: { type: 'exponential', delay: 2000 }` |
+| **HTTP client**    | Frontend → Backend            | Retry 3x on 5xx/network error; 1s, 2s, 4s backoff              |
+| **StorageService** | SeaweedFS putObject/getObject | `@nestjs/axios` retry or custom wrapper                        |
+| **Database**       | Prisma queries                | Connection retry; transient error handling                     |
 
 #### BullMQ Retry Configuration
 
@@ -358,7 +371,7 @@ await minioClient.completeMultipartUpload(bucket, objectKey, uploadId, parts);
 | ---------------------------- | ------------------------------- |
 | ECONNRESET, ETIMEDOUT        | 400 Bad Request (invalid file)  |
 | 503 Service Unavailable      | 404 Not Found                   |
-| MinIO internal errors        | Validation failed (magic bytes) |
+| SeaweedFS internal errors    | Validation failed (magic bytes) |
 | DB connection pool exhausted | Duplicate key                   |
 
 #### Implementation
@@ -436,24 +449,24 @@ backend-workers (2–10 pods) → BullMQ workers only
 
 #### Options
 
-| Option                | Use Case            | Complexity |
-| --------------------- | ------------------- | ---------- |
-| **MinIO single node** | Dev, low load       | Low        |
-| **MinIO distributed** | Prod, 10–100 TB/day | Medium     |
-| **S3 + CloudFront**   | Prod, global, CDN   | Medium     |
-| **Multi-region S3**   | Global, 99.99%+     | High       |
+| Option                    | Use Case            | Complexity |
+| ------------------------- | ------------------- | ---------- |
+| **SeaweedFS single node** | Dev, low load       | Low        |
+| **SeaweedFS distributed** | Prod, 10–100 TB/day | Medium     |
+| **S3 + CloudFront**       | Prod, global, CDN   | Medium     |
+| **Multi-region S3**       | Global, 99.99%+     | High       |
 
-#### MinIO Distributed Mode
+#### SeaweedFS Distributed Mode
 
 - **4+ nodes** (erasure coding): 4 data + 2 parity drives minimum
 - **Consistent hashing** for object placement
 - **Shared backend** (NAS, NFS) or distributed storage
 
 ```yaml
-# Example: 4-node MinIO setup
-# Each node: MINIO_ROOT_USER, MINIO_ROOT_PASSWORD
-# Endpoints: http://minio-{1..4}.svc:9000
-minio server http://minio-{1..4}/data
+# Example: SeaweedFS cluster (master + volume servers)
+# Master: seaweedfs master -port=9333
+# Volume servers: seaweedfs volume -mserver=master:9333 -port=8080 -dir=/data
+# S3 API: seaweedfs filer -master=master:9333 -port=8888 (S3-compatible gateway)
 ```
 
 #### S3-Compatible at Scale
@@ -462,27 +475,32 @@ minio server http://minio-{1..4}/data
 | ------------- | ------------------------------------------------------------------------------- |
 | **Bucket**    | One bucket per environment; prefix by `audio/`, `video/`, `staging/`            |
 | **Lifecycle** | Staging: delete after 24h; final: transition to Glacier after 1 year (optional) |
-| **CDN**       | CloudFront/Cloudflare in front of MinIO/S3 for read path                        |
+| **CDN**       | CloudFront/Cloudflare in front of SeaweedFS/S3 for read path                    |
 | **CORS**      | Allow frontend origin for presigned PUT                                         |
 
 #### Environment Abstraction
 
-Keep `StorageService` S3-compatible so you can switch between MinIO and AWS S3:
+Keep `StorageService` S3-compatible so you can switch between SeaweedFS and AWS S3:
 
 ```typescript
-// Same interface for MinIO / S3
-const client = process.env.STORAGE_PROVIDER === 's3'
-  ? new S3Client({ ... })
-  : new MinIO.Client({ ... });
+// Same S3-compatible interface for SeaweedFS (S3 gateway) or AWS S3
+const client = new S3Client({
+  endpoint:
+    process.env.STORAGE_PROVIDER === "s3"
+      ? undefined
+      : process.env.SEAWEEDFS_S3_ENDPOINT,
+  region: process.env.AWS_REGION || "us-east-1",
+  // ... credentials
+});
 ```
 
 #### Capacity Planning
 
-| Daily Uploads | Est. Storage | Bandwidth   | Recommendation                |
-| ------------- | ------------ | ----------- | ----------------------------- |
-| 71K           | ~4 TB        | ~4 TB/day   | MinIO single node             |
-| 710K          | ~40 TB       | ~40 TB/day  | MinIO distributed (4–8 nodes) |
-| 7.1M          | ~400 TB      | ~400 TB/day | S3 + CloudFront               |
+| Daily Uploads | Est. Storage | Bandwidth   | Recommendation                    |
+| ------------- | ------------ | ----------- | --------------------------------- |
+| 71K           | ~4 TB        | ~4 TB/day   | SeaweedFS single node             |
+| 710K          | ~40 TB       | ~40 TB/day  | SeaweedFS distributed (4–8 nodes) |
+| 7.1M          | ~400 TB      | ~400 TB/day | S3 + CloudFront                   |
 
 ---
 
@@ -492,28 +510,28 @@ const client = process.env.STORAGE_PROVIDER === 's3'
 
 #### How YugaByteDB Helps With Scaling
 
-| Capability | Benefit |
-|------------|---------|
-| **Horizontal scaling** | Add nodes to the cluster without downtime; data and workload rebalance automatically |
-| **Automatic sharding** | Tables split into tablets distributed across nodes; hash or range sharding |
-| **Built-in replication** | RPO=0, RTO 3–15 s; no manual streaming replication setup |
-| **Operational simplicity** | No vacuuming, no transaction ID wraparound; automatic rebalancing on node addition |
+| Capability                 | Benefit                                                                              |
+| -------------------------- | ------------------------------------------------------------------------------------ |
+| **Horizontal scaling**     | Add nodes to the cluster without downtime; data and workload rebalance automatically |
+| **Automatic sharding**     | Tables split into tablets distributed across nodes; hash or range sharding           |
+| **Built-in replication**   | RPO=0, RTO 3–15 s; no manual streaming replication setup                             |
+| **Operational simplicity** | No vacuuming, no transaction ID wraparound; automatic rebalancing on node addition   |
 
 #### Sharding Strategies for Voice Data
 
-| Strategy | Use Case | Example |
-|----------|----------|---------|
-| **Hash sharding** | Even distribution, point lookups | Default for `User`, `Sentence` |
-| **Range sharding** | Range scans by language or date | `SpeechRecording` by `languageCode` or `createdAt` |
+| Strategy           | Use Case                         | Example                                            |
+| ------------------ | -------------------------------- | -------------------------------------------------- |
+| **Hash sharding**  | Even distribution, point lookups | Default for `User`, `Sentence`                     |
+| **Range sharding** | Range scans by language or date  | `SpeechRecording` by `languageCode` or `createdAt` |
 
 #### What You Still Need With YugaByteDB
 
-| Concern | YugaByteDB | Still Needed |
-|---------|------------|--------------|
-| Connection exhaustion | Scales with nodes | PgBouncer, connection pooling |
-| Query performance | Sharding helps | Indexes, partitioning strategy |
-| Read scaling | Replicas for reads | Route analytics/search to read replicas |
-| Hot tables | Tablets spread load | Consider range sharding by `languageCode` or date |
+| Concern               | YugaByteDB          | Still Needed                                      |
+| --------------------- | ------------------- | ------------------------------------------------- |
+| Connection exhaustion | Scales with nodes   | PgBouncer, connection pooling                     |
+| Query performance     | Sharding helps      | Indexes, partitioning strategy                    |
+| Read scaling          | Replicas for reads  | Route analytics/search to read replicas           |
+| Hot tables            | Tablets spread load | Consider range sharding by `languageCode` or date |
 
 #### Production Checklist
 
@@ -531,32 +549,32 @@ const client = process.env.STORAGE_PROVIDER === 's3'
 
 #### Multi-Region Topologies
 
-| Topology | Purpose | Latency / Consistency |
-|----------|---------|------------------------|
-| **Default synchronous replication** | Strong consistency across regions | Higher write latency (cross-region commits) |
-| **Geo-partitioning** | Data pinned to regions by policy (e.g. `languageCode`, region) | Low latency; data residency compliance |
-| **xCluster** | Async replication (unidirectional or bidirectional) across regions | Timeline consistency; lower write latency |
-| **Read replicas** | Read-only clusters in distant regions | Read latency can drop from ~60 ms to ~2 ms |
+| Topology                            | Purpose                                                            | Latency / Consistency                       |
+| ----------------------------------- | ------------------------------------------------------------------ | ------------------------------------------- |
+| **Default synchronous replication** | Strong consistency across regions                                  | Higher write latency (cross-region commits) |
+| **Geo-partitioning**                | Data pinned to regions by policy (e.g. `languageCode`, region)     | Low latency; data residency compliance      |
+| **xCluster**                        | Async replication (unidirectional or bidirectional) across regions | Timeline consistency; lower write latency   |
+| **Read replicas**                   | Read-only clusters in distant regions                              | Read latency can drop from ~60 ms to ~2 ms  |
 
 #### YugaByteDB vs CockroachDB (Geo-Scaling)
 
-| Capability | CockroachDB | YugaByteDB |
-|------------|-------------|------------|
-| **Geo-partitioning** | Yes (regional by row, regional tables) | Yes (geo-partitioning by policy) |
-| **Multi-region** | Yes | Yes |
-| **Read replicas** | Yes | Yes |
-| **Data residency** | Yes (row-level) | Yes (partition-level) |
-| **Multi-cloud** | Yes | Yes (AWS, GCP, Azure) |
-| **Survival goals** | Yes (region/zone failure) | Yes (replication factor 5–7 for regional failure) |
+| Capability           | CockroachDB                            | YugaByteDB                                        |
+| -------------------- | -------------------------------------- | ------------------------------------------------- |
+| **Geo-partitioning** | Yes (regional by row, regional tables) | Yes (geo-partitioning by policy)                  |
+| **Multi-region**     | Yes                                    | Yes                                               |
+| **Read replicas**    | Yes                                    | Yes                                               |
+| **Data residency**   | Yes (row-level)                        | Yes (partition-level)                             |
+| **Multi-cloud**      | Yes                                    | Yes (AWS, GCP, Azure)                             |
+| **Survival goals**   | Yes (region/zone failure)              | Yes (replication factor 5–7 for regional failure) |
 
 #### Voice Data Platform Use Cases
 
-| Use Case | Approach |
-|----------|----------|
+| Use Case                             | Approach                                                                                     |
+| ------------------------------------ | -------------------------------------------------------------------------------------------- |
 | **Contributors in multiple regions** | Geo-partition `SpeechRecording` by `languageCode` or region; keep data close to contributors |
-| **Analytics in distant regions** | Read replicas in regions with heavy analytics/search traffic |
-| **Data residency (GDPR, etc.)** | Geo-partitioning to keep data in required jurisdictions |
-| **Multi-cloud** | Deploy across AWS, GCP, Azure for redundancy or cost optimization |
+| **Analytics in distant regions**     | Read replicas in regions with heavy analytics/search traffic                                 |
+| **Data residency (GDPR, etc.)**      | Geo-partitioning to keep data in required jurisdictions                                      |
+| **Multi-cloud**                      | Deploy across AWS, GCP, Azure for redundancy or cost optimization                            |
 
 #### Geo-Scaling Checklist
 
@@ -578,13 +596,13 @@ Beyond chunked uploads, retries, worker scaling, and blob storage, these factors
 
 The platform uses **YugaByteDB** (PostgreSQL-compatible). YugaByteDB provides horizontal scaling, automatic sharding, and built-in replication—see Section 7.5. The factors below still apply:
 
-| Factor                    | What Happens                                                   | Mitigation                                               |
-| ------------------------- | -------------------------------------------------------------- | -------------------------------------------------------- |
-| **Connection exhaustion** | More pods → more DB connections → pool limit hit               | PgBouncer, connection pooling, limit connections per pod |
+| Factor                    | What Happens                                                   | Mitigation                                                                 |
+| ------------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Connection exhaustion** | More pods → more DB connections → pool limit hit               | PgBouncer, connection pooling, limit connections per pod                   |
 | **Query latency**         | Hot tables (e.g. `SpeechRecording`) grow; full scans slow down | Indexes, partitioning by `languageCode` or date; YugaByteDB range sharding |
-| **Write contention**      | Many inserts/updates on same tables                            | Partitioning, batching, async writes; YugaByteDB tablets spread load |
-| **Replication lag**       | Read replicas fall behind under heavy writes                   | Monitor lag; route critical reads to primary             |
-| **Lock contention**       | Long transactions block others                                 | Shorter transactions, optimistic locking                 |
+| **Write contention**      | Many inserts/updates on same tables                            | Partitioning, batching, async writes; YugaByteDB tablets spread load       |
+| **Replication lag**       | Read replicas fall behind under heavy writes                   | Monitor lag; route critical reads to primary                               |
+| **Lock contention**       | Long transactions block others                                 | Shorter transactions, optimistic locking                                   |
 
 ---
 
@@ -614,7 +632,7 @@ The platform uses **YugaByteDB** (PostgreSQL-compatible). YugaByteDB provides ho
 
 | Factor                   | What Happens                            | Mitigation                                       |
 | ------------------------ | --------------------------------------- | ------------------------------------------------ |
-| **Bandwidth saturation** | MinIO/API links saturated at peak       | Direct uploads, CDN, multipart, parallel uploads |
+| **Bandwidth saturation** | SeaweedFS/API links saturated at peak   | Direct uploads, CDN, multipart, parallel uploads |
 | **DNS resolution**       | High request rate → DNS lookup overhead | DNS caching, connection pooling, keep-alive      |
 | **TLS handshake**        | Many new connections → CPU cost         | TLS session reuse, HTTP/2                        |
 | **Geographic latency**   | Distant users see high latency          | Edge/CDN, regional deployments                   |

@@ -49,4 +49,4 @@ pnpm test:functional:all
 
 ## Test Environment
 
-Tests use a separate test database and mock external services (MinIO, Redis, etc.) to ensure isolation and speed.
+Tests use a separate test database and mock external services (SeaweedFS S3, Redis, etc.) to ensure isolation and speed.

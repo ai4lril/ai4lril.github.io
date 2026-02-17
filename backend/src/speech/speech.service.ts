@@ -204,7 +204,7 @@ export class SpeechService {
       // This is acceptable as frontend already calculates duration
     }
 
-    // Upload to MinIO using the generic uploadMedia method
+    // Upload to blob storage (SeaweedFS S3) using the generic uploadMedia method
     const contentTypePrefix = mediaType === 'video' ? 'video' : 'audio';
     const fileName = `speech-${sentenceId}-${Date.now()}.${audioFormat}`;
     const blobStorageLink = await this.storage.uploadMedia(

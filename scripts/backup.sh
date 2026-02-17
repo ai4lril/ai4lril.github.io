@@ -1,6 +1,6 @@
 #!/bin/bash
 # Database backup script for Voice Data Collection Platform
-# Backs up PostgreSQL to MinIO (S3-compatible storage)
+# Backs up PostgreSQL to SeaweedFS S3 (or any S3-compatible storage)
 # Usage: ./scripts/backup.sh [backup_dir]
 # Run via cron: 0 2 * * * /path/to/scripts/backup.sh
 
@@ -13,11 +13,12 @@ DB_NAME="${POSTGRES_DB:-voice_data_collection}"
 DB_USER="${POSTGRES_USER:-postgres}"
 DB_HOST="${POSTGRES_HOST:-postgres}"
 DB_PORT="${POSTGRES_PORT:-5432}"
-MINIO_HOST="${MINIO_HOST:-minio}"
-MINIO_PORT="${MINIO_PORT:-9000}"
-MINIO_BUCKET="${MINIO_BACKUP_BUCKET:-backups}"
-MINIO_ACCESS_KEY="${MINIO_ACCESS_KEY:-minioadmin}"
-MINIO_SECRET_KEY="${MINIO_SECRET_KEY:-minioadmin}"
+# SeaweedFS S3 (or MINIO_* fallback for compatibility)
+S3_HOST="${SEAWEEDFS_S3_HOST:-${MINIO_HOST:-seaweedfs-s3}}"
+S3_PORT="${SEAWEEDFS_S3_PORT:-${MINIO_PORT:-8333}}"
+S3_BUCKET="${SEAWEEDFS_BACKUP_BUCKET:-${MINIO_BACKUP_BUCKET:-backups}}"
+S3_ACCESS_KEY="${SEAWEEDFS_ACCESS_KEY:-${MINIO_ACCESS_KEY:-s3admin}}"
+S3_SECRET_KEY="${SEAWEEDFS_SECRET_KEY:-${MINIO_SECRET_KEY:-s3secret}}"
 
 mkdir -p "$BACKUP_DIR"
 DUMP_FILE="${BACKUP_DIR}/voice_data_collection_${TIMESTAMP}.sql.gz"
@@ -32,11 +33,11 @@ fi
 
 echo "[$(date)] Backup created: $DUMP_FILE ($(du -h "$DUMP_FILE" | cut -f1))"
 
-# Upload to MinIO if mc (minio client) is available
+# Upload to S3 (SeaweedFS/MinIO) if mc (minio client) is available
 if command -v mc &>/dev/null; then
-  export MC_HOST_backup="https://${MINIO_ACCESS_KEY}:${MINIO_SECRET_KEY}@${MINIO_HOST}:${MINIO_PORT}"
-  mc mb backup/backups --ignore-existing 2>/dev/null || true
-  mc cp "$DUMP_FILE" "backup/${MINIO_BUCKET}/" 2>/dev/null && echo "[$(date)] Uploaded to MinIO" || echo "[$(date)] MinIO upload skipped (mc config or network)"
+  export MC_HOST_backup="http://${S3_ACCESS_KEY}:${S3_SECRET_KEY}@${S3_HOST}:${S3_PORT}"
+  mc mb backup/${S3_BUCKET} --ignore-existing 2>/dev/null || true
+  mc cp "$DUMP_FILE" "backup/${S3_BUCKET}/" 2>/dev/null && echo "[$(date)] Uploaded to S3" || echo "[$(date)] S3 upload skipped (mc config or network)"
 fi
 
 # Retention: remove backups older than RETENTION_DAYS

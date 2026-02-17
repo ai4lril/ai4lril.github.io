@@ -91,7 +91,7 @@ pnpm prisma migrate   # Run migrations
 cd backend
 pnpm test            # Unit tests
 pnpm test:cov        # Unit tests with coverage
-pnpm test:integration # Integration tests (requires Postgres, Redis, MinIO)
+pnpm test:integration # Integration tests (requires Postgres, Redis, SeaweedFS)
 pnpm test:e2e        # E2E tests
 pnpm test:load       # Load tests (requires backend running)
 ```

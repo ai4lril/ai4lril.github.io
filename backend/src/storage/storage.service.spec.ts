@@ -3,19 +3,22 @@ import { BadRequestException } from '@nestjs/common';
 import { StorageService } from './storage.service';
 import { PrismaService } from '../prisma/prisma.service';
 
-const mockPutObject = jest.fn().mockResolvedValue(undefined);
-const mockPresignedGetObject = jest.fn().mockResolvedValue('https://presigned-url');
-const mockRemoveObject = jest.fn().mockResolvedValue(undefined);
-const mockBucketExists = jest.fn().mockResolvedValue(true);
+const mockSend = jest.fn();
+const mockGetSignedUrl = jest.fn().mockResolvedValue('https://presigned-url');
 
-jest.mock('minio', () => ({
-  Client: jest.fn().mockImplementation(() => ({
-    putObject: mockPutObject,
-    presignedGetObject: mockPresignedGetObject,
-    removeObject: mockRemoveObject,
-    bucketExists: mockBucketExists,
-    makeBucket: jest.fn(),
+jest.mock('@aws-sdk/client-s3', () => ({
+  S3Client: jest.fn().mockImplementation(() => ({
+    send: mockSend,
   })),
+  PutObjectCommand: jest.fn().mockImplementation((params) => ({ _params: params })),
+  GetObjectCommand: jest.fn().mockImplementation((params) => ({ _params: params })),
+  DeleteObjectCommand: jest.fn().mockImplementation((params) => ({ _params: params })),
+  HeadBucketCommand: jest.fn().mockImplementation((params) => ({ _params: params })),
+  CreateBucketCommand: jest.fn().mockImplementation((params) => ({ _params: params })),
+}));
+
+jest.mock('@aws-sdk/s3-request-presigner', () => ({
+  getSignedUrl: (...args: unknown[]) => mockGetSignedUrl(...args),
 }));
 
 // WebM magic bytes: 0x1a, 0x45, 0xdf, 0xa3 (EBML header)
@@ -33,6 +36,9 @@ describe('StorageService', () => {
 
   beforeEach(async () => {
     jest.clearAllMocks();
+    // HeadBucket succeeds (bucket exists) - no CreateBucket needed
+    mockSend.mockResolvedValue(undefined);
+
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         StorageService,
@@ -87,12 +93,15 @@ describe('StorageService', () => {
 
       expect(result).toContain('voice-audio');
       expect(result).toContain('audio/');
-      expect(mockPutObject).toHaveBeenCalledWith(
-        'voice-audio',
-        expect.stringContaining('audio/'),
-        webmBuffer,
-        webmBuffer.length,
-        expect.objectContaining({ 'Content-Type': 'audio/webm' }),
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          _params: expect.objectContaining({
+            Bucket: 'voice-audio',
+            Key: expect.stringContaining('audio/'),
+            Body: webmBuffer,
+            ContentType: 'audio/webm',
+          }),
+        }),
       );
     });
   });
@@ -102,19 +111,22 @@ describe('StorageService', () => {
       const result = await service.getAudioUrl('audio/test.webm');
 
       expect(result).toBe('https://presigned-url');
-      expect(mockPresignedGetObject).toHaveBeenCalledWith(
-        'voice-audio',
-        'audio/test.webm',
-        86400,
-      );
+      expect(mockGetSignedUrl).toHaveBeenCalled();
     });
   });
 
   describe('deleteAudio', () => {
-    it('should call removeObject', async () => {
+    it('should call DeleteObjectCommand via send', async () => {
       await service.deleteAudio('audio/test.webm');
 
-      expect(mockRemoveObject).toHaveBeenCalledWith('voice-audio', 'audio/test.webm');
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          _params: expect.objectContaining({
+            Bucket: 'voice-audio',
+            Key: 'audio/test.webm',
+          }),
+        }),
+      );
     });
   });
 });

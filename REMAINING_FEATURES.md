@@ -40,10 +40,10 @@ This document consolidates remaining gaps and areas for improvement in the ILHRF
 
 ## Feature Completeness Matrix
 
-| Category       | Feature           | Status         | Priority |
-| -------------- | ----------------- | -------------- | -------- |
-| **UX**         | Multi-language UI | ⚠️ Unclear     | LOW      |
-| **Compliance** | Data Retention    | ⚠️ Partial     | LOW      |
+| Category       | Feature           | Status     | Priority |
+| -------------- | ----------------- | ---------- | -------- |
+| **UX**         | Multi-language UI | ⚠️ Unclear | LOW      |
+| **Compliance** | Data Retention    | ⚠️ Partial | LOW      |
 
 ---
 
@@ -94,8 +94,8 @@ This document consolidates remaining gaps and areas for improvement in the ILHRF
 
 ### Storage Considerations
 
-**Current**: MinIO (single instance)  
-**At Scale**: MinIO Distributed Mode, S3-Compatible Cloud Storage, CDN Integration (CloudFront, Cloudflare)
+**Current**: SeaweedFS (S3-compatible, single instance)  
+**At Scale**: SeaweedFS cluster, S3-Compatible Cloud Storage, CDN Integration (CloudFront, Cloudflare)
 
 ### Database Considerations
 

@@ -80,7 +80,7 @@ export class DatasetExportService {
           name: 'metadata.json',
         });
 
-        // Add audio files (download from MinIO and add to ZIP)
+        // Add audio files (download from blob storage and add to ZIP)
         // Note: This is a simplified version - in production, you'd stream files directly
         recordings.forEach((recording) => {
           archive.append(`Placeholder for ${recording.audioFile}`, {
@@ -92,7 +92,7 @@ export class DatasetExportService {
       });
       /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
-      // Upload to MinIO
+      // Upload to blob storage (SeaweedFS S3)
       const fs = await import('fs');
       const fileBuffer = fs.readFileSync(zipPath);
       const fileUrl = await this.storageService.uploadMedia(

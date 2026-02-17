@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Voice Data Collection Platform uses automated PostgreSQL backups with optional MinIO storage and configurable retention.
+The ILHRF's Linguistic Data Collection Platform uses automated PostgreSQL backups with optional SeaweedFS (S3-compatible) storage and configurable retention.
 
 ## Backup Strategy
 
@@ -10,7 +10,7 @@ The Voice Data Collection Platform uses automated PostgreSQL backups with option
 
 - **Schedule**: Daily at 2:00 AM UTC (configurable via cron)
 - **Retention**: 7 days by default (`BACKUP_RETENTION_DAYS`)
-- **Storage**: Local `./backups` directory and optionally MinIO
+- **Storage**: Local `./backups` directory and optionally SeaweedFS S3
 - **Format**: Compressed SQL dump (`.sql.gz`)
 
 ### Manual Backup
@@ -69,9 +69,9 @@ POSTGRES_HOST=localhost ./scripts/restore.sh backups/voice_data_collection_20260
 docker compose start backend
 ```
 
-### Recovery from MinIO
+### Recovery from SeaweedFS S3
 
-If backups are stored in MinIO:
+If backups are stored in SeaweedFS S3:
 
 ```bash
 mc cp backup/backups/voice_data_collection_20260208_020000.sql.gz ./
@@ -88,12 +88,12 @@ mc cp backup/backups/voice_data_collection_20260208_020000.sql.gz ./
 | `POSTGRES_PASSWORD`     | postgres              | Database password        |
 | `POSTGRES_DB`           | voice_data_collection | Database name            |
 | `BACKUP_RETENTION_DAYS` | 7                     | Days to keep backups     |
-| `MINIO_BACKUP_BUCKET`   | backups               | MinIO bucket for backups |
+| `SEAWEEDFS_BACKUP_BUCKET` | backups             | SeaweedFS S3 bucket for backups |
 
-## MinIO Data
+## SeaweedFS Data
 
-MinIO stores media files (audio, video). For full disaster recovery:
+SeaweedFS stores media files (audio, video). For full disaster recovery:
 
 1. Backup PostgreSQL (database)
-2. Backup MinIO volume: `docker run --rm -v minio_data:/data -v $(pwd):/backup alpine tar czf /backup/minio_backup.tar.gz -C /data .`
+2. Backup SeaweedFS volumes: `docker run --rm -v seaweedfs_master_data:/data -v seaweedfs_volume_data:/vol -v $(pwd):/backup alpine tar czf /backup/seaweedfs_backup.tar.gz -C /data . -C /vol .` (or use S3-compatible tools)
 3. Backup Dragonfly cache is optional (cache can be rebuilt)

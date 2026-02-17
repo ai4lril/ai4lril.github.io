@@ -37,13 +37,19 @@ process.env.DATABASE_URL =
 // JWT Secret
 process.env.JWT_SECRET = process.env.JWT_SECRET || 'test-jwt-secret-key';
 
-// MinIO (test configuration)
-process.env.MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
-process.env.MINIO_PORT = process.env.MINIO_PORT || '9000';
-process.env.MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'test';
-process.env.MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'test';
-process.env.MINIO_BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'test-bucket';
-process.env.MINIO_USE_SSL = process.env.MINIO_USE_SSL || 'false';
+// SeaweedFS S3 (test configuration)
+process.env.SEAWEEDFS_S3_HOST =
+  process.env.SEAWEEDFS_S3_HOST || process.env.MINIO_ENDPOINT || 'localhost';
+process.env.SEAWEEDFS_S3_PORT =
+  process.env.SEAWEEDFS_S3_PORT || process.env.MINIO_PORT || '8333';
+process.env.SEAWEEDFS_ACCESS_KEY =
+  process.env.SEAWEEDFS_ACCESS_KEY || process.env.MINIO_ACCESS_KEY || 's3admin';
+process.env.SEAWEEDFS_SECRET_KEY =
+  process.env.SEAWEEDFS_SECRET_KEY || process.env.MINIO_SECRET_KEY || 's3secret';
+process.env.SEAWEEDFS_BUCKET =
+  process.env.SEAWEEDFS_BUCKET || process.env.MINIO_BUCKET_NAME || 'voice-audio';
+process.env.SEAWEEDFS_USE_SSL =
+  process.env.SEAWEEDFS_USE_SSL || process.env.MINIO_USE_SSL || 'false';
 
 // Cache/Redis
 process.env.REDIS_URL =

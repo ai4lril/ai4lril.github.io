@@ -203,7 +203,7 @@ model SpeechRecording {
   id          String   @id @default(cuid())
   sentenceId  String   @map("sentence_id")
   userId      String?  @map("user_id")
-  audioFile   String   @map("audio_file") // File path or URL to audio file (MinIO blob storage link)
+  audioFile   String   @map("audio_file") // File path or URL to audio file (SeaweedFS S3 blob storage link)
   audioFormat String   @map("audio_format") // e.g., 'wav', 'webm', 'mp3'
   mediaType   String   @default("audio") @map("media_type") // 'audio' or 'video'
   duration    Float? // Duration in seconds
@@ -587,7 +587,7 @@ model AudioMetadata {
   id                String   @id @default(cuid())
   speechRecordingId String   @unique @map("speech_recording_id")
   userId            String   @map("user_id")
-  blobStorageLink   String   @map("blob_storage_link") // MinIO S3 link
+  blobStorageLink   String   @map("blob_storage_link") // SeaweedFS S3 blob storage link
   audioDuration     Float    @map("audio_duration") // Duration in seconds
   timestamp         DateTime @default(now()) // Upload timestamp
   languageCode      String   @map("language_code")
@@ -659,7 +659,7 @@ model AnswerRecording {
   id                   String   @id @default(cuid())
   questionSubmissionId String   @map("question_submission_id")
   userId               String   @map("user_id")
-  audioFile            String   @map("audio_file") // MinIO blob storage link
+  audioFile            String   @map("audio_file") // SeaweedFS S3 blob storage link
   audioFormat          String   @map("audio_format")
   duration             Float? // Duration in seconds
   fileSize             Int?     @map("file_size")
@@ -1025,7 +1025,7 @@ model AudioBlog {
   languageCode String    @map("language_code")
   title        String
   description  String?
-  audioFile    String    @map("audio_file") // MinIO link
+  audioFile    String    @map("audio_file") // SeaweedFS S3 blob storage link
   duration     Float?
   published    Boolean   @default(false)
   publishedAt  DateTime? @map("published_at")
@@ -1048,7 +1048,7 @@ model VideoBlog {
   languageCode String    @map("language_code")
   title        String
   description  String?
-  videoFile    String    @map("video_file") // MinIO link
+  videoFile    String    @map("video_file") // SeaweedFS S3 blob storage link
   thumbnailUrl String?   @map("thumbnail_url")
   duration     Float?
   published    Boolean   @default(false)

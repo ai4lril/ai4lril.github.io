@@ -26,7 +26,7 @@ export class AudioBlogService {
     duration?: number,
   ) {
     try {
-      // Upload audio to MinIO
+      // Upload audio to blob storage (SeaweedFS S3)
       const audioUrl = await this.storageService.uploadMedia(
         audioFile,
         `audio-blogs/${userId}/${Date.now()}_${audioFileName}`,

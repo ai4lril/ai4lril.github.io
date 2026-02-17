@@ -1,23 +1,35 @@
 {
-  "extends": "../../../backend/tsconfig.json",
+  "extends": "../../backend/tsconfig.json",
   "compilerOptions": {
     "module": "commonjs",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "baseUrl": "../../../backend",
-    "types": ["jest", "node"],
+    "baseUrl": "../../backend",
+    "types": [
+      "jest",
+      "node"
+    ],
     "typeRoots": [
-      "../../../backend/node_modules/@types",
-      "../../../node_modules/@types"
+      "../../backend/node_modules/@types",
+      "../../node_modules/@types"
     ],
     "paths": {
-      "@/*": ["src/*"],
-      "@nestjs/*": ["node_modules/@nestjs/*"]
+      "@/*": [
+        "src/*"
+      ],
+      "@nestjs/*": [
+        "node_modules/@nestjs/*"
+      ]
     },
     "resolveJsonModule": true,
     "skipLibCheck": true
   },
-  "include": ["**/*.ts", "global.d.ts"],
-  "exclude": ["node_modules"]
+  "include": [
+    "**/*.ts",
+    "global.d.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

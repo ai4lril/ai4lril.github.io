@@ -49,24 +49,64 @@ services:
         reservations:
           memory: 32GB
 
-  # MinIO for blob storage (S3-compatible)
-  minio:
-    image: minio/minio:latest
-    container_name: voice-data-minio
-    command: server /data --console-address ":9001"
-    environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+  # SeaweedFS for blob storage (S3-compatible)
+  seaweedfs-master:
+    image: chrislusf/seaweedfs:latest
+    container_name: voice-data-seaweedfs-master
+    command: master -ip=seaweedfs-master -ip.bind=0.0.0.0 -port=9333
     ports:
-      - "9002:9000" # MinIO API
-      - "9001:9001" # MinIO Console
+      - "9333:9333"
+      - "19333:19333"
     volumes:
-      - minio_data:/data
+      - seaweedfs_master_data:/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
+      test:
+        ["CMD", "wget", "-q", "-O", "-", "http://localhost:9333/cluster/status"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  seaweedfs-volume:
+    image: chrislusf/seaweedfs:latest
+    container_name: voice-data-seaweedfs-volume
+    command: volume -ip=seaweedfs-volume -master=seaweedfs-master:9333 -ip.bind=0.0.0.0 -port=8080 -dir=/data
+    ports:
+      - "8080:8080"
+    volumes:
+      - seaweedfs_volume_data:/data
+    depends_on:
+      seaweedfs-master:
+        condition: service_healthy
+    restart: unless-stopped
+
+  seaweedfs-filer:
+    image: chrislusf/seaweedfs:latest
+    container_name: voice-data-seaweedfs-filer
+    command: filer -ip=seaweedfs-filer -master=seaweedfs-master:9333 -ip.bind=0.0.0.0 -port=8888
+    ports:
+      - "8888:8888"
+    depends_on:
+      - seaweedfs-master
+      - seaweedfs-volume
+    restart: unless-stopped
+
+  seaweedfs-s3:
+    image: chrislusf/seaweedfs:latest
+    container_name: voice-data-seaweedfs-s3
+    environment:
+      AWS_ACCESS_KEY_ID: s3admin
+      AWS_SECRET_ACCESS_KEY: s3secret
+    command: s3 -filer=seaweedfs-filer:8888 -ip.bind=0.0.0.0 -port=8333
+    ports:
+      - "8333:8333"
+    depends_on:
+      - seaweedfs-filer
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "-", "http://localhost:8333/"]
+      interval: 10s
+      timeout: 5s
       retries: 3
 
   # TimeScaleDB for time-series data
@@ -224,13 +264,13 @@ services:
       JWT_SECRET: "${JWT_SECRET:-Ovc5Gigy1KBQiVsNr51tow1fTNojj8aQ2Fwv1JLn+uE=}"
       PORT: 3001
       NODE_ENV: development
-      # MinIO configuration
-      MINIO_ENDPOINT: "minio"
-      MINIO_PORT: "9000"
-      MINIO_ACCESS_KEY: "minioadmin"
-      MINIO_SECRET_KEY: "minioadmin"
-      MINIO_BUCKET_NAME: "voice-audio"
-      MINIO_USE_SSL: "false"
+      # SeaweedFS S3 configuration
+      SEAWEEDFS_S3_HOST: "seaweedfs-s3"
+      SEAWEEDFS_S3_PORT: "8333"
+      SEAWEEDFS_ACCESS_KEY: "s3admin"
+      SEAWEEDFS_SECRET_KEY: "s3secret"
+      SEAWEEDFS_BUCKET: "voice-audio"
+      SEAWEEDFS_USE_SSL: "false"
       # TimeScaleDB configuration
       TIMESCALEDB_URL: "postgresql://timescale:timescale@timescaledb:5432/timescale"
       # QdrantDB configuration
@@ -267,7 +307,7 @@ services:
     depends_on:
       - postgres
       - dragonfly
-      - minio
+      - seaweedfs-s3
       - timescaledb
     restart: unless-stopped
     volumes:
@@ -350,7 +390,8 @@ volumes:
   postgres_data:
   yugabyte_data:
   dragonfly_data:
-  minio_data:
+  seaweedfs_master_data:
+  seaweedfs_volume_data:
   timescaledb_data:
   qdrant_data:
   neo4j_data:

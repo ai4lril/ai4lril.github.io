@@ -202,7 +202,7 @@ export class QuestionService {
       // ffprobe not available or failed - use provided duration
     }
 
-    // Upload to MinIO
+    // Upload to blob storage (SeaweedFS S3)
     let blobStorageLink: string;
     try {
       const fileName = `answer-${questionSubmissionId}-${Date.now()}.${audioFormat}`;
@@ -212,8 +212,8 @@ export class QuestionService {
         `audio/${audioFormat}`,
       );
     } catch (error) {
-      // If MinIO is not available (e.g., in tests), use a placeholder
-      console.warn('MinIO upload failed, using placeholder:', error);
+      // If blob storage is not available (e.g., in tests), use a placeholder
+      console.warn('Blob storage upload failed, using placeholder:', error);
       blobStorageLink = `placeholder://audio/${questionSubmissionId}-${Date.now()}.${audioFormat}`;
     }
 

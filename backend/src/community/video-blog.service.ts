@@ -27,7 +27,7 @@ export class VideoBlogService {
     duration?: number,
   ) {
     try {
-      // Upload video to MinIO
+      // Upload video to blob storage (SeaweedFS S3)
       const videoUrl = await this.storageService.uploadMedia(
         videoFile,
         `video-blogs/${userId}/${Date.now()}_${videoFileName}`,

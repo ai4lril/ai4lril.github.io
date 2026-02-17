@@ -179,14 +179,6 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      minio:
-        image: minio/minio:latest
-        env:
-          MINIO_ROOT_USER: minioadmin
-          MINIO_ROOT_PASSWORD: minioadmin
-        ports:
-          - 9000:9000
-
     defaults:
       run:
         working-directory: ./backend
@@ -214,6 +206,14 @@ jobs:
         env:
           DATABASE_URL: "postgresql://postgres:postgres@localhost:5432/voice_data_collection"
 
+      - name: Start SeaweedFS
+        run: |
+          docker run -d -p 8333:8333 --name seaweedfs \
+            -e AWS_ACCESS_KEY_ID=s3admin \
+            -e AWS_SECRET_ACCESS_KEY=s3secret \
+            chrislusf/seaweedfs:latest server -filer -s3 -ip=0.0.0.0
+          sleep 5
+
       - name: Run backend tests
         run: pnpm test:cov
         env:
@@ -221,6 +221,12 @@ jobs:
           JWT_SECRET: "test-secret"
           CACHE_URL: "redis://localhost:6379"
           REDIS_URL: "redis://localhost:6379"
+          SEAWEEDFS_S3_HOST: "localhost"
+          SEAWEEDFS_S3_PORT: "8333"
+          SEAWEEDFS_ACCESS_KEY: "s3admin"
+          SEAWEEDFS_SECRET_KEY: "s3secret"
+          SEAWEEDFS_BUCKET: "voice-audio"
+          SEAWEEDFS_USE_SSL: "false"
 
       - name: Run backend integration tests
         run: pnpm test:integration
@@ -229,12 +235,12 @@ jobs:
           JWT_SECRET: "test-secret"
           CACHE_URL: "redis://localhost:6379"
           REDIS_URL: "redis://localhost:6379"
-          MINIO_ENDPOINT: "localhost"
-          MINIO_PORT: "9000"
-          MINIO_ACCESS_KEY: "minioadmin"
-          MINIO_SECRET_KEY: "minioadmin"
-          MINIO_BUCKET_NAME: "voice-audio"
-          MINIO_USE_SSL: "false"
+          SEAWEEDFS_S3_HOST: "localhost"
+          SEAWEEDFS_S3_PORT: "8333"
+          SEAWEEDFS_ACCESS_KEY: "s3admin"
+          SEAWEEDFS_SECRET_KEY: "s3secret"
+          SEAWEEDFS_BUCKET: "voice-audio"
+          SEAWEEDFS_USE_SSL: "false"
 
       - name: Upload coverage artifact
         uses: actions/upload-artifact@v4

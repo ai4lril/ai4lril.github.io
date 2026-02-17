@@ -28,8 +28,8 @@ const mockProgress = {
 
 const mockStorage = {
   validateDuration: jest.fn(),
-  uploadMedia: jest.fn().mockResolvedValue('https://minio/bucket/audio.webm'),
-  uploadAudio: jest.fn().mockResolvedValue('https://minio/bucket/audio.webm'),
+  uploadMedia: jest.fn().mockResolvedValue('https://seaweedfs/bucket/audio.webm'),
+  uploadAudio: jest.fn().mockResolvedValue('https://seaweedfs/bucket/audio.webm'),
   saveAudioMetadata: jest.fn().mockResolvedValue({}),
 };
 

@@ -78,7 +78,7 @@ export class ExportService {
           throw new Error(`Unknown export type: ${job.type}`);
       }
 
-      // Upload to MinIO
+      // Upload to blob storage (SeaweedFS S3)
       const fs = await import('fs');
       const fileBuffer = fs.readFileSync(filePath);
       const contentType =

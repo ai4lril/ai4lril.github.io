@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed (2026-02-09)
+
+#### MinIO to SeaweedFS Migration
+
+- **Storage**: Replaced MinIO with SeaweedFS for blob storage (audio, video, exports)
+  - Backend uses AWS S3 SDK (`@aws-sdk/client-s3`, `@aws-sdk/s3-request-presigner`) with SeaweedFS S3 gateway
+  - Env vars: `SEAWEEDFS_S3_HOST`, `SEAWEEDFS_S3_PORT`, `SEAWEEDFS_ACCESS_KEY`, `SEAWEEDFS_SECRET_KEY`, `SEAWEEDFS_BUCKET`, `SEAWEEDFS_USE_SSL` (MINIO\_\* fallback supported)
+  - Docker Compose: SeaweedFS stack (master, volume, filer, s3) replaces MinIO
+  - CI: SeaweedFS all-in-one container for backend tests
+  - Docs: BACKUP_RECOVERY.md, backup.sh, README updated for SeaweedFS
+  - Removed `minio` from backend and frontend dependencies
+
 ### Added (2026-02-17)
 
 #### SEO Enhancements

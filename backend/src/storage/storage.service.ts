@@ -1,5 +1,13 @@
 import { Injectable, BadRequestException, Logger } from '@nestjs/common';
-import * as MinIO from 'minio';
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+  DeleteObjectCommand,
+  HeadBucketCommand,
+  CreateBucketCommand,
+} from '@aws-sdk/client-s3';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { PrismaService } from '../prisma/prisma.service';
 import { FileValidator } from './file-validator';
 import { writeFile, unlink } from 'fs/promises';
@@ -10,38 +18,79 @@ import { promisify } from 'util';
 
 const execAsync = promisify(exec);
 
+// Env vars: SEAWEEDFS_* (preferred) or MINIO_* (fallback)
+function getStorageConfig() {
+  const host =
+    process.env.SEAWEEDFS_S3_HOST || process.env.MINIO_ENDPOINT || 'localhost';
+  const port =
+    process.env.SEAWEEDFS_S3_PORT || process.env.MINIO_PORT || '8333';
+  const useSSL =
+    process.env.SEAWEEDFS_USE_SSL === 'true' ||
+    process.env.MINIO_USE_SSL === 'true';
+  const accessKey =
+    process.env.SEAWEEDFS_ACCESS_KEY ||
+    process.env.MINIO_ACCESS_KEY ||
+    's3admin';
+  const secretKey =
+    process.env.SEAWEEDFS_SECRET_KEY ||
+    process.env.MINIO_SECRET_KEY ||
+    's3secret';
+  const bucket =
+    process.env.SEAWEEDFS_BUCKET ||
+    process.env.MINIO_BUCKET_NAME ||
+    'voice-audio';
+  const protocol = useSSL ? 'https' : 'http';
+  const endpoint = `${protocol}://${host}:${port}`;
+  return { host, port, useSSL, accessKey, secretKey, bucket, endpoint };
+}
+
 @Injectable()
 export class StorageService {
-  private minioClient: MinIO.Client;
+  private s3Client: S3Client;
   private bucketName: string;
+  private readonly config: ReturnType<typeof getStorageConfig>;
   private readonly logger = new Logger(StorageService.name);
 
   constructor(private prisma: PrismaService) {
-    this.minioClient = new MinIO.Client({
-      endPoint: process.env.MINIO_ENDPOINT || 'localhost',
-      port: parseInt(process.env.MINIO_PORT || '9000'),
-      useSSL: process.env.MINIO_USE_SSL === 'true',
-      accessKey: process.env.MINIO_ACCESS_KEY || 'minioadmin',
-      secretKey: process.env.MINIO_SECRET_KEY || 'minioadmin',
+    this.config = getStorageConfig();
+    this.bucketName = this.config.bucket;
+
+    this.s3Client = new S3Client({
+      endpoint: this.config.endpoint,
+      region: 'us-east-1',
+      forcePathStyle: true,
+      credentials: {
+        accessKeyId: this.config.accessKey,
+        secretAccessKey: this.config.secretKey,
+      },
     });
 
-    this.bucketName = process.env.MINIO_BUCKET_NAME || 'voice-audio';
     void this.ensureBucketExists();
   }
 
   private async ensureBucketExists() {
     try {
-      const exists = await this.minioClient.bucketExists(this.bucketName);
-      if (!exists) {
-        await this.minioClient.makeBucket(this.bucketName, 'us-east-1');
+      await this.s3Client.send(
+        new HeadBucketCommand({ Bucket: this.bucketName }),
+      );
+    } catch (error: unknown) {
+      const isNotFound =
+        error &&
+        typeof error === 'object' &&
+        'name' in error &&
+        (error as { name: string }).name === 'NotFound';
+      if (isNotFound) {
+        await this.s3Client.send(
+          new CreateBucketCommand({ Bucket: this.bucketName }),
+        );
+      } else {
+        this.logger.error('Error ensuring bucket exists:', error);
       }
-    } catch (error) {
-      console.error('Error ensuring bucket exists:', error);
     }
   }
 
   /**
-   * Upload audio file to MinIO storage
+   * Upload audio file to SeaweedFS (S3-compatible) storage
    * Kept for backward compatibility - delegates to uploadMedia
    */
   async uploadAudio(
@@ -53,7 +102,7 @@ export class StorageService {
   }
 
   /**
-   * Upload any media file (audio or video) to MinIO storage
+   * Upload any media file (audio or video) to SeaweedFS (S3-compatible) storage
    *
    * @param buffer - File buffer
    * @param fileName - Name for the stored file
@@ -98,22 +147,17 @@ export class StorageService {
       const pathPrefix = mediaType === 'video' ? 'video' : 'audio';
       const objectName = `${pathPrefix}/${Date.now()}-${fileName}`;
 
-      await this.minioClient.putObject(
-        this.bucketName,
-        objectName,
-        buffer,
-        buffer.length,
-        {
-          'Content-Type': contentType,
-        },
+      await this.s3Client.send(
+        new PutObjectCommand({
+          Bucket: this.bucketName,
+          Key: objectName,
+          Body: buffer,
+          ContentType: contentType,
+        }),
       );
 
-      // Return the blob storage link
-      const protocol = process.env.MINIO_USE_SSL === 'true' ? 'https' : 'http';
-      const port = process.env.MINIO_PORT || '9000';
-      const endpoint = process.env.MINIO_ENDPOINT || 'localhost';
-
-      return `${protocol}://${endpoint}:${port}/${this.bucketName}/${objectName}`;
+      // Return the blob storage link (path-style URL)
+      return `${this.config.endpoint}/${this.bucketName}/${objectName}`;
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -126,11 +170,11 @@ export class StorageService {
   async getAudioUrl(objectName: string): Promise<string> {
     try {
       // Generate presigned URL valid for 1 day
-      return this.minioClient.presignedGetObject(
-        this.bucketName,
-        objectName,
-        86400,
-      );
+      const command = new GetObjectCommand({
+        Bucket: this.bucketName,
+        Key: objectName,
+      });
+      return getSignedUrl(this.s3Client, command, { expiresIn: 86400 });
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
@@ -140,7 +184,12 @@ export class StorageService {
 
   async deleteAudio(objectName: string): Promise<void> {
     try {
-      await this.minioClient.removeObject(this.bucketName, objectName);
+      await this.s3Client.send(
+        new DeleteObjectCommand({
+          Bucket: this.bucketName,
+          Key: objectName,
+        }),
+      );
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
