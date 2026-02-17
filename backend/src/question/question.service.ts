@@ -7,6 +7,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { ProgressService } from '../progress/progress.service';
 import { StorageService } from '../storage/storage.service';
 import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { TaskAssignmentService } from '../task-assignment/task-assignment.service';
 import { sanitizeInput } from '../common/utils/sanitize';
 
 /**
@@ -20,6 +21,7 @@ export class QuestionService {
     private progress: ProgressService,
     private storage: StorageService,
     private cacheInvalidation: CacheInvalidationService,
+    private taskAssignment: TaskAssignmentService,
   ) { }
 
   /**
@@ -95,7 +97,27 @@ export class QuestionService {
       submissions = submissions.filter((s) => !answeredIds.has(s.id));
     }
 
-    return submissions.map((s) => ({
+    // Get answer counts for under-collection prioritization
+    const submissionIds = submissions.map((s) => s.id);
+    const answerCounts = await this.prisma.answerRecording.groupBy({
+      by: ['questionSubmissionId'],
+      where: { questionSubmissionId: { in: submissionIds } },
+      _count: { id: true },
+    });
+    const countMap = new Map(
+      answerCounts.map((ac) => [ac.questionSubmissionId, ac._count.id]),
+    );
+
+    const withCounts = submissions.map((s) => ({
+      ...s,
+      _answerCount: countMap.get(s.id) ?? 0,
+    }));
+
+    // Rank by intelligent task assignment
+    const ctx = await this.taskAssignment.getUserContext(userId);
+    const ranked = this.taskAssignment.rankQuestions(withCounts, ctx);
+
+    return ranked.map((s) => ({
       id: s.id,
       text: s.submittedText,
       languageCode: s.languageCode,

@@ -29,7 +29,7 @@ export default function BottomBar({ audioSrc, mediaType = 'audio', onSkip, onSub
     };
 
     return (
-        <div className="sm:mt-10 bg-linear-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 sm:bg-white/90 sm:rounded-full rounded-xl w-full max-w-2xl mx-auto px-4 py-4 sm:shadow-xl border border-indigo-100/50 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300 hover:shadow-2xl">
+        <div className="sm:mt-10 bg-linear-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 sm:bg-white/90 sm:rounded-full rounded-xl w-full max-w-2xl mx-auto px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:shadow-xl border border-indigo-100/50 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300 hover:shadow-2xl">
             {/* Skip Button */}
             <button
                 onClick={onSkip}

@@ -9,6 +9,7 @@ import { ProgressService } from '../progress/progress.service';
 import { CacheService } from '../cache/cache.service';
 import { CacheInvalidationService } from '../cache/cache-invalidation.service';
 import { RealtimeGateway } from '../realtime/realtime.gateway';
+import { TaskAssignmentService } from '../task-assignment/task-assignment.service';
 
 /**
  * Service for handling speech recording (Scripted Speech feature)
@@ -23,10 +24,13 @@ export class SpeechService {
     private cache: CacheService,
     private cacheInvalidation: CacheInvalidationService,
     private realtimeGateway: RealtimeGateway,
+    private taskAssignment: TaskAssignmentService,
   ) { }
 
   /**
-   * Get validated sentences available for speech recording
+   * Get validated sentences available for speech recording.
+   * Uses intelligent task assignment: difficulty matching, language preference,
+   * and prioritization of under-collected sentences.
    *
    * @param languageCode - Optional ISO 639-3 + ISO 15924 language code filter
    * @param userId - Optional user ID to exclude already completed sentences
@@ -55,13 +59,13 @@ export class SpeechService {
       where.languageCode = languageCode;
     }
 
-    const skip = (page - 1) * limit;
+    // Fetch larger pool for intelligent ranking (up to 5x limit, max 250)
+    const poolSize = Math.min(limit * 5, 250);
 
     let sentences = await this.prisma.sentence.findMany({
       where,
       orderBy: { createdAt: 'desc' },
-      take: limit,
-      skip,
+      take: poolSize,
     });
 
     // Exclude sentences already completed by user
@@ -74,7 +78,35 @@ export class SpeechService {
       );
     }
 
-    return sentences;
+    // Get recording counts per sentence for under-collection prioritization
+    const sentenceIds = sentences.map((s) => s.id);
+    const recordingCounts = await this.prisma.speechRecording.groupBy({
+      by: ['sentenceId'],
+      where: { sentenceId: { in: sentenceIds } },
+      _count: { id: true },
+    });
+    const countMap = new Map(
+      recordingCounts.map((rc) => [rc.sentenceId, rc._count.id]),
+    );
+
+    const sentencesWithCounts = sentences.map((s) => ({
+      ...s,
+      _recordingCount: countMap.get(s.id) ?? 0,
+    }));
+
+    // Rank by intelligent task assignment
+    const ctx = await this.taskAssignment.getUserContext(userId);
+    const ranked = this.taskAssignment.rankSpeechSentences(
+      sentencesWithCounts,
+      ctx,
+    );
+
+    // Apply pagination and strip internal fields
+    const skip = (page - 1) * limit;
+    return ranked.slice(skip, skip + limit).map(({ _recordingCount, ...s }) => {
+      void _recordingCount; // Strip internal field from response
+      return s;
+    });
   }
 
   /**
@@ -313,8 +345,13 @@ export class SpeechService {
       return result;
     }
 
-    // Return first available recording
-    const selected = availableRecordings[0];
+    // Pick best recording via intelligent task assignment
+    const ctx = await this.taskAssignment.getUserContext(userId);
+    const selected = this.taskAssignment.pickBestValidationRecording(
+      availableRecordings,
+      countMap,
+      ctx,
+    ) ?? availableRecordings[0];
     const result = {
       id: selected.id,
       audioFile: selected.audioFile,

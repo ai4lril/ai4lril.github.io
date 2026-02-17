@@ -8,8 +8,6 @@ export const metadata: Metadata = {
     description: 'Submit Named Entity Recognition annotations',
 };
 
-const API_BASE_URL = 'https://ilhrf.org/api';
-
 export default function NerAnnotationPage() {
     return (
         <div className="prose prose-slate max-w-none">

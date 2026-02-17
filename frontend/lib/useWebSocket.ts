@@ -13,14 +13,15 @@ export function useWebSocket(token: string | null) {
 
     realtimeClient.connect(token);
 
+    const listeners = listenersRef.current;
     return () => {
       // Clean up listeners on unmount
-      listenersRef.current.forEach((callbacks, event) => {
+      listeners.forEach((callbacks, event) => {
         callbacks.forEach((callback) => {
           realtimeClient.off(event, callback);
         });
       });
-      listenersRef.current.clear();
+      listeners.clear();
     };
   }, [token]);
 

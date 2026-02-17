@@ -1,3 +1,9 @@
+import { SITE_URL } from '@/lib/site-config';
+
+/**
+ * @deprecated SEO metadata is now handled by Next.js App Router metadata API in layout.tsx and page.tsx.
+ * This component is not imported anywhere. Use site-config.ts SITE_URL if you need absolute URLs.
+ */
 interface SEOHeadProps {
     title?: string;
     description?: string;
@@ -17,7 +23,9 @@ export default function SEOHead({
 }: SEOHeadProps) {
     const defaultKeywords = [
         "language data collection",
-        "Indian languages",
+        "7100+ languages",
+        "International Linguistic Heritage Research Foundation",
+        "ILHRF",
         "NLP datasets",
         "speech recognition",
         "artificial intelligence",
@@ -30,7 +38,7 @@ export default function SEOHead({
         <>
             {/* Canonical URL */}
             {canonical && (
-                <link rel="canonical" href={`https://ai4lril.github.io${canonical}`} />
+                <link rel="canonical" href={`${SITE_URL}${canonical}`} />
             )}
 
             {/* Robots Meta */}
@@ -85,16 +93,16 @@ export function generatePageStructuredData(
         "@type": type,
         "name": name,
         "description": description,
-        "url": `https://ai4lril.github.io${url}`,
+        "url": `${SITE_URL}${url}`,
         "publisher": {
             "@type": "Organization",
-            "name": "ILHRF",
-            "url": "https://ai4lril.github.io"
+            "name": "International Linguistic Heritage Research Foundation",
+            "url": SITE_URL
         },
         "isPartOf": {
             "@type": "WebSite",
             "name": "ILHRF",
-            "url": "https://ai4lril.github.io"
+            "url": SITE_URL
         }
     };
 }

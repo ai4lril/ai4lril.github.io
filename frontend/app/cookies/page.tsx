@@ -1,9 +1,11 @@
 import Link from "next/link";
 import type { Metadata } from "next";
+import { SITE_URL, ORG_NAME } from "@/lib/site-config";
 
 export const metadata: Metadata = {
     title: "Cookie Policy | Data Collection & Usage",
     description: "Learn about how ILHRF uses cookies and similar technologies to enhance your experience while respecting your privacy choices.",
+    alternates: { canonical: `${SITE_URL}/cookies` },
     keywords: [
         "cookie policy",
         "privacy settings",
@@ -18,6 +20,8 @@ export const metadata: Metadata = {
         title: "Cookie Policy | ILHRF",
         description: "Understand our cookie usage and your privacy controls.",
         type: "website",
+        url: `${SITE_URL}/cookies`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-cookies.jpg",

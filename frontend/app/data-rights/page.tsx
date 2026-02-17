@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_URL, ORG_NAME } from "@/lib/site-config";
 
 export const metadata: Metadata = {
     title: "Data Subject Rights Portal | Exercise Your Privacy Rights",
     description: "Access, correct, delete, or export your personal data. Exercise your GDPR, CCPA, and other data protection rights through our secure portal.",
+    alternates: { canonical: `${SITE_URL}/data-rights` },
     keywords: [
         "data subject rights",
         "GDPR rights",
@@ -19,6 +21,8 @@ export const metadata: Metadata = {
         title: "Data Subject Rights Portal | ILHRF",
         description: "Exercise your data protection rights securely and efficiently.",
         type: "website",
+        url: `${SITE_URL}/data-rights`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-data-rights.jpg",

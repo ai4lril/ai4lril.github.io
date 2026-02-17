@@ -3,37 +3,39 @@ import Image from 'next/image';
 import Link from 'next/link';
 import type { Metadata } from "next";
 import Breadcrumb from '@/components/Breadcrumb';
+import { SITE_URL, ORG_NAME } from '@/lib/site-config';
 
 export const metadata: Metadata = {
-    title: "About | ILHRF - Indian Linguistic Heritage Research Foundation",
-    description: "Learn about ILHRF, supporting 23 Indian languages and English. Our mission to preserve linguistic diversity through open-source technology and AI development.",
+    title: "About | ILHRF - International Linguistic Heritage Research Foundation",
+    description: "Learn about ILHRF, the International Linguistic Heritage Research Foundation. Our mission to preserve linguistic diversity for 7100+ languages worldwide through crowdsourced data collection and open-source technology.",
+    alternates: { canonical: `${SITE_URL}/about` },
     keywords: [
         "about ILHRF",
-        "Indian Linguistic Heritage Research Foundation",
-        "23 languages",
+        "International Linguistic Heritage Research Foundation",
+        "7100+ languages",
         "linguistic research",
-        "Indian languages preservation",
-        "Assamese Bengali Gujarati Hindi",
-        "Kannada Malayalam Marathi Punjabi",
-        "Tamil Telugu Urdu English",
+        "language preservation",
+        "crowdsourced linguistic data",
+        "global languages",
         "open source project",
         "team Alvyn Abranches",
         "language technology",
         "computational linguistics",
         "language documentation",
-        "Indo-Aryan languages",
-        "Dravidian languages"
+        "language diversity"
     ],
     openGraph: {
-        title: "About ILHRF | Indian Linguistic Heritage Research Foundation",
-        description: "Discover our mission to preserve linguistic diversity through open-source technology. Supporting 23 languages from Assamese to Urdu and English for AI and NLP research.",
+        title: "About ILHRF | International Linguistic Heritage Research Foundation",
+        description: "Discover our mission to preserve linguistic diversity for 7100+ languages worldwide through crowdsourced data collection and open-source technology.",
         type: "website",
+        url: `${SITE_URL}/about`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-about.jpg",
                 width: 1200,
                 height: 630,
-                alt: "About ILHRF - Supporting 23 Languages",
+                alt: "About ILHRF - International Linguistic Heritage Research Foundation",
             },
         ],
     },

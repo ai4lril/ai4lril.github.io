@@ -7,6 +7,7 @@ import { ProgressModule } from '../progress/progress.module';
 import { CacheModule } from '../cache/cache.module';
 import { QueueModule } from '../queue/queue.module';
 import { RealtimeModule } from '../realtime/realtime.module';
+import { TaskAssignmentModule } from '../task-assignment/task-assignment.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { RealtimeModule } from '../realtime/realtime.module';
     forwardRef(() => CacheModule),
     forwardRef(() => QueueModule),
     RealtimeModule,
+    TaskAssignmentModule,
   ],
   controllers: [SpeechController],
   providers: [SpeechService],

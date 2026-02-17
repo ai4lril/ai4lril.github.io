@@ -173,16 +173,18 @@ export default function PendingQuestionsPage() {
                         <ul className="divide-y divide-gray-200">
                             {questions.map((question) => (
                                 <li key={question.id} className="px-6 py-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{question.submittedText}</p>
-                                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                                <span className="mr-4">Language: {question.languageCode}</span>
-                                                <Clock className="h-4 w-4 mr-1" />
-                                                <span>{new Date(question.createdAt).toLocaleDateString()}</span>
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{question.submittedText}</p>
+                                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                                                <span>Language: {question.languageCode}</span>
+                                                <span className="flex items-center">
+                                                    <Clock className="h-4 w-4 mr-1" />
+                                                    {new Date(question.createdAt).toLocaleDateString()}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div className="ml-4 flex items-center space-x-2">
+                                        <div className="flex items-center space-x-2 shrink-0 sm:ml-4">
                                             <button
                                                 onClick={() => handleValidate(question.id, true)}
                                                 disabled={validatingId === question.id}

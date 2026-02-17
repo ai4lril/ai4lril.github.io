@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Put,
+  Patch,
   Post,
   Body,
   UseGuards,
@@ -29,7 +30,7 @@ export class UsersController {
   constructor(
     private readonly usersService: UsersService,
     private readonly verificationService: VerificationService,
-  ) {}
+  ) { }
 
   @UseGuards(JwtAuthGuard)
   @Get('profile')
@@ -79,5 +80,11 @@ export class UsersController {
     const isVerified =
       await this.verificationService.checkVerificationStatus(req.user.id);
     return { isVerified };
+  }
+
+  @Patch('me/onboarding-complete')
+  @UseGuards(JwtAuthGuard)
+  async completeOnboarding(@Request() req: RequestWithUser) {
+    return this.usersService.completeOnboarding(req.user.id);
   }
 }

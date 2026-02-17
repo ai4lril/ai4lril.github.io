@@ -17,8 +17,10 @@ const localStorageMock = {
     setItem: jest.fn(),
     removeItem: jest.fn(),
     clear: jest.fn(),
+    length: 0,
+    key: jest.fn(() => null),
 };
-global.localStorage = localStorageMock;
+global.localStorage = localStorageMock as Storage;
 
 // Mock performance
 global.performance = {
@@ -211,8 +213,8 @@ describe('Frontend Logger', () => {
 
         it('should handle invalid inputs', () => {
             expect(logger.maskSensitiveData('', 'email')).toBe('');
-            expect(logger.maskSensitiveData(null as any, 'email')).toBe(null);
-            expect(logger.maskSensitiveData(undefined as any, 'email')).toBe(undefined);
+            expect(logger.maskSensitiveData(null as unknown as string, 'email')).toBe(null);
+            expect(logger.maskSensitiveData(undefined as unknown as string, 'email')).toBe(undefined);
         });
     });
 
@@ -320,11 +322,12 @@ describe('Frontend Logger', () => {
 
             const logs = logger.getRecentLogs();
             const formLog = logs.find(log => log.category === 'FORM_INTERACTION');
+            const fields = formLog?.metadata?.fields as Record<string, string> | undefined;
 
-            expect(formLog?.metadata?.fields?.email).toBe('us****@****.com');
-            expect(formLog?.metadata?.fields?.password).toBe('********');
-            expect(formLog?.metadata?.fields?.age).toBe('[REDACTED]');
-            expect(formLog?.metadata?.fields?.phone).toBe('+12****7890');
+            expect(fields?.email).toBe('us****@****.com');
+            expect(fields?.password).toBe('********');
+            expect(fields?.age).toBe('[REDACTED]');
+            expect(fields?.phone).toBe('+12****7890');
         });
 
         it('should mark security events appropriately', () => {

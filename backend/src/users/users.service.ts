@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private prisma: PrismaService) {}
+  constructor(private prisma: PrismaService) { }
 
   async getProfile(userId: string) {
     const user = await this.prisma.user.findUnique({
@@ -91,5 +91,21 @@ export class UsersService {
         updated_at: true,
       },
     });
+  }
+
+  async completeOnboarding(userId: string): Promise<{ success: boolean }> {
+    await this.prisma.user.update({
+      where: { id: userId },
+      data: { onboardingCompletedAt: new Date() },
+    });
+    await this.prisma.userActivity.create({
+      data: {
+        userId,
+        action: 'onboarding_completed',
+        resource: 'tour',
+        metadata: { stepsCompleted: 5 },
+      },
+    });
+    return { success: true };
   }
 }

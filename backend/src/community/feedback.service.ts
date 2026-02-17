@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
+import { WebhookService } from '../webhook/webhook.service';
 import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
@@ -10,6 +11,7 @@ export class FeedbackService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
+    private readonly webhookService: WebhookService,
   ) { }
 
   async submitFeedback(
@@ -19,11 +21,7 @@ export class FeedbackService {
     message: string,
   ) {
     try {
-      // Notify admins
-      // This would need admin user IDs - for now, we'll skip
-      // await this.notificationService.createNotification(...)
-
-      return this.prisma.feedback.create({
+      const feedback = await this.prisma.feedback.create({
         data: {
           userId,
           type,
@@ -32,6 +30,18 @@ export class FeedbackService {
           status: 'open',
         },
       });
+
+      // Dispatch webhook (non-blocking)
+      this.webhookService
+        .dispatch('feedback.submitted', {
+          feedbackId: feedback.id,
+          type,
+          subject,
+          userId,
+        })
+        .catch((err) => this.logger.warn('Webhook dispatch failed:', err));
+
+      return feedback;
     } catch (error) {
       this.logger.error(`Failed to submit feedback: ${getErrorMessage(error)}`);
       throw error;

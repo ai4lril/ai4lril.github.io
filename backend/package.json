@@ -1,7 +1,7 @@
 {
   "name": "ilhrf-linguistic-data-collection-backend",
   "version": "0.0.1",
-  "description": "Backend API for linguistic data collection application",
+  "description": "Backend API for ILHRF linguistic data collection application",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
@@ -20,7 +20,9 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
+    "test:integration": "jest --config ./test/jest-integration.json --runInBand",
     "test:functional": "NODE_PATH=./node_modules jest --config ../tests/functional/backend/jest.config.js --testPathPattern=../tests/functional/backend",
+    "test:load": "artillery run test/performance/load-test.yml",
     "db:seed": "tsx prisma/seed.ts",
     "test:coverage": "jest --coverage"
   },
@@ -94,6 +96,7 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/redis": "^4.0.11",
     "@types/supertest": "^6.0.3",
+    "artillery": "^2.0.30",
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-prettier": "^5.5.5",
@@ -138,10 +141,10 @@
     ],
     "coverageThreshold": {
       "global": {
-        "lines": 2,
-        "functions": 1,
-        "branches": 1,
-        "statements": 2
+        "lines": 12,
+        "functions": 12,
+        "branches": 10,
+        "statements": 12
       }
     }
   }

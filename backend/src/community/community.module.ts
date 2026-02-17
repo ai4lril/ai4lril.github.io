@@ -17,6 +17,7 @@ import { CacheModule } from '../cache/cache.module';
 import { LoggerModule } from '../logger/logger.module';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { QueueModule } from '../queue/queue.module';
+import { WebhookModule } from '../webhook/webhook.module';
 import { JwtModule } from '@nestjs/jwt';
 
 @Module({
@@ -27,6 +28,7 @@ import { JwtModule } from '@nestjs/jwt';
     LoggerModule,
     forwardRef(() => NotificationsModule),
     forwardRef(() => QueueModule),
+    forwardRef(() => WebhookModule),
     JwtModule.register({
       secret: process.env.JWT_SECRET,
       signOptions: { expiresIn: '7d' },

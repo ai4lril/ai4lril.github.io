@@ -99,8 +99,9 @@
         "security_activities",
         JSON.stringify(activities.slice(-10))
       );
-    } catch (e) {
+    } catch (err) {
       // Ignore localStorage errors
+      console.error("Error storing security activities:", err);
     }
   };
 
@@ -177,15 +178,15 @@
   const MAX_ANOMALY_SCORE = isDevelopment ? 20 : 10;
 
   // Monitor for SQL injection patterns in form inputs
-  const detectSqlInjection = (input) => {
-    const sqlPatterns = [
-      /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)/i,
-      /('|(\\x27)|(\\x2D\\x2D)|(\\#)|(\\x2F\\x2A)|(\\x2A\\x2F))/i,
-      /(-{2}|\/\*|\*\/)/i,
-    ];
+  // const detectSqlInjection = (input) => {
+  //   const sqlPatterns = [
+  //     /(\b(union|select|insert|update|delete|drop|create|alter|exec|execute)\b)/i,
+  //     /('|(\\x27)|(\\x2D\\x2D)|(\\#)|(\\x2F\\x2A)|(\\x2A\\x2F))/i,
+  //     /(-{2}|\/\*|\*\/)/i,
+  //   ];
 
-    return sqlPatterns.some((pattern) => pattern.test(input));
-  };
+  //   return sqlPatterns.some((pattern) => pattern.test(input));
+  // };
 
   // Monitor for XSS patterns
   const detectXss = (input) => {

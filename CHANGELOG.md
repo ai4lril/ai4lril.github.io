@@ -7,6 +7,90 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-02-17)
+
+#### SEO Enhancements
+
+- **metadataBase, openGraph, twitter, keywords** — Root layout with International Linguistic Heritage Research Foundation branding, 7100+ languages, crowdsourcing-focused descriptions
+- **Site config** — `frontend/lib/site-config.ts` with SITE_URL (NEXT_PUBLIC_FRONTEND_URL), ORG_NAME, ORG_ACRONYM, ORG_DESCRIPTION
+- **Dynamic sitemap** — `app/sitemap.ts` with all public routes (/, about, speak, listen, question, write, transcribe, translate, review, languages, contact, privacy, terms, cookies, data-rights, docs, login)
+- **Dynamic robots.txt** — `app/robots.ts`; removed Crawl-delay; no Disallow for \*.json (allows manifest.json); AhrefsBot/SemrushBot disallowed
+- **Page layouts** — speak, listen, question, write, transcribe with full metadata and canonical URLs
+- **Canonical URLs** — Added to languages, privacy, about, terms, contact, cookies, data-rights
+- **Structured data** — StructuredData component with Organization + WebSite JSON-LD in root layout
+- **Default OG image** — `app/opengraph-image.tsx` with ImageResponse (1200×630, indigo gradient, ILHRF, foundation name, "Crowdsourced Linguistic Data for 7100+ Languages")
+- **SEOHead** — Deprecated; updated to use SITE_URL and foundation branding
+- **About page** — Updated to International Linguistic Heritage Research Foundation, 7100+ languages (global scope)
+- **Static files removed** — Deleted public/sitemap.xml and public/robots.txt (replaced by dynamic versions)
+
+#### Mobile-Friendly Website
+
+- **Viewport configuration**: Explicit viewport export in layout (device-width, initialScale, maximumScale, userScalable, viewportFit: cover)
+- **Table overflow**: Wrapped privacy stats table, pos/ner annotation tables in overflow-x-auto
+- **Content-moderation layout**: Sentences and questions list items stack on mobile (flex-col sm:flex-row, min-w-0, flex-shrink-0)
+- **Video recording**: Mobile-aware constraints in RecordBtn (640×480 min on viewport < 768px)
+- **Safe-area insets**: BottomBar uses pb-[max(1rem,env(safe-area-inset-bottom))] for notched phones
+
+#### Documentation
+
+- **Consolidated analysis documents**: Created `REMAINING_FEATURES.md` merging content from `GAP_ANALYSIS.md`, `SCALABILITY_ANALYSIS.md`, `CACHING_ANALYSIS.md`, and `README-IMPLEMENTATION.md`; deleted the four original files
+
+#### Backend
+
+- **ESLint fixes**: Resolved all 234 backend ESLint warnings without changing config
+  - Added `getErrorMessage()` and `isPrismaErrorCode()` in `common/error-utils.ts`
+  - Added `RequestUser` type in `common/request-user.types.ts`
+  - Typed `req.user` across controllers (auth, community, export, gamification, notifications, search)
+  - Replaced `error: any` with `error: unknown` and `getErrorMessage()` for error handling
+  - Fixed OAuth profile typing, Prisma error checks, floating promises, cache generics
+
+#### Frontend
+
+- **Logger unit tests**: Fixed TypeScript errors in `test/unit/logger.test.ts`
+  - Added `length` and `key` to localStorage mock to satisfy `Storage` interface
+  - Added `Record<string, string>` type assertion for `formLog.metadata.fields` in privacy compliance test
+
+### Added (2026-02-09)
+
+#### Documentation
+
+- **SEO analysis**: Added SEO Enhancements section to REMAINING_FEATURES.md
+  - Current state: partial metadata, static sitemap/robots, unused SEOHead component
+  - Proposed: metadataBase, dynamic sitemap, canonical URLs, structured data (JSON-LD), OG images, domain consistency
+
+#### Intelligent Task Assignment
+
+- **TaskAssignmentService**: Centralized scoring and ranking for task assignment
+  - Difficulty matching: easy for level 1–2, medium for 3–5, hard for 6+
+  - Language preference: boost tasks in user's `languagesContributed`
+  - Under-collection prioritization: prefer sentences with fewer recordings, recordings with fewer validations, questions with fewer answers
+  - Waiting-time prioritization: prefer recordings waiting longest for validation/transcription
+- **SpeechService**: getSpeechSentences and getAudioForValidation use intelligent assignment
+- **QuestionService**: getValidatedQuestions uses intelligent assignment
+- **TranscriptionService**: getAudioForTranscription uses intelligent assignment
+
+#### Contributor Onboarding
+
+- **Welcome email**: Sent after signup (email/password and OAuth) with first-task tips and link to /speak
+- **Onboarding tour**: 5-step modal (Welcome → Choose language → Record first sentence → Validate others → You're ready) with Next/Skip/Done; `PATCH /users/me/onboarding-complete` to mark done
+- **First-task tip**: Dismissible tip card on /speak when totalContributions === 0 (quiet room, clear pronunciation)
+- **Progress tracking**: "X of 5 steps" display for new users; `GET /gamification/stats/me` returns totalContributions, totalValidations, onboardingStep, onboardingCompletedAt
+- **Analytics**: UserActivity logged when tour is completed (`action: onboarding_completed`, `resource: tour`)
+
+#### Webhook System
+
+- **Webhook registration**: REST API for managing webhooks (POST/GET/PUT/DELETE `/api/webhooks`)
+  - Per-user webhooks with URL, secret, description, and event type subscriptions
+  - JWT authentication required
+- **Webhook delivery**: Async delivery via BullMQ queue (`{webhook-delivery}`)
+  - 5 retry attempts with exponential backoff
+  - HMAC-SHA256 signatures in `X-Webhook-Signature` header for verification
+  - Payload format: `{ event, timestamp, data }`
+- **Event types**: `speech.recorded`, `question.answered`, `user.signed_up`, `feedback.submitted`
+- **Integration points**: Media upload processor, auth service, feedback service
+- **Database**: `Webhook` and `WebhookDelivery` models; migration `20260217120000_add_webhooks`
+- **Documentation**: Removed Webhook System from `REMAINING_FEATURES.md` (now implemented)
+
 ### Changed (2026-02-08)
 
 #### Documentation

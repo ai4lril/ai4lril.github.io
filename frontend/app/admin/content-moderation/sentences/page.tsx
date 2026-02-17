@@ -170,17 +170,19 @@ export default function PendingSentencesPage() {
                         <ul className="divide-y divide-gray-200">
                             {sentences.map((sentence) => (
                                 <li key={sentence.id} className="px-6 py-4">
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex-1">
-                                            <p className="text-sm font-medium text-gray-900">{sentence.text}</p>
-                                            <div className="mt-2 flex items-center text-sm text-gray-500">
-                                                <span className="mr-4">Language: {sentence.languageCode}</span>
-                                                <span className="mr-4">Type: {sentence.taskType}</span>
-                                                <Clock className="h-4 w-4 mr-1" />
-                                                <span>{new Date(sentence.createdAt).toLocaleDateString()}</span>
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{sentence.text}</p>
+                                            <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-gray-500">
+                                                <span>Language: {sentence.languageCode}</span>
+                                                <span>Type: {sentence.taskType}</span>
+                                                <span className="flex items-center">
+                                                    <Clock className="h-4 w-4 mr-1" />
+                                                    {new Date(sentence.createdAt).toLocaleDateString()}
+                                                </span>
                                             </div>
                                         </div>
-                                        <div className="ml-4 flex items-center space-x-2">
+                                        <div className="flex items-center space-x-2 shrink-0 sm:ml-4">
                                             <button
                                                 onClick={() => handleValidate(sentence.id, true)}
                                                 disabled={validatingId === sentence.id}

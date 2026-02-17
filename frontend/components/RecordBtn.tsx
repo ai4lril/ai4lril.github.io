@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { encodePCMToWAV } from '@/lib/audio-utils';
 
 interface RecordBtnProps {
@@ -17,8 +17,12 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
     const streamRef = useRef<MediaStream | null>(null);
     const isRecordingRef = useRef<boolean>(false);
 
-    // Get best available video quality
+    // Get best available video quality (relaxed constraints on mobile for low-end devices)
     const getBestVideoConstraints = async (): Promise<MediaTrackConstraints> => {
+        const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
+        const minWidth = isMobile ? 640 : 1280;
+        const minHeight = isMobile ? 480 : 720;
+
         try {
             const devices = await navigator.mediaDevices.enumerateDevices();
             const videoDevices = devices.filter(d => d.kind === 'videoinput');
@@ -32,20 +36,20 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
 
                 return {
                     facingMode: 'user',
-                    width: { ideal: capabilities.width?.max || 1920, min: 1280 },
-                    height: { ideal: capabilities.height?.max || 1080, min: 720 },
-                    frameRate: { ideal: capabilities.frameRate?.max || 30, min: 24 }
+                    width: { ideal: capabilities.width?.max || (isMobile ? 1280 : 1920), min: minWidth },
+                    height: { ideal: capabilities.height?.max || (isMobile ? 720 : 1080), min: minHeight },
+                    frameRate: { ideal: capabilities.frameRate?.max || 30, min: isMobile ? 15 : 24 }
                 };
             }
         } catch (error) {
             console.warn('Could not query device capabilities, using defaults:', error);
         }
 
-        // Fallback to high-quality defaults
+        // Fallback to defaults (mobile or desktop)
         return {
             facingMode: 'user',
-            width: { ideal: 1920, min: 1280 },
-            height: { ideal: 1080, min: 720 },
+            width: { ideal: isMobile ? 1280 : 1920, min: minWidth },
+            height: { ideal: isMobile ? 720 : 1080, min: minHeight },
             frameRate: { ideal: 30 }
         };
     };
@@ -150,7 +154,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
         }
     };
 
-    const stopRecording = async () => {
+    const stopRecording = useCallback(async () => {
         if (mode === 'audio' && audioContextRef.current && scriptProcessorRef.current) {
             // Stop audio recording and convert to WAV
             scriptProcessorRef.current.disconnect();
@@ -187,7 +191,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
         }
         isRecordingRef.current = false;
         setIsRecording(false);
-    };
+    }, [mode, onAudioRecorded]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -215,7 +219,7 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
         if (isRecordingRef.current) {
             stopRecording();
         }
-    }, [mode]);
+    }, [mode, stopRecording]);
 
     const isVideo = mode === 'video';
 

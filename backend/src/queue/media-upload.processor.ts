@@ -7,6 +7,7 @@ import { QuestionService } from '../question/question.service';
 import { AudioBlogService } from '../community/audio-blog.service';
 import { VideoBlogService } from '../community/video-blog.service';
 import { StorageService } from '../storage/storage.service';
+import { WebhookService } from '../webhook/webhook.service';
 
 /**
  * Processor for audio upload jobs
@@ -24,6 +25,7 @@ export class AudioUploadProcessor extends WorkerHost {
     private readonly questionService: QuestionService,
     private readonly audioBlogService: AudioBlogService,
     private readonly storageService: StorageService,
+    private readonly webhookService: WebhookService,
   ) {
     super();
   }
@@ -95,8 +97,15 @@ export class AudioUploadProcessor extends WorkerHost {
       data.mediaType || 'audio',
     );
 
-    // saveSpeechRecording returns { success: true, recordingId: string }
-    // We need to fetch the recording to get the blobStorageLink if needed
+    // Dispatch webhook
+    this.webhookService.dispatch('speech.recorded', {
+      recordingId: result.recordingId,
+      sentenceId: data.sentenceId,
+      userId: data.userId,
+      duration: data.duration,
+      mediaType: data.mediaType || 'audio',
+    }).catch((err) => this.logger.warn('Webhook dispatch failed:', err));
+
     return {
       success: true,
       recordingId: result.recordingId,
@@ -129,8 +138,14 @@ export class AudioUploadProcessor extends WorkerHost {
       data.userId,
     );
 
-    // The result from saveAnswer doesn't return the answer object directly
-    // We need to fetch it or return what we have
+    // Dispatch webhook
+    this.webhookService.dispatch('question.answered', {
+      answerId: result.answerId || result.id,
+      questionSubmissionId: data.questionSubmissionId,
+      userId: data.userId,
+      duration: data.duration,
+    }).catch((err) => this.logger.warn('Webhook dispatch failed:', err));
+
     return {
       success: true,
       recordingId: result.answerId || result.id,
@@ -205,6 +220,7 @@ export class VideoUploadProcessor extends WorkerHost {
   constructor(
     private readonly speechService: SpeechService,
     private readonly videoBlogService: VideoBlogService,
+    private readonly webhookService: WebhookService,
   ) {
     super();
   }
@@ -272,6 +288,15 @@ export class VideoUploadProcessor extends WorkerHost {
       data.userId,
       'video',
     );
+
+    // Dispatch webhook
+    this.webhookService.dispatch('speech.recorded', {
+      recordingId: result.recordingId,
+      sentenceId: data.sentenceId,
+      userId: data.userId,
+      duration: data.duration,
+      mediaType: 'video',
+    }).catch((err) => this.logger.warn('Webhook dispatch failed:', err));
 
     return {
       success: true,

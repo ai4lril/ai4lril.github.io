@@ -107,7 +107,7 @@ export default function PosPage() {
             if (response.ok) {
                 const result = await response.json();
                 console.log("POS submitted successfully", result);
-                
+
                 // Show success message
                 const successMsg = document.createElement('div');
                 successMsg.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50 animate-bounce-in';
@@ -118,7 +118,7 @@ export default function PosPage() {
                         document.body.removeChild(successMsg);
                     }
                 }, 3000);
-                
+
                 nextSentence();
             } else {
                 let errorMessage = "Failed to submit POS annotations";
@@ -174,37 +174,39 @@ export default function PosPage() {
                         {tokens.length > 0 && (
                             <form onSubmit={handleSubmit} className="space-y-4 relative z-10">
                                 <div className="card-wide rounded-xl border border-slate-200 bg-white shadow-sm p-2 md:p-4">
-                                    <table className="w-full mx-auto text-sm">
-                                        <thead>
-                                            <tr className="text-slate-600 text-center">
-                                                <th className="py-2">Token</th>
-                                                <th className="py-2">UPOS Tag</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {tokens.map((tok, i) => (
-                                                <tr key={i} className="border-t border-slate-100 odd:bg-white even:bg-slate-50 hover:bg-indigo-50/40">
-                                                    <td className="py-2.5 text-center">
-                                                        <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-slate-800">
-                                                            {tok}
-                                                        </span>
-                                                    </td>
-                                                    <td className="py-2.5 text-center">
-                                                        <select
-                                                            className={`text-sm rounded-full px-3 py-1 bg-white focus:outline-none ${missing.has(i) ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-300'} border focus:border-indigo-600`}
-                                                            value={tags[i] || ""}
-                                                            onChange={(e) => handleTagChange(i, e.target.value)}
-                                                        >
-                                                            <option value="">Tag…</option>
-                                                            {POS_TAGS.map(tag => (
-                                                                <option key={tag} value={tag}>{tag}</option>
-                                                            ))}
-                                                        </select>
-                                                    </td>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full mx-auto text-sm">
+                                            <thead>
+                                                <tr className="text-slate-600 text-center">
+                                                    <th className="py-2">Token</th>
+                                                    <th className="py-2">UPOS Tag</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {tokens.map((tok, i) => (
+                                                    <tr key={i} className="border-t border-slate-100 odd:bg-white even:bg-slate-50 hover:bg-indigo-50/40">
+                                                        <td className="py-2.5 text-center">
+                                                            <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-slate-800">
+                                                                {tok}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-2.5 text-center">
+                                                            <select
+                                                                className={`text-sm rounded-full px-3 py-1 bg-white focus:outline-none ${missing.has(i) ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-300'} border focus:border-indigo-600`}
+                                                                value={tags[i] || ""}
+                                                                onChange={(e) => handleTagChange(i, e.target.value)}
+                                                            >
+                                                                <option value="">Tag…</option>
+                                                                {POS_TAGS.map(tag => (
+                                                                    <option key={tag} value={tag}>{tag}</option>
+                                                                ))}
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div className="mt-4 flex gap-3 justify-center">

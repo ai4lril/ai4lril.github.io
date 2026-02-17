@@ -85,6 +85,19 @@ pnpm prisma studio    # Database GUI
 pnpm prisma migrate   # Run migrations
 ```
 
+### Testing
+
+```bash
+cd backend
+pnpm test            # Unit tests
+pnpm test:cov        # Unit tests with coverage
+pnpm test:integration # Integration tests (requires Postgres, Redis, MinIO)
+pnpm test:e2e        # E2E tests
+pnpm test:load       # Load tests (requires backend running)
+```
+
+**Load testing**: Run `pnpm test:load` from the backend directory with the backend running. Uses Artillery to simulate API load. Configuration: `backend/test/performance/load-test.yml`. Optional CI job: `backend-load-test`.
+
 ## 📁 Project Structure
 
 ### Frontend (`/frontend`)

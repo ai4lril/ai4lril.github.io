@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { ProgressService } from '../progress/progress.service';
+import { TaskAssignmentService } from '../task-assignment/task-assignment.service';
 import { sanitizeInput } from '../common/utils/sanitize';
 
 /**
@@ -16,7 +17,8 @@ export class TranscriptionService {
   constructor(
     private prisma: PrismaService,
     private progress: ProgressService,
-  ) {}
+    private taskAssignment: TaskAssignmentService,
+  ) { }
 
   /**
    * Get audio recordings available for transcription
@@ -58,7 +60,12 @@ export class TranscriptionService {
       return null;
     }
 
-    const selected = recordings[0];
+    // Pick best recording via intelligent task assignment
+    const ctx = await this.taskAssignment.getUserContext(userId);
+    const selected =
+      this.taskAssignment.pickBestTranscriptionRecording(recordings, ctx) ??
+      recordings[0];
+
     return {
       id: selected.id,
       audioFile: selected.audioFile,

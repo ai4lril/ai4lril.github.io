@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { SITE_URL, ORG_NAME } from "@/lib/site-config";
 
 export const metadata: Metadata = {
     title: "Privacy Policy | Data Protection & Rights",
     description: "Learn about how Language Data Collection protects your privacy, handles your data, and ensures ethical data practices. Understand your rights and our commitment to data security.",
+    alternates: { canonical: `${SITE_URL}/privacy` },
     keywords: [
         "privacy policy",
         "data protection",
@@ -18,6 +20,8 @@ export const metadata: Metadata = {
         title: "Privacy Policy | Language Data Collection",
         description: "Learn about our commitment to protecting your privacy and ensuring ethical data practices in linguistic research.",
         type: "website",
+        url: `${SITE_URL}/privacy`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-privacy.jpg",
@@ -681,20 +685,22 @@ export default function PrivacyPage() {
                     </summary>
                     <div className="mt-4">
                         <p className="text-slate-700 mb-4">Anonymized stats demonstrating transparency (Q4 2025):</p>
-                        <table className="w-full border-collapse border border-slate-300">
-                            <thead>
-                                <tr className="bg-slate-100">
-                                    <th className="border border-slate-300 p-2 text-left">Category</th>
-                                    <th className="border border-slate-300 p-2 text-left">Count</th>
-                                    <th className="border border-slate-300 p-2 text-left">Resolution Rate</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr><td className="border border-slate-300 p-2">Access Requests</td><td className="border border-slate-300 p-2">1,247</td><td className="border border-slate-300 p-2">100% (Avg 15 days)</td></tr>
-                                <tr><td className="border border-slate-300 p-2">Deletions</td><td className="border border-slate-300 p-2">456</td><td className="border border-slate-300 p-2">100% (Full erasure)</td></tr>
-                                <tr><td className="border border-slate-300 p-2">Incidents</td><td className="border border-slate-300 p-2">0</td><td className="border border-slate-300 p-2">N/A</td></tr>
-                            </tbody>
-                        </table>
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse border border-slate-300">
+                                <thead>
+                                    <tr className="bg-slate-100">
+                                        <th className="border border-slate-300 p-2 text-left">Category</th>
+                                        <th className="border border-slate-300 p-2 text-left">Count</th>
+                                        <th className="border border-slate-300 p-2 text-left">Resolution Rate</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td className="border border-slate-300 p-2">Access Requests</td><td className="border border-slate-300 p-2">1,247</td><td className="border border-slate-300 p-2">100% (Avg 15 days)</td></tr>
+                                    <tr><td className="border border-slate-300 p-2">Deletions</td><td className="border border-slate-300 p-2">456</td><td className="border border-slate-300 p-2">100% (Full erasure)</td></tr>
+                                    <tr><td className="border border-slate-300 p-2">Incidents</td><td className="border border-slate-300 p-2">0</td><td className="border border-slate-300 p-2">N/A</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                         <p className="mt-2 text-sm text-slate-600">Full reports at <Link href="/transparency-reports">Transparency Hub</Link>. Updated quarterly.</p>
                     </div>
                 </details>

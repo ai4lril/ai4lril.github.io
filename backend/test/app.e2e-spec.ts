@@ -42,4 +42,73 @@ describe('AppController (e2e)', () => {
       .expect(200);
     expect(res.text).toContain('http_requests_total');
   });
+
+  it('GET /api/queue/health returns queue health', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/queue/health')
+      .expect(200);
+    expect(res.body).toHaveProperty('status');
+    expect(res.body).toHaveProperty('queues');
+  });
+
+  it('POST /api/auth/signup rejects empty password', async () => {
+    await request(app.getHttpServer())
+      .post('/api/auth/signup')
+      .send({
+        first_name: 'Test',
+        last_name: 'User',
+        display_name: 'Test User',
+        username: 'testuser',
+        email: 'test@example.com',
+        password: '',
+      })
+      .expect(400);
+  });
+
+  it('POST /api/auth/signup rejects weak password', async () => {
+    await request(app.getHttpServer())
+      .post('/api/auth/signup')
+      .send({
+        first_name: 'Test',
+        last_name: 'User',
+        display_name: 'Test User',
+        username: 'testuser',
+        email: 'test@example.com',
+        password: 'weak',
+      })
+      .expect(400);
+  });
+
+  it('POST /api/auth/login returns 401 for invalid credentials', async () => {
+    await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email: 'nonexistent@example.com', password: 'WrongPass123' })
+      .expect(401);
+  });
+
+  it('POST /api/auth/login rejects empty email', async () => {
+    await request(app.getHttpServer())
+      .post('/api/auth/login')
+      .send({ email: '', password: 'Password123' })
+      .expect(400);
+  });
+
+  it('GET /api/speech/sentences returns sentences', async () => {
+    const res = await request(app.getHttpServer())
+      .get('/api/speech/sentences')
+      .expect(200);
+    expect(Array.isArray(res.body)).toBe(true);
+  });
+
+  it('POST /api/speech/recording returns 401 without auth', async () => {
+    await request(app.getHttpServer())
+      .post('/api/speech/recording')
+      .send({
+        sentenceId: 'test-id',
+        audioFile: 'base64encoded',
+        audioFormat: 'webm',
+        mediaType: 'audio',
+      })
+      .expect(401);
+  });
 });

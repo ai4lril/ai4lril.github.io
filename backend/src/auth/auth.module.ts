@@ -14,11 +14,13 @@ import { RecoveryService } from './recovery.service';
 import { VerificationService } from '../verification.service';
 import { NotificationsModule } from '../notifications/notifications.module';
 import { CacheModule } from '../cache/cache.module';
+import { WebhookModule } from '../webhook/webhook.module';
 
 @Module({
   imports: [
     PrismaModule,
     CacheModule,
+    WebhookModule,
     PassportModule,
     JwtModule.register({
       secret: process.env.JWT_SECRET || 'your-jwt-secret-key',
@@ -39,4 +41,4 @@ import { CacheModule } from '../cache/cache.module';
   ],
   exports: [AuthService, ApiKeyService, RecoveryService],
 })
-export class AuthModule {}
+export class AuthModule { }

@@ -30,6 +30,7 @@ import { CommunityModule } from './community/community.module';
 import { SearchModule } from './search/search.module';
 import { QueueModule } from './queue/queue.module';
 import { LanguagesModule } from './languages/languages.module';
+import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
@@ -75,6 +76,7 @@ import { LanguagesModule } from './languages/languages.module';
     SearchModule,
     QueueModule,
     LanguagesModule,
+    WebhookModule,
   ],
   controllers: [AppController],
   providers: [

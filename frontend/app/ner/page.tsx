@@ -285,37 +285,39 @@ export default function NerPage() {
                         {tokens.length > 0 && !loading && (
                             <form onSubmit={handleSubmit} className="relative z-10 space-y-4">
                                 <div className="card-wide rounded-xl border border-slate-200 bg-white shadow-sm p-2 md:p-4">
-                                    <table className="w-full mx-auto text-sm">
-                                        <thead>
-                                            <tr className="text-slate-600 text-center">
-                                                <th className="py-2">Token</th>
-                                                <th className="py-2">BIO Tag</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            {tokens.map((tok, i) => (
-                                                <tr key={i} className="border-t border-slate-100 odd:bg-white even:bg-slate-50 hover:bg-indigo-50/40">
-                                                    <td className="py-2.5 text-center">
-                                                        <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-slate-800">
-                                                            {tok}
-                                                        </span>
-                                                    </td>
-                                                    <td className="py-2.5 text-center">
-                                                        <select
-                                                            className={`text-sm rounded-full px-3 py-1 bg-white focus:outline-none ${missing.has(i) ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-300'} border focus:border-indigo-600`}
-                                                            value={entities[i] || ""}
-                                                            onChange={(e) => handleEntityChange(i, e.target.value)}
-                                                        >
-                                                            <option value="">Tag…</option>
-                                                            {['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'B-ORG', 'I-ORG', 'B-DATE', 'I-DATE', 'B-TIME', 'I-TIME', 'B-MISC', 'I-MISC', 'O'].map(tag => (
-                                                                <option key={tag} value={tag}>{tag}</option>
-                                                            ))}
-                                                        </select>
-                                                    </td>
+                                    <div className="overflow-x-auto">
+                                        <table className="w-full mx-auto text-sm">
+                                            <thead>
+                                                <tr className="text-slate-600 text-center">
+                                                    <th className="py-2">Token</th>
+                                                    <th className="py-2">BIO Tag</th>
                                                 </tr>
-                                            ))}
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                {tokens.map((tok, i) => (
+                                                    <tr key={i} className="border-t border-slate-100 odd:bg-white even:bg-slate-50 hover:bg-indigo-50/40">
+                                                        <td className="py-2.5 text-center">
+                                                            <span className="inline-block rounded-full bg-slate-100 px-3 py-1 text-slate-800">
+                                                                {tok}
+                                                            </span>
+                                                        </td>
+                                                        <td className="py-2.5 text-center">
+                                                            <select
+                                                                className={`text-sm rounded-full px-3 py-1 bg-white focus:outline-none ${missing.has(i) ? 'border-red-400 ring-1 ring-red-300' : 'border-slate-300'} border focus:border-indigo-600`}
+                                                                value={entities[i] || ""}
+                                                                onChange={(e) => handleEntityChange(i, e.target.value)}
+                                                            >
+                                                                <option value="">Tag…</option>
+                                                                {['B-PER', 'I-PER', 'B-LOC', 'I-LOC', 'B-ORG', 'I-ORG', 'B-DATE', 'I-DATE', 'B-TIME', 'I-TIME', 'B-MISC', 'I-MISC', 'O'].map(tag => (
+                                                                    <option key={tag} value={tag}>{tag}</option>
+                                                                ))}
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 </div>
 
                                 <div className="mt-4 flex gap-3 justify-center">

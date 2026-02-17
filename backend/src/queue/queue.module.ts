@@ -1,4 +1,5 @@
 import { Module, forwardRef } from '@nestjs/common';
+import { WebhookModule } from '../webhook/webhook.module';
 import { BullModule } from '@nestjs/bullmq';
 import { AudioUploadProcessor } from './media-upload.processor';
 import { VideoUploadProcessor } from './media-upload.processor';
@@ -77,10 +78,19 @@ const getRedisConnection = () => {
           attempts: 5, // More attempts for processing
         },
       },
+      {
+        name: '{webhook-delivery}',
+        defaultJobOptions: {
+          priority: 4,
+          attempts: 5,
+          backoff: { type: 'exponential', delay: 2000 },
+        },
+      },
     ),
     forwardRef(() => SpeechModule),
     forwardRef(() => QuestionModule),
     forwardRef(() => CommunityModule),
+    forwardRef(() => WebhookModule),
     StorageModule,
   ],
   controllers: [QueueController],

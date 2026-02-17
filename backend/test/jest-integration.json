@@ -1,0 +1,23 @@
+{
+  "moduleFileExtensions": [
+    "js",
+    "json",
+    "ts"
+  ],
+  "rootDir": "..",
+  "testMatch": [
+    "<rootDir>/test/integration/**/*integration.spec.ts"
+  ],
+  "setupFiles": [
+    "<rootDir>/test/setup-e2e.ts",
+    "<rootDir>/test/setup-integration.ts"
+  ],
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "transformIgnorePatterns": [
+    "node_modules/(?!(@exodus|html-encoding-sniffer|jsdom|linkedom)/)"
+  ],
+  "testEnvironment": "node",
+  "testTimeout": 30000
+}

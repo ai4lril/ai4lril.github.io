@@ -8,6 +8,8 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { VerificationService } from '../verification.service';
+import { WebhookService } from '../webhook/webhook.service';
+import { EmailService } from '../notifications/email.service';
 import { getErrorMessage, isPrismaErrorCode } from '../common/error-utils';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
@@ -74,6 +76,8 @@ export class AuthService {
     private jwtService: JwtService,
     private prisma: PrismaService,
     private verificationService: VerificationService,
+    private webhookService: WebhookService,
+    private emailService: EmailService,
   ) { }
 
   async signup(signupDto: SignupDto) {
@@ -162,11 +166,28 @@ export class AuthService {
       { expiresIn: '7d' },
     );
 
+    // Dispatch webhook (non-blocking)
+    this.webhookService
+      .dispatch('user.signed_up', {
+        userId: user.id,
+        email: user.email,
+        username: user.username,
+        displayName: user.display_name,
+      })
+      .catch((err) => this.logger.warn('Webhook dispatch failed:', err));
+
     // Send verification email (non-blocking, do not await)
     this.verificationService
       .sendVerificationEmail(user.id)
       .catch((err) =>
         this.logger.warn(`Failed to send verification email: ${getErrorMessage(err)}`),
+      );
+
+    // Send welcome email (non-blocking, do not await)
+    this.emailService
+      .sendWelcomeEmail(user.email, user.display_name)
+      .catch((err) =>
+        this.logger.warn(`Failed to send welcome email: ${getErrorMessage(err)}`),
       );
 
     return {
@@ -251,7 +272,8 @@ export class AuthService {
     }
 
     // Use transaction to prevent race conditions
-    return await this.prisma.$transaction(
+    let isNewUser = false;
+    const result = await this.prisma.$transaction(
       async (tx) => {
         // Check if user exists by Google ID
         let user = await tx.user.findUnique({
@@ -337,8 +359,9 @@ export class AuthService {
             return this.googleLogin(profile);
           }
 
-          // Create new user with minimal profile
+          // Create new user with minimal profile (will send welcome email after tx commits)
           const username = `user_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+          isNewUser = true;
           try {
             user = await tx.user.create({
               data: {
@@ -373,6 +396,7 @@ export class AuthService {
               },
             });
           } catch (error: unknown) {
+            isNewUser = false;
             // Handle unique constraint violations (race condition)
             if (isPrismaErrorCode(error, 'P2002')) {
               // User was created by another process, retry lookup
@@ -444,6 +468,22 @@ export class AuthService {
         };
       },
     );
+
+    // Send welcome email for new OAuth users (after transaction commits)
+    if (isNewUser && result.user) {
+      const email =
+        typeof result.user.email === 'string' ? result.user.email : '';
+      const displayName =
+        typeof result.user.display_name === 'string'
+          ? result.user.display_name
+          : 'User';
+      this.emailService
+        .sendWelcomeEmail(email, displayName)
+        .catch((err) =>
+          this.logger.warn(`Failed to send welcome email: ${getErrorMessage(err)}`),
+        );
+    }
+    return result;
   }
 
   /**
@@ -518,7 +558,8 @@ export class AuthService {
     const userEmail = email || `${uniqueUsername}@github.noreply`;
 
     // Use transaction to prevent race conditions
-    return await this.prisma.$transaction(
+    let isNewUser = false;
+    const result = await this.prisma.$transaction(
       async (tx) => {
         // Check if user exists by GitHub ID
         let user = await tx.user.findUnique({
@@ -601,7 +642,8 @@ export class AuthService {
             return this.githubLogin(profile);
           }
 
-          // Create new user with minimal profile
+          // Create new user with minimal profile (will send welcome email after tx commits)
+          isNewUser = true;
           try {
             user = await tx.user.create({
               data: {
@@ -633,6 +675,7 @@ export class AuthService {
               },
             });
           } catch (error: unknown) {
+            isNewUser = false;
             // Handle unique constraint violations (race condition)
             if (isPrismaErrorCode(error, 'P2002')) {
               // User was created by another process, retry lookup
@@ -720,6 +763,22 @@ export class AuthService {
         timeout: 10000, // 10 second timeout for transaction
       },
     );
+
+    // Send welcome email for new OAuth users (after transaction commits)
+    if (isNewUser && result.user) {
+      const email =
+        typeof result.user.email === 'string' ? result.user.email : '';
+      const displayName =
+        typeof result.user.display_name === 'string'
+          ? result.user.display_name
+          : 'User';
+      this.emailService
+        .sendWelcomeEmail(email, displayName)
+        .catch((err) =>
+          this.logger.warn(`Failed to send welcome email: ${getErrorMessage(err)}`),
+        );
+    }
+    return result;
   }
 
   async linkOAuthProvider(

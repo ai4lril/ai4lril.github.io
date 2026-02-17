@@ -2,10 +2,28 @@ import type { Metadata } from 'next';
 import DocsPageWrapper from '@/components/docs/DocsPageWrapper';
 import CodeBlock from '@/components/docs/CodeBlock';
 import { LANGUAGES } from '@/lib/languages';
+import { SITE_URL, ORG_NAME } from '@/lib/site-config';
+
+const title = 'Supported Languages | ILHRF';
+const description =
+    'ILHRF crowdsourced linguistic data platform supports 7100+ languages worldwide. List of supported languages and their ISO language codes with script variants for the API.';
 
 export const metadata: Metadata = {
-    title: 'Supported Languages - API Documentation',
-    description: 'List of supported languages and their language codes with script variants',
+    title,
+    description,
+    alternates: { canonical: `${SITE_URL}/languages` },
+    openGraph: {
+        title,
+        description,
+        type: 'website',
+        url: `${SITE_URL}/languages`,
+        siteName: ORG_NAME,
+    },
+    twitter: {
+        card: 'summary_large_image',
+        title,
+        description,
+    },
 };
 
 export default function LanguagesPage() {

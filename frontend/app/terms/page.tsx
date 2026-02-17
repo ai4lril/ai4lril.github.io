@@ -1,9 +1,11 @@
 import Link from 'next/link';
 import type { Metadata } from "next";
+import { SITE_URL, ORG_NAME } from "@/lib/site-config";
 
 export const metadata: Metadata = {
     title: "Terms of Service | Usage Guidelines",
     description: "Read the terms of service for Language Data Collection. Understand our usage guidelines, data handling policies, and user responsibilities for contributing to linguistic research.",
+    alternates: { canonical: `${SITE_URL}/terms` },
     keywords: [
         "terms of service",
         "usage guidelines",
@@ -18,6 +20,8 @@ export const metadata: Metadata = {
         title: "Terms of Service | Language Data Collection",
         description: "Understand our usage guidelines and terms for contributing to linguistic research and AI development.",
         type: "website",
+        url: `${SITE_URL}/terms`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-terms.jpg",

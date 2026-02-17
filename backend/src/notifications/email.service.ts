@@ -83,11 +83,12 @@ export class EmailService {
   }
 
   async sendWelcomeEmail(to: string, name: string): Promise<void> {
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
     await this.sendEmail({
       to,
       subject: 'Welcome to Voice Data Collection Platform',
       template: 'welcome',
-      context: { name },
+      context: { name, frontendUrl },
     });
   }
 

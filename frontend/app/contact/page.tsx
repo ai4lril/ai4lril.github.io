@@ -3,10 +3,12 @@ import Breadcrumb from '@/components/Breadcrumb';
 import ContactForm from './ContactForm';
 import Link from 'next/link';
 import TeamPhoto from './TeamPhoto';
+import { SITE_URL, ORG_NAME } from '@/lib/site-config';
 
 export const metadata: Metadata = {
     title: "Contact | Get in Touch",
     description: "Contact the Language Data Collection team. Reach out for collaborations, partnerships, technical support, or to propose new languages and scripts for our platform.",
+    alternates: { canonical: `${SITE_URL}/contact` },
     keywords: [
         "contact language data collection",
         "get in touch",
@@ -21,6 +23,8 @@ export const metadata: Metadata = {
         title: "Contact Language Data Collection | Get in Touch",
         description: "Reach out to our team for collaborations, technical support, or to propose new languages for our open-source platform.",
         type: "website",
+        url: `${SITE_URL}/contact`,
+        siteName: ORG_NAME,
         images: [
             {
                 url: "/og-contact.jpg",

@@ -33,6 +33,10 @@ export default function Speak() {
     const [loading, setLoading] = useState(true);
     const [submitting, setSubmitting] = useState(false);
 
+    // First-task tip: show when totalContributions === 0
+    const [totalContributions, setTotalContributions] = useState<number | null>(null);
+    const [showFirstTip, setShowFirstTip] = useState(true);
+
     // Fetch speech sentences from backend
     const fetchSpeechSentences = async (languageCode?: string) => {
         try {
@@ -217,6 +221,8 @@ export default function Speak() {
 
             if (result.success) {
                 showToast(`${mediaType === 'video' ? 'Video' : 'Audio'} recording submitted successfully!`, "success");
+                setTotalContributions((c) => (c ?? 0) + 1);
+                setShowFirstTip(false);
                 nextSentence();
             } else {
                 throw new Error(result.message || 'Submission failed');
@@ -241,6 +247,29 @@ export default function Speak() {
         }
         setMediaType(newType);
     };
+
+    // Fetch user stats for first-task tip
+    useEffect(() => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            setShowFirstTip(false);
+            return;
+        }
+        if (typeof window !== 'undefined' && localStorage.getItem('first_tip_dismissed')) {
+            setShowFirstTip(false);
+        }
+        fetch(`${API_BASE_URL}/gamification/stats/me`, {
+            headers: { Authorization: `Bearer ${token}` },
+        })
+            .then((res) => (res.ok ? res.json() : null))
+            .then((data) => {
+                if (data) {
+                    setTotalContributions(data.totalContributions ?? 0);
+                    if ((data.totalContributions ?? 0) > 0) setShowFirstTip(false);
+                }
+            })
+            .catch(() => setShowFirstTip(false));
+    }, []);
 
     // Init language and fetch sentences + clean up URLs when component unmounts
     useEffect(() => {
@@ -281,6 +310,28 @@ export default function Speak() {
                 )}
             </p>
             <div className="w-full card-wide mx-auto my-2 relative flex flex-col animate-slide-in-left">
+                {/* First-task tip for new contributors */}
+                {showFirstTip && totalContributions === 0 && (
+                    <div className="mb-3 mx-auto w-full max-w-md rounded-lg bg-indigo-50 border border-indigo-200 p-4 flex items-start justify-between gap-3">
+                        <div>
+                            <p className="font-medium text-indigo-900">First recording tips</p>
+                            <p className="text-sm text-indigo-700 mt-1">Record in a quiet room. Speak clearly at a natural pace.</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => {
+                                localStorage.setItem('first_tip_dismissed', '1');
+                                setShowFirstTip(false);
+                            }}
+                            className="shrink-0 text-indigo-600 hover:text-indigo-800"
+                            aria-label="Dismiss tip"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                )}
                 <div className="text-center mb-2 flex items-center justify-center gap-3 flex-wrap">
                     <span className="inline-block text-xs px-3 py-2 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 font-medium animate-bounce-in">{codeToLabel(lang)}</span>
 
