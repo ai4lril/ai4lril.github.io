@@ -11,13 +11,12 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Prisma } from '@prisma/client';
 import { SearchService } from './search.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 
 interface RequestWithUser {
-  user?: {
-    id: string;
-  };
+  user?: { id: string };
 }
 
 @ApiTags('search')
@@ -64,11 +63,11 @@ export class SearchController {
   @Post('save')
   @UseGuards(JwtAuthGuard)
   async saveSearch(
-    @Request() req,
+    @Request() req: RequestWithUser,
     @Body()
-    body: { name: string; query: string; filters?: Record<string, any> },
+    body: { name: string; query: string; filters?: Prisma.InputJsonValue },
   ) {
-    const { id: userId } = req.user as { id: string };
+    const userId = req.user!.id;
     return this.searchService.saveSearch(
       userId,
       body.name,
@@ -79,23 +78,23 @@ export class SearchController {
 
   @Get('saved')
   @UseGuards(JwtAuthGuard)
-  async getSavedSearches(@Request() req) {
-    const { id: userId } = req.user as { id: string };
+  async getSavedSearches(@Request() req: RequestWithUser) {
+    const userId = req.user!.id;
     return this.searchService.getSavedSearches(userId);
   }
 
   @Delete('saved/:id')
   @UseGuards(JwtAuthGuard)
-  async deleteSavedSearch(@Param('id') id: string, @Request() req) {
-    const { id: userId } = req.user as { id: string };
+  async deleteSavedSearch(@Param('id') id: string, @Request() req: RequestWithUser) {
+    const userId = req.user!.id;
     await this.searchService.deleteSavedSearch(userId, id);
     return { success: true };
   }
 
   @Get('history')
   @UseGuards(JwtAuthGuard)
-  async getSearchHistory(@Request() req, @Query('limit') limit?: string) {
-    const { id: userId } = req.user as { id: string };
+  async getSearchHistory(@Request() req: RequestWithUser, @Query('limit') limit?: string) {
+    const userId = req.user!.id;
     return this.searchService.getSearchHistory(
       userId,
       limit ? parseInt(limit, 10) : 20,

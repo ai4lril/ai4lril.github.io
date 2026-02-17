@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { NotificationService } from '../notifications/notification.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
 export class FeedbackService {
@@ -9,7 +10,7 @@ export class FeedbackService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationService: NotificationService,
-  ) {}
+  ) { }
 
   async submitFeedback(
     userId: string | null,
@@ -32,13 +33,13 @@ export class FeedbackService {
         },
       });
     } catch (error) {
-      this.logger.error(`Failed to submit feedback: ${error.message}`);
+      this.logger.error(`Failed to submit feedback: ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
   async getFeedback(userId?: string, status?: string, limit = 50, offset = 0) {
-    const where: any = {};
+    const where: { userId?: string; status?: string } = {};
     if (userId) {
       where.userId = userId;
     }

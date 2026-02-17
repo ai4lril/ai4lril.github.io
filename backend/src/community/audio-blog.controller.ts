@@ -17,6 +17,7 @@ import { AudioBlogService } from './audio-blog.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { QueueService } from '../queue/queue.service';
 import { MediaUploadJobData } from '../queue/interfaces/media-upload-job.interface';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('community/audio-blog')
 export class AudioBlogController {
@@ -30,7 +31,7 @@ export class AudioBlogController {
   @UseInterceptors(FileInterceptor('audio'))
   @HttpCode(HttpStatus.ACCEPTED)
   async createAudioBlog(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @UploadedFile() file: Express.Multer.File,
     @Body()
     body: {

@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -9,7 +10,7 @@ export class QualityService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async calculateQualityScore(
     userId: string,
@@ -56,9 +57,7 @@ export class QualityService {
 
       return score;
     } catch (error) {
-      this.logger.error(
-        `Error calculating quality score for user ${userId}: ${error.message}`,
-      );
+      this.logger.error(`Error calculating quality score for user ${userId}: ${getErrorMessage(error)}`);
       return 0;
     }
   }
@@ -208,8 +207,8 @@ export class QualityService {
     const reliabilityScore =
       recordingIds.length > 0
         ? Math.round(
-            (consistentCount / Math.min(recordingIds.length, 50)) * 100,
-          )
+          (consistentCount / Math.min(recordingIds.length, 50)) * 100,
+        )
         : 50;
 
     // Update user stats

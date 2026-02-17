@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class IAAService {
   private readonly logger = new Logger(IAAService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   /**
    * Calculate Cohen's Kappa for inter-annotator agreement
@@ -50,7 +51,7 @@ export class IAAService {
 
       return Math.max(0, Math.min(1, kappa));
     } catch (error) {
-      this.logger.error(`Error calculating Cohen's Kappa: ${error.message}`);
+      this.logger.error(`Error calculating Cohen's Kappa: ${getErrorMessage(error)}`);
       return 0;
     }
   }
@@ -101,7 +102,7 @@ export class IAAService {
 
       return Math.max(0, Math.min(1, kappa));
     } catch (error) {
-      this.logger.error(`Error calculating Fleiss' Kappa: ${error.message}`);
+      this.logger.error(`Error calculating Fleiss' Kappa: ${getErrorMessage(error)}`);
       return 0;
     }
   }

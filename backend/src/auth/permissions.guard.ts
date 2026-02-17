@@ -5,11 +5,12 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { RequestUser } from '../common/request-user.types';
 import { PERMISSIONS_KEY } from './permissions.decorator';
 
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(private reflector: Reflector) { }
 
   canActivate(context: ExecutionContext): boolean {
     const requiredPermissions = this.reflector.getAllAndOverride<string[]>(
@@ -21,7 +22,7 @@ export class PermissionsGuard implements CanActivate {
       return true;
     }
 
-    const request = context.switchToHttp().getRequest();
+    const request = context.switchToHttp().getRequest<{ user?: RequestUser }>();
     const user = request.user;
 
     if (!user) {
@@ -30,7 +31,7 @@ export class PermissionsGuard implements CanActivate {
 
     // For now, permissions are based on roles
     // In the future, this can be extended to check specific permissions
-    const userPermissions = this.getPermissionsForRole(user.role);
+    const userPermissions = this.getPermissionsForRole(user.role ?? 'USER');
 
     const hasPermission = requiredPermissions.some((permission) =>
       userPermissions.includes(permission),

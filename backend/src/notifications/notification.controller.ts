@@ -10,15 +10,16 @@ import {
 } from '@nestjs/common';
 import { NotificationService } from './notification.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('notifications')
 @UseGuards(JwtAuthGuard)
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) {}
+  constructor(private readonly notificationService: NotificationService) { }
 
   @Get()
   async getNotifications(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {
@@ -31,28 +32,28 @@ export class NotificationController {
   }
 
   @Get('unread-count')
-  async getUnreadCount(@Request() req) {
+  async getUnreadCount(@Request() req: { user: RequestUser }) {
     const userId = req.user.id;
     const count = await this.notificationService.getUnreadCount(userId);
     return { count };
   }
 
   @Put(':id/read')
-  async markAsRead(@Request() req, @Param('id') id: string) {
+  async markAsRead(@Request() req: { user: RequestUser }, @Param('id') id: string) {
     const userId = req.user.id;
     await this.notificationService.markAsRead(userId, id);
     return { success: true };
   }
 
   @Put('read-all')
-  async markAllAsRead(@Request() req) {
+  async markAllAsRead(@Request() req: { user: RequestUser }) {
     const userId = req.user.id;
     await this.notificationService.markAllAsRead(userId);
     return { success: true };
   }
 
   @Delete(':id')
-  async deleteNotification(@Request() req, @Param('id') id: string) {
+  async deleteNotification(@Request() req: { user: RequestUser }, @Param('id') id: string) {
     const userId = req.user.id;
     await this.notificationService.deleteNotification(userId, id);
     return { success: true };

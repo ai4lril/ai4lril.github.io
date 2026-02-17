@@ -17,6 +17,7 @@ import { VideoBlogService } from './video-blog.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { QueueService } from '../queue/queue.service';
 import { MediaUploadJobData } from '../queue/interfaces/media-upload-job.interface';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('community/video-blog')
 export class VideoBlogController {
@@ -30,7 +31,7 @@ export class VideoBlogController {
   @UseInterceptors(FileInterceptor('video'))
   @HttpCode(HttpStatus.ACCEPTED)
   async createVideoBlog(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @UploadedFile() file: Express.Multer.File,
     @Body()
     body: {

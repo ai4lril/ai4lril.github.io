@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
+import { getErrorMessage } from '../common/error-utils';
 import { join } from 'path';
 import { createObjectCsvWriter } from 'csv-writer';
 
@@ -11,7 +12,7 @@ export class ExportService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
-  ) {}
+  ) { }
 
   async createExportJob(
     userId: string | null,
@@ -32,12 +33,12 @@ export class ExportService {
 
       // Process export asynchronously
       this.processExport(job.id).catch((error) => {
-        this.logger.error(`Export job ${job.id} failed: ${error.message}`);
+        this.logger.error(`Export job ${job.id} failed: ${getErrorMessage(error)}`);
       });
 
       return job.id;
     } catch (error) {
-      this.logger.error(`Failed to create export job: ${error.message}`);
+      this.logger.error(`Failed to create export job: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -121,12 +122,13 @@ export class ExportService {
 
       this.logger.log(`Export job ${jobId} completed successfully`);
     } catch (error) {
-      this.logger.error(`Export job ${jobId} failed: ${error.message}`);
+      const errMsg = getErrorMessage(error);
+      this.logger.error(`Export job ${jobId} failed: ${errMsg}`);
       await this.prisma.exportJob.update({
         where: { id: jobId },
         data: {
           status: 'failed',
-          error: error.message,
+          error: errMsg,
           completedAt: new Date(),
         },
       });
@@ -134,10 +136,10 @@ export class ExportService {
   }
 
   private async exportContributions(
-    job: any,
+    job: { id: string; format: string; filters?: unknown },
   ): Promise<{ filePath: string; fileSize: number }> {
     const contributions = await this.prisma.contribution.findMany({
-      where: job.filters || {},
+      where: (job.filters as Record<string, unknown>) || {},
       include: {
         user: {
           select: {
@@ -192,10 +194,10 @@ export class ExportService {
   }
 
   private async exportUsers(
-    job: any,
+    job: { id: string; format: string; filters?: unknown },
   ): Promise<{ filePath: string; fileSize: number }> {
     const users = await this.prisma.user.findMany({
-      where: job.filters || {},
+      where: (job.filters as Record<string, unknown>) || {},
       select: {
         id: true,
         username: true,
@@ -256,7 +258,7 @@ export class ExportService {
   }
 
   private async exportAnalytics(
-    job: any,
+    job: { id: string; format: string },
   ): Promise<{ filePath: string; fileSize: number }> {
     // Export analytics data
     const analytics = {

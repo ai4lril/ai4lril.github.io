@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -13,13 +14,14 @@ export class FAQService {
 
   async getFAQs(category?: string, search?: string) {
     const cacheKey = `faqs:${category || 'all'}:${search || ''}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.fAQ.findMany>>;
+    const cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (cached) {
       return cached;
     }
 
-    const where: any = {};
+    const where: Prisma.FAQWhereInput = {};
     if (category) {
       where.category = category;
     }
@@ -77,7 +79,7 @@ export class FAQService {
         data: {
           notHelpful: {
             increment: 1,
-          }, 
+          },
         },
       });
     }

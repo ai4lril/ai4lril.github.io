@@ -1,4 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -9,26 +11,26 @@ export class StatsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async updateUserStats(
     userId: string,
     type: string,
-    metadata?: Record<string, any>,
+    metadata?: Record<string, unknown>,
   ): Promise<void> {
     try {
       const stats = await this.prisma.userStats.findUnique({
         where: { userId },
       });
 
-      const updateData: any = {};
+      const updateData: Prisma.UserStatsUpdateInput = {};
 
       switch (type) {
         case 'contribution':
           updateData.totalContributions = { increment: 1 };
-          if (metadata?.language) {
+          if (metadata?.language && typeof metadata.language === 'string') {
             // Add language to languagesContributed array if not already present
-            const currentLanguages = stats?.languagesContributed || [];
+            const currentLanguages = (stats?.languagesContributed as string[]) ?? [];
             if (!currentLanguages.includes(metadata.language)) {
               updateData.languagesContributed = {
                 push: metadata.language,
@@ -40,7 +42,7 @@ export class StatsService {
           updateData.totalValidations = { increment: 1 };
           break;
         case 'audio':
-          if (metadata?.duration) {
+          if (typeof metadata?.duration === 'number') {
             updateData.audioSeconds = { increment: metadata.duration };
           }
           break;
@@ -53,8 +55,8 @@ export class StatsService {
           totalContributions: type === 'contribution' ? 1 : 0,
           totalValidations: type === 'validation' ? 1 : 0,
           audioSeconds:
-            type === 'audio' && metadata?.duration ? metadata.duration : 0,
-          languagesContributed: metadata?.language ? [metadata.language] : [],
+            type === 'audio' && typeof metadata?.duration === 'number' ? metadata.duration : 0,
+          languagesContributed: typeof metadata?.language === 'string' ? [metadata.language] : [],
         },
         update: updateData,
       });
@@ -65,9 +67,7 @@ export class StatsService {
       // Invalidate cache
       await this.cacheService.del(`user_stats:${userId}`);
     } catch (error) {
-      this.logger.error(
-        `Error updating stats for user ${userId}: ${error.message}`,
-      );
+      this.logger.error(`Error updating stats for user ${userId}: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -114,7 +114,8 @@ export class StatsService {
 
   async getUserStats(userId: string) {
     const cacheKey = `user_stats:${userId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type UserStatsResult = Awaited<ReturnType<typeof this.prisma.userStats.findUnique>> & { totalContributions: number; totalValidations: number; audioSeconds: number };
+    const cached = await this.cacheService.get<UserStatsResult>(cacheKey);
 
     if (cached) {
       return cached;

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
 export class ForumService {
@@ -9,7 +10,7 @@ export class ForumService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async createPost(
     userId: string,
@@ -32,7 +33,7 @@ export class ForumService {
 
       return post;
     } catch (error) {
-      this.logger.error(`Failed to create forum post: ${error.message}`);
+      this.logger.error(`Failed to create forum post: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -64,14 +65,15 @@ export class ForumService {
 
       return reply;
     } catch (error) {
-      this.logger.error(`Failed to create forum reply: ${error.message}`);
+      this.logger.error(`Failed to create forum reply: ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
   async getPosts(categoryId?: string, limit: number = 20, offset: number = 0) {
     const cacheKey = `forum_posts:${categoryId || 'all'}:${limit}:${offset}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.forumPost.findMany>>;
+    const cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (cached) {
       return cached;
@@ -111,7 +113,8 @@ export class ForumService {
 
   async getPost(postId: string) {
     const cacheKey = `forum_post:${postId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type CachedPost = Awaited<ReturnType<typeof this.prisma.forumPost.findUnique>>;
+    const cached = await this.cacheService.get<CachedPost>(cacheKey);
 
     if (cached) {
       return cached;
@@ -151,7 +154,8 @@ export class ForumService {
 
   async getReplies(postId: string, limit: number = 50, offset: number = 0) {
     const cacheKey = `forum_replies:${postId}:${limit}:${offset}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.forumReply.findMany>>;
+    const cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (cached) {
       return cached;
@@ -182,7 +186,8 @@ export class ForumService {
 
   async getCategories() {
     const cacheKey = 'forum_categories';
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.forumCategory.findMany>>;
+    const cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (cached) {
       return cached;

@@ -12,6 +12,7 @@ import {
 import { FeedbackService } from './feedback.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/rbac.guard';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('community/feedback')
 export class FeedbackController {
@@ -20,9 +21,9 @@ export class FeedbackController {
   @Post()
   async submitFeedback(
     @Body() body: { type: string; subject: string; message: string },
-    @Request() req: any,
+    @Request() req: { user?: RequestUser },
   ) {
-    const userId = req.user?.id || null;
+    const userId = req.user?.id ?? null;
     return this.feedbackService.submitFeedback(
       userId,
       body.type,
@@ -34,7 +35,7 @@ export class FeedbackController {
   @Get()
   @UseGuards(JwtAuthGuard)
   async getMyFeedback(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Query('status') status?: string,
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
@@ -69,7 +70,7 @@ export class FeedbackController {
   @Roles('MODERATOR', 'ADMIN', 'SUPER_ADMIN')
   async respondToFeedback(
     @Param('id') id: string,
-    @Request() req: any,
+    @Request() req: { user: RequestUser },
     @Body() body: { response: string },
   ) {
     const adminUserId = req.user.id;

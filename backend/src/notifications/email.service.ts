@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { MailerService } from '@nestjs-modules/mailer';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
@@ -18,7 +19,7 @@ export class EmailService {
     private readonly mailerService: MailerService,
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async sendEmail(options: EmailOptions): Promise<void> {
     try {
@@ -57,9 +58,8 @@ export class EmailService {
 
       this.logger.log(`Email sent successfully to ${options.to}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send email to ${options.to}: ${error.message}`,
-      );
+      const errMsg = getErrorMessage(error);
+      this.logger.error(`Failed to send email to ${options.to}: ${errMsg}`);
 
       // Log failed email to queue
       await this.prisma.emailQueue
@@ -70,7 +70,7 @@ export class EmailService {
             template: options.template,
             context: options.context,
             status: 'failed',
-            error: error.message,
+            error: errMsg,
             sentAt: new Date(),
           },
         })

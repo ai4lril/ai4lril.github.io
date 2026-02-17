@@ -22,15 +22,16 @@ import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LinkOAuthDto, UnlinkOAuthDto } from './dto/link-oauth.dto';
 import { RequestPasswordResetDto, ResetPasswordDto } from './dto/password-reset.dto';
 import { JwtAuthGuard } from './jwt-auth.guard';
-import { OAuthUser } from './auth.service';
+import { OAuthUser, AuthLoginResult } from './auth.service';
+import { getErrorMessage } from '../common/error-utils';
+import { RequestUser } from '../common/request-user.types';
 import { RecoveryService } from './recovery.service';
 
 interface RequestWithUser {
-  user: {
-    id?: string;
+  user: RequestUser & {
     googleId?: string;
     githubId?: string;
-    email: string;
+    email?: string;
     firstName?: string;
     lastName?: string;
     displayName?: string;
@@ -88,16 +89,13 @@ export class AuthController {
         lastName?: string;
         picture?: string;
       };
-      const result = await this.authService.googleLogin(user);
+      const result: AuthLoginResult = await this.authService.googleLogin(user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       const redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}&refreshToken=${result.refreshToken}&provider=google`;
       return res.redirect(redirectUrl);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Log error for debugging
-      console.error(
-        'Google OAuth error:',
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+      console.error('Google OAuth error:', getErrorMessage(error));
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       let errorParam = 'oauth_failed';
@@ -135,7 +133,7 @@ export class AuthController {
         picture?: string;
         accessToken?: string;
       };
-      const result = await this.authService.githubLogin(user);
+      const result: AuthLoginResult = await this.authService.githubLogin(user);
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       let redirectUrl = `${frontendUrl}/auth/callback?token=${result.token}&refreshToken=${result.refreshToken}&provider=github`;
 
@@ -145,12 +143,9 @@ export class AuthController {
       }
 
       return res.redirect(redirectUrl);
-    } catch (error: any) {
+    } catch (error: unknown) {
       // Log error for debugging
-      console.error(
-        'GitHub OAuth error:',
-        error instanceof Error ? error.message : 'Unknown error',
-      );
+      console.error('GitHub OAuth error:', getErrorMessage(error));
 
       const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5577';
       let errorParam = 'oauth_failed';

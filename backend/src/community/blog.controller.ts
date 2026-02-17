@@ -12,15 +12,16 @@ import {
 } from '@nestjs/common';
 import { BlogService } from './blog.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('community/blog')
 export class BlogController {
-  constructor(private readonly blogService: BlogService) {}
+  constructor(private readonly blogService: BlogService) { }
 
   @Post()
   @UseGuards(JwtAuthGuard)
   async createBlogPost(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Body()
     body: {
       languageCode: string;
@@ -71,7 +72,7 @@ export class BlogController {
   @UseGuards(JwtAuthGuard)
   async updateBlogPost(
     @Param('id') id: string,
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Body()
     updates: {
       title?: string;
@@ -86,7 +87,7 @@ export class BlogController {
 
   @Delete(':id')
   @UseGuards(JwtAuthGuard)
-  async deleteBlogPost(@Param('id') id: string, @Request() req) {
+  async deleteBlogPost(@Param('id') id: string, @Request() req: { user: RequestUser }) {
     const userId = req.user.id;
     await this.blogService.deleteBlogPost(id, userId);
     return { success: true };

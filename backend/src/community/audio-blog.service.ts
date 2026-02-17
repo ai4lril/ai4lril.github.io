@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CacheService } from '../cache/cache.service';
 import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
 export class AudioBlogService {
@@ -52,14 +53,15 @@ export class AudioBlogService {
 
       return audioBlog;
     } catch (error) {
-      this.logger.error(`Failed to create audio blog: ${error.message}`);
+      this.logger.error(`Failed to create audio blog: ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
   async getAudioBlog(blogId: string) {
     const cacheKey = `audio_blog:${blogId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type CachedAudioBlog = Awaited<ReturnType<typeof this.prisma.audioBlog.findUnique>>;
+    const cached = await this.cacheService.get<CachedAudioBlog>(cacheKey);
 
     if (cached) {
       return cached;
@@ -104,7 +106,8 @@ export class AudioBlogService {
   ) {
     // Cache full list without pagination parameters to reduce key proliferation
     const cacheKey = `audio_blogs:${languageCode}:${published}`;
-    let cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.audioBlog.findMany>>;
+    let cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (!cached) {
       // Fetch full list from database

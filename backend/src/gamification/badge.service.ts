@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -9,7 +10,7 @@ export class BadgeService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async checkAndAwardBadges(
     userId: string,
@@ -48,7 +49,7 @@ export class BadgeService {
           });
 
           // Award points
-          const points = badge.criteria?.['points'] || 10;
+          const points = (badge.criteria as Record<string, number>)?.['points'] ?? 10;
           await this.awardPoints(userId, points);
 
           awardedBadges.push(badge.id);
@@ -59,21 +60,19 @@ export class BadgeService {
 
       return awardedBadges;
     } catch (error) {
-      this.logger.error(
-        `Error checking badges for user ${userId}: ${error.message}`,
-      );
+      this.logger.error(`Error checking badges for user ${userId}: ${getErrorMessage(error)}`);
       return awardedBadges;
     }
   }
 
   private async checkBadgeCriteria(
-    badge: any,
+    badge: { criteria?: unknown },
     userId: string,
     action: string,
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     _metadata?: Record<string, any>,
   ): Promise<boolean> {
-    const { criteria } = badge;
+    const criteria = badge.criteria as { action?: string; count?: number; type?: string; minContributions?: number; minStreak?: number; minPoints?: number } | undefined;
     if (!criteria) {
       return false;
     }
@@ -82,7 +81,7 @@ export class BadgeService {
     if (criteria.action === action) {
       if (criteria.count) {
         const userStats = await this.getUserStats(userId);
-        const actionCount = userStats[`${action}Count`] || 0;
+        const actionCount = (userStats as Record<string, number>)[`${action}Count`] ?? 0;
         return actionCount >= criteria.count;
       }
       return true;
@@ -120,9 +119,10 @@ export class BadgeService {
     return false;
   }
 
-  private async getUserStats(userId: string): Promise<any> {
+  private async getUserStats(userId: string) {
     const cacheKey = `user_stats:${userId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type UserStatsLike = { totalContributions: number; totalValidations: number; totalPoints: number; [key: string]: unknown };
+    const cached = await this.cacheService.get<UserStatsLike>(cacheKey);
 
     if (cached) {
       return cached;
@@ -132,11 +132,11 @@ export class BadgeService {
       where: { userId },
     });
 
-    const result = stats || {
+    const result: UserStatsLike = (stats ?? {
       totalContributions: 0,
       totalValidations: 0,
       totalPoints: 0,
-    };
+    }) as UserStatsLike;
 
     await this.cacheService.set(cacheKey, result, 300); // 5 min TTL
     return result;

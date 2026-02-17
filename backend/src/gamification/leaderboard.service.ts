@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
 
@@ -9,7 +10,7 @@ export class LeaderboardService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async updateLeaderboard(
     category: string,
@@ -24,12 +25,12 @@ export class LeaderboardService {
       const users = await this.prisma.user.findMany({
         where: languageCode
           ? {
-              userStats: {
-                languagesContributed: {
-                  has: languageCode,
-                },
+            userStats: {
+              languagesContributed: {
+                has: languageCode,
               },
-            }
+            },
+          }
           : {},
         select: {
           id: true,
@@ -54,17 +55,17 @@ export class LeaderboardService {
           where: {
             userId_category_languageCode_periodStart: languageCode
               ? {
-                  userId: users[i].id,
-                  category,
-                  languageCode,
-                  periodStart: periodStartDate,
-                }
+                userId: users[i].id,
+                category,
+                languageCode,
+                periodStart: periodStartDate,
+              }
               : ({
-                  userId: users[i].id,
-                  category,
-                  languageCode: null,
-                  periodStart: periodStartDate,
-                } as any),
+                userId: users[i].id,
+                category,
+                languageCode: null,
+                periodStart: periodStartDate,
+              } as unknown as Parameters<typeof this.prisma.leaderboard.upsert>[0]['where']['userId_category_languageCode_periodStart']),
           },
           create: {
             userId: users[i].id,
@@ -90,7 +91,7 @@ export class LeaderboardService {
         `Leaderboard updated for category ${category}, language ${languageCode || 'global'}`,
       );
     } catch (error) {
-      this.logger.error(`Error updating leaderboard: ${error.message}`);
+      this.logger.error(`Error updating leaderboard: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -102,7 +103,8 @@ export class LeaderboardService {
     offset: number = 0,
   ) {
     const cacheKey = `leaderboard:${category}:${languageCode || 'global'}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type LeaderboardEntry = Awaited<ReturnType<typeof this.prisma.leaderboard.findMany>>[number];
+    const cached = await this.cacheService.get<LeaderboardEntry[]>(cacheKey);
 
     if (cached && offset === 0) {
       return cached.slice(0, limit);

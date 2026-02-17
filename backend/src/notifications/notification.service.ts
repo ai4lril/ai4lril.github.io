@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from './email.service';
 import { CacheService } from '../cache/cache.service';
@@ -20,7 +21,7 @@ export class NotificationService {
     private readonly prisma: PrismaService,
     private readonly emailService: EmailService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async createNotification(dto: CreateNotificationDto): Promise<void> {
     try {
@@ -71,14 +72,12 @@ export class NotificationService {
             );
           }
         } catch (error) {
-          this.logger.error(
-            `Failed to send email notification: ${error.message}`,
-          );
+          this.logger.error(`Failed to send email notification: ${getErrorMessage(error)}`);
           // Don't throw - in-app notification was created
         }
       }
     } catch (error) {
-      this.logger.error(`Failed to create notification: ${error.message}`);
+      this.logger.error(`Failed to create notification: ${getErrorMessage(error)}`);
       throw error;
     }
   }

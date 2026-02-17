@@ -11,6 +11,7 @@ import { Server, Socket } from 'socket.io';
 import { Logger } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @WebSocketGateway({
   cors: {
@@ -34,20 +35,20 @@ export class RealtimeGateway
 
   async handleConnection(client: Socket) {
     try {
-      const token =
-        client.handshake.auth.token ||
-        client.handshake.headers.authorization?.replace('Bearer ', '');
+      const authToken =
+        (client.handshake.auth as { token?: string }).token ||
+        (client.handshake.headers.authorization)?.replace('Bearer ', '');
 
-      if (!token) {
+      if (!authToken || typeof authToken !== 'string') {
         this.logger.warn(`Client ${client.id} connected without token`);
         client.disconnect();
         return;
       }
 
-      const payload = this.jwtService.verify(token);
-      const userId = payload.id || payload.sub;
+      const payload = this.jwtService.verify<{ id?: string; sub?: string }>(authToken);
+      const userId: string | undefined = payload.id ?? payload.sub;
 
-      if (!userId) {
+      if (!userId || typeof userId !== 'string') {
         this.logger.warn(`Invalid token payload for client ${client.id}`);
         client.disconnect();
         return;
@@ -55,7 +56,7 @@ export class RealtimeGateway
 
       // Store connection
       this.connectedUsers.set(client.id, userId);
-      client.data.userId = userId;
+      (client.data as { userId?: string }).userId = userId;
 
       // Join user room for targeted messaging
       await client.join(`user:${userId}`);
@@ -74,9 +75,7 @@ export class RealtimeGateway
 
       this.logger.log(`Client ${client.id} (user ${userId}) connected`);
     } catch (error) {
-      this.logger.error(
-        `Connection error for client ${client.id}: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      this.logger.error(`Connection error for client ${client.id}: ${getErrorMessage(error)}`);
       client.disconnect();
     }
   }
@@ -114,15 +113,15 @@ export class RealtimeGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { channels: string[] },
   ) {
-    const { userId } = client.data as { userId: string };
+    const userId = (client.data as { userId?: string }).userId;
     if (!userId) {
       return { error: 'Not authenticated' };
     }
 
-    data.channels.forEach((channel) => {
-      client.join(channel);
+    for (const channel of data.channels) {
+      void client.join(channel);
       this.logger.log(`User ${userId} subscribed to channel ${channel}`);
-    });
+    }
 
     return { success: true, subscribed: data.channels };
   }
@@ -132,9 +131,9 @@ export class RealtimeGateway
     @ConnectedSocket() client: Socket,
     @MessageBody() data: { channels: string[] },
   ) {
-    data.channels.forEach((channel) => {
-      client.leave(channel);
-    });
+    for (const channel of data.channels) {
+      void client.leave(channel);
+    }
 
     return { success: true, unsubscribed: data.channels };
   }

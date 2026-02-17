@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { EmailService } from '../notifications/email.service';
 import { CacheService } from '../cache/cache.service';
+import { getErrorMessage } from '../common/error-utils';
 import { randomBytes } from 'crypto';
 import * as bcrypt from 'bcryptjs';
 
@@ -63,9 +64,7 @@ export class RecoveryService {
 
       this.logger.log(`Password reset email sent to ${email}`);
     } catch (error) {
-      this.logger.error(
-        `Failed to send password reset email: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      this.logger.error(`Failed to send password reset email: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -97,9 +96,7 @@ export class RecoveryService {
       this.logger.log(`Password reset successful for user ${resetRecord.userId}`);
       return true;
     } catch (error) {
-      this.logger.error(
-        `Password reset failed: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      this.logger.error(`Password reset failed: ${getErrorMessage(error)}`);
       return false;
     }
   }

@@ -8,6 +8,7 @@ import {
 import { JwtService } from '@nestjs/jwt';
 import { PrismaService } from '../prisma/prisma.service';
 import { VerificationService } from '../verification.service';
+import { getErrorMessage, isPrismaErrorCode } from '../common/error-utils';
 import * as bcrypt from 'bcryptjs';
 import { LoginDto } from './dto/login.dto';
 import { SignupDto } from './dto/signup.dto';
@@ -56,6 +57,13 @@ export interface OAuthUser {
   username?: string;
   picture?: string;
   accessToken?: string;
+}
+
+export interface AuthLoginResult {
+  user: Record<string, unknown>;
+  token: string;
+  refreshToken: string;
+  emailWarning?: string;
 }
 
 @Injectable()
@@ -158,7 +166,7 @@ export class AuthService {
     this.verificationService
       .sendVerificationEmail(user.id)
       .catch((err) =>
-        this.logger.warn(`Failed to send verification email: ${err.message}`),
+        this.logger.warn(`Failed to send verification email: ${getErrorMessage(err)}`),
       );
 
     return {
@@ -231,7 +239,7 @@ export class AuthService {
       lastName?: string;
       picture?: string;
     },
-  ) {
+  ): Promise<AuthLoginResult> {
     const { googleId, email, firstName, lastName, displayName, picture } =
       profile;
 
@@ -364,9 +372,9 @@ export class AuthService {
                 email,
               },
             });
-          } catch (error: any) {
+          } catch (error: unknown) {
             // Handle unique constraint violations (race condition)
-            if (error.code === 'P2002') {
+            if (isPrismaErrorCode(error, 'P2002')) {
               // User was created by another process, retry lookup
               user = await tx.user.findUnique({
                 where: { email },
@@ -458,16 +466,18 @@ export class AuthService {
         return null;
       }
 
-      const emails = await response.json();
+      const emails = (await response.json()) as Array<{
+        primary?: boolean;
+        verified?: boolean;
+        email?: string;
+      }>;
       // Find primary email or first verified email
-      const primaryEmail = emails.find((e: any) => e.primary)?.email;
-      const verifiedEmail = emails.find((e: any) => e.verified)?.email;
+      const primaryEmail = emails.find((e) => e.primary)?.email;
+      const verifiedEmail = emails.find((e) => e.verified)?.email;
 
       return primaryEmail || verifiedEmail || emails[0]?.email || null;
     } catch (error) {
-      this.logger.error(
-        `Error fetching GitHub email: ${error instanceof Error ? error.message : 'Unknown error'}`,
-      );
+      this.logger.error(`Error fetching GitHub email: ${getErrorMessage(error)}`);
       return null;
     }
   }
@@ -482,7 +492,7 @@ export class AuthService {
       picture?: string;
       accessToken?: string;
     },
-  ) {
+  ): Promise<AuthLoginResult> {
     const {
       githubId,
       email: profileEmail,
@@ -622,9 +632,9 @@ export class AuthService {
                 email: email || userEmail,
               },
             });
-          } catch (error: any) {
+          } catch (error: unknown) {
             // Handle unique constraint violations (race condition)
-            if (error.code === 'P2002') {
+            if (isPrismaErrorCode(error, 'P2002')) {
               // User was created by another process, retry lookup
               user = await tx.user.findUnique({
                 where: { githubId },

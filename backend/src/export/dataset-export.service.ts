@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
+import { getErrorMessage } from '../common/error-utils';
 import * as archiver from 'archiver';
 import { createWriteStream } from 'fs';
 import { join } from 'path';
@@ -12,7 +13,7 @@ export class DatasetExportService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: StorageService,
-  ) {}
+  ) { }
 
   async exportDataset(filters: {
     languageCode?: string;
@@ -31,8 +32,8 @@ export class DatasetExportService {
           },
           sentence: filters.languageCode
             ? {
-                languageCode: filters.languageCode,
-              }
+              languageCode: filters.languageCode,
+            }
             : undefined,
         },
         include: {
@@ -49,6 +50,7 @@ export class DatasetExportService {
       // Create ZIP file
       const zipPath = join('/tmp', `dataset_export_${Date.now()}.zip`);
       const output = createWriteStream(zipPath);
+      /* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access -- archiver package has incomplete types */
       const archive = archiver('zip', { zlib: { level: 9 } });
 
       await new Promise<void>((resolve, reject) => {
@@ -88,6 +90,7 @@ export class DatasetExportService {
 
         archive.finalize();
       });
+      /* eslint-enable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access */
 
       // Upload to MinIO
       const fs = await import('fs');
@@ -104,7 +107,7 @@ export class DatasetExportService {
 
       return fileUrl;
     } catch (error) {
-      this.logger.error(`Dataset export failed: ${error.message}`);
+      this.logger.error(`Dataset export failed: ${getErrorMessage(error)}`);
       throw error;
     }
   }

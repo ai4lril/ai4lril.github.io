@@ -274,13 +274,14 @@ export class StorageService {
           this.logger.warn('Failed to cleanup temp file:', cleanupError);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       // ffprobe might not be installed - this is acceptable
       // Frontend already calculates duration, so this is just for validation
-      if (error.code !== 'ENOENT') {
+      const code = error && typeof error === 'object' && 'code' in error ? (error as { code: string }).code : undefined;
+      if (code !== 'ENOENT') {
         this.logger.warn(
           `Failed to extract ${mediaType} duration using ffprobe:`,
-          error instanceof Error ? error.message : error,
+          error instanceof Error ? error.message : String(error),
         );
       }
       return null;

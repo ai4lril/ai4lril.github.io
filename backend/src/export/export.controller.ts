@@ -12,7 +12,7 @@ import { ExportService } from './export.service';
 import { DatasetExportService } from './dataset-export.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { RolesGuard, Roles } from '../auth/rbac.guard';
-import { Response } from 'express';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('export')
 export class ExportController {
@@ -24,7 +24,7 @@ export class ExportController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async createExport(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Body()
     body: {
       type: string;
@@ -51,7 +51,7 @@ export class ExportController {
   @Get('history')
   @UseGuards(JwtAuthGuard)
   async getExportHistory(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Query('limit') limit?: string,
     @Query('offset') offset?: string,
   ) {

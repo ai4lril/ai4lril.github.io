@@ -3,6 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 import { StorageService } from '../storage/storage.service';
 import { CacheService } from '../cache/cache.service';
 import { CacheInvalidationService } from '../cache/cache-invalidation.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
 export class VideoBlogService {
@@ -54,14 +55,15 @@ export class VideoBlogService {
 
       return videoBlog;
     } catch (error) {
-      this.logger.error(`Failed to create video blog: ${error.message}`);
+      this.logger.error(`Failed to create video blog: ${getErrorMessage(error)}`);
       throw error;
     }
   }
 
   async getVideoBlog(blogId: string) {
     const cacheKey = `video_blog:${blogId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type CachedVideoBlog = Awaited<ReturnType<typeof this.prisma.videoBlog.findUnique>>;
+    const cached = await this.cacheService.get<CachedVideoBlog>(cacheKey);
 
     if (cached) {
       return cached;
@@ -106,7 +108,8 @@ export class VideoBlogService {
   ) {
     // Cache full list without pagination parameters to reduce key proliferation
     const cacheKey = `video_blogs:${languageCode}:${published}`;
-    let cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.videoBlog.findMany>>;
+    let cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (!cached) {
       // Fetch full list from database

@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
 import { CacheService } from '../cache/cache.service';
+import { getErrorMessage } from '../common/error-utils';
 
 @Injectable()
 export class BlogService {
@@ -9,7 +10,7 @@ export class BlogService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) { }
 
   async createBlogPost(
     userId: string,
@@ -37,7 +38,7 @@ export class BlogService {
 
       return blogPost;
     } catch (error) {
-      this.logger.error(`Failed to create blog post: ${error.message}`);
+      this.logger.error(`Failed to create blog post: ${getErrorMessage(error)}`);
       throw error;
     }
   }
@@ -83,7 +84,8 @@ export class BlogService {
 
   async getBlogPost(blogId: string) {
     const cacheKey = `blog_post:${blogId}`;
-    const cached = await this.cacheService.get<any>(cacheKey);
+    type CachedBlogPost = Awaited<ReturnType<typeof this.prisma.blogPost.findUnique>>;
+    const cached = await this.cacheService.get<CachedBlogPost>(cacheKey);
 
     if (cached) {
       return cached;
@@ -128,7 +130,8 @@ export class BlogService {
     offset: number = 0,
   ) {
     const cacheKey = `blog_posts:${languageCode}:${script}:${published}:${limit}:${offset}`;
-    const cached = await this.cacheService.get<any[]>(cacheKey);
+    type CachedList = Awaited<ReturnType<typeof this.prisma.blogPost.findMany>>;
+    const cached = await this.cacheService.get<CachedList>(cacheKey);
 
     if (cached) {
       return cached;

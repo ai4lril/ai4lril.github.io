@@ -10,10 +10,11 @@ import {
 } from '@nestjs/common';
 import { ForumService } from './forum.service';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { RequestUser } from '../common/request-user.types';
 
 @Controller('community/forum')
 export class ForumController {
-  constructor(private readonly forumService: ForumService) {}
+  constructor(private readonly forumService: ForumService) { }
 
   @Get('categories')
   async getCategories() {
@@ -54,7 +55,7 @@ export class ForumController {
   @Post('posts')
   @UseGuards(JwtAuthGuard)
   async createPost(
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Body() body: { categoryId: string; title: string; content: string },
   ) {
     const userId = req.user.id;
@@ -70,7 +71,7 @@ export class ForumController {
   @UseGuards(JwtAuthGuard)
   async createReply(
     @Param('id') postId: string,
-    @Request() req,
+    @Request() req: { user: RequestUser },
     @Body() body: { content: string },
   ) {
     const userId = req.user.id;

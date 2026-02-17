@@ -249,7 +249,8 @@ export class SpeechService {
     const cacheKey = `recordings:validation:${languageCode || 'all'}:${userId || 'anonymous'}`;
 
     // Check cache first
-    const cached = await this.cache.get<any>(cacheKey);
+    type CachedRecording = Awaited<ReturnType<typeof this.prisma.speechRecording.findMany>>;
+    const cached = await this.cache.get<CachedRecording>(cacheKey);
     if (cached) {
       return cached;
     }

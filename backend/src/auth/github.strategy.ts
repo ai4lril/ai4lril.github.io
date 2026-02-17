@@ -50,13 +50,18 @@ export class GitHubStrategy extends PassportStrategy(Strategy, 'github') {
           });
 
           if (response.ok) {
-            const emailData = await response.json();
-            const primaryEmail = emailData.find((e: any) => e.primary)?.email;
-            const verifiedEmail = emailData.find((e: any) => e.verified)?.email;
+            const emailData = (await response.json()) as Array<{
+              primary?: boolean;
+              verified?: boolean;
+              email?: string;
+            }>;
+            const primaryEmail = emailData.find((e) => e.primary)?.email;
+            const verifiedEmail = emailData.find((e) => e.verified)?.email;
             email = primaryEmail || verifiedEmail || emailData[0]?.email;
           }
         } catch (err) {
-          console.warn('Failed to fetch email from GitHub API:', err instanceof Error ? err.message : err);
+          const msg = err instanceof Error ? err.message : String(err);
+          console.warn('Failed to fetch email from GitHub API:', msg);
           // Email fetching failed, will be handled in auth.service
         }
       }

@@ -1,11 +1,12 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { getErrorMessage } from '../common/error-utils';
 import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class AnomalyDetectionService {
   private readonly logger = new Logger(AnomalyDetectionService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   async detectAnomalies(userId: string): Promise<void> {
     try {
@@ -69,9 +70,7 @@ export class AnomalyDetectionService {
         });
       }
     } catch (error) {
-      this.logger.error(
-        `Error detecting anomalies for user ${userId}: ${error.message}`,
-      );
+      this.logger.error(`Error detecting anomalies for user ${userId}: ${getErrorMessage(error)}`);
     }
   }
 

@@ -79,17 +79,17 @@ export class QueueService {
     }
 
     const state = await job.getState();
-    const { id,progress, returnvalue, failedReason, timestamp, processedOn, finishedOn } = job;
+    const jobData = job as { id?: string; progress?: number; returnvalue?: unknown; failedReason?: string; timestamp?: number; processedOn?: number; finishedOn?: number };
 
     return {
-      id: id!,
+      id: jobData.id ?? jobId,
       status: state,
-      progress: typeof progress === 'number' ? progress : undefined,
-      result: returnvalue || undefined,
-      error: failedReason || undefined,
-      createdAt: new Date(timestamp),
-      processedAt: processedOn ? new Date(processedOn) : undefined,
-      finishedAt: finishedOn ? new Date(finishedOn) : undefined,
+      progress: typeof jobData.progress === 'number' ? jobData.progress : undefined,
+      result: jobData.returnvalue ?? undefined,
+      error: jobData.failedReason ?? undefined,
+      createdAt: new Date(jobData.timestamp ?? Date.now()),
+      processedAt: jobData.processedOn ? new Date(jobData.processedOn) : undefined,
+      finishedAt: jobData.finishedOn ? new Date(jobData.finishedOn) : undefined,
     };
   }
 
