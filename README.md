@@ -61,6 +61,17 @@ Once running, you'll have access to:
 - **Database Admin**: `http://localhost:7000` (YugaByteDB UI)
 - **Database Admin**: `http://localhost:9000` (YugaByteDB tserver UI)
 
+### Running with HTTP/2 (HTTPS)
+
+To run with HTTP/2 and TLS (self-signed certs for dev):
+
+```bash
+./scripts/generate-dev-certs.sh
+docker compose -f compose.yml -f compose-http2.yml --profile http2 up -d
+```
+
+Then access **https://localhost** (accept the self-signed certificate in your browser). See [docs/HTTP2_TLS.md](docs/HTTP2_TLS.md) for production setup with Let's Encrypt and Kubernetes.
+
 ## 🛠️ Development Workflow
 
 ### Backend Development

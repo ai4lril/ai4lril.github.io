@@ -1,0 +1,16 @@
+# Override for HTTP/2 mode. Use with:
+#   ./scripts/generate-dev-certs.sh && docker compose -f compose.yml -f compose-http2.yml --profile http2 up -d
+# Then access https://localhost (accept self-signed cert)
+services:
+  frontend:
+    environment:
+      NEXT_PUBLIC_API_URL: "https://localhost/api"
+      NEXT_PUBLIC_FRONTEND_URL: "https://localhost"
+      BACKEND_INTERNAL_URL: "http://backend:3001/api"
+
+  backend:
+    environment:
+      GOOGLE_CALLBACK_URL: "${GOOGLE_CALLBACK_URL:-https://localhost/api/auth/google/callback}"
+      GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL:-https://localhost/api/auth/github/callback}"
+      FRONTEND_URL: "${FRONTEND_URL:-https://localhost}"
+      CORS_ORIGIN: "${CORS_ORIGIN:-https://localhost}"

@@ -1,6 +1,7 @@
 # ILHRF Data Collection Platform — Architecture
 
-**Document Version:** 1.1
+**Document Version:** 1.2
+
 **Last Updated:** February 16, 2026
 
 ---
@@ -14,60 +15,67 @@ The ILHRF Data Collection Platform is a **crowdsourcing web application** for co
 ## 1. High-Level System Architecture
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                                    EXTERNAL USERS                                                │
-│  Contributors │ Moderators │ Admins │ Researchers (API)                                          │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                                    EXTERNAL USERS                                                     │
+│  Contributors │ Moderators │ Admins │ Researchers (API)                                               │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                          │
+                                    HTTPS/HTTP2 (optional)
                                           │
                                           ▼
-┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              PRESENTATION LAYER                                                  │
-│  ┌───────────────────────────────────────────────────────────────────────────────────────────┐   │
-│  │  Next.js 15 Frontend (React 19)                                                           │   │
-│  │  • App Router • Tailwind CSS • i18n (LangSwitcher) • Server & Client Components           │   │
-│  │  Port: 5577                                                                               │   │
-│  └───────────────────────────────────────────────────────────────────────────────────────────┘   │
-└──────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│  Nginx Reverse Proxy (optional, profile http2) — TLS termination, HTTP/2, proxies to backend/frontend │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
+                                          │
+                                          ▼
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              PRESENTATION LAYER                                                       │
+│  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+│  │  Next.js 15 Frontend (React 19)                                                                │   │
+│  │  • App Router • Tailwind CSS • i18n (LangSwitcher) • Server & Client Components                │   │
+│  │  Port: 5577                                                                                    │   │
+│  └────────────────────────────────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
                                           │
                               REST API + WebSocket (Socket.IO)
                                           │
                                           ▼
-┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              APPLICATION LAYER                                                    │
-│  ┌────────────────────────────────────────────────────────────────────────────────────────────┐   │
-│  │  NestJS Backend API                                                                        │   │
-│  │  • REST /api/* • Swagger /api/docs • JWT + OAuth (Google, GitHub) • API Keys               │   │
-│  │  • Throttling • Validation • Exception Filters • Prometheus /api/metrics/prometheus        │   │
-│  │  Port: 5566 (mapped from 3001)                                                             │   │
-│  └────────────────────────────────────────────────────────────────────────────────────────────┘   │
-└───────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              APPLICATION LAYER                                                        │
+│  ┌────────────────────────────────────────────────────────────────────────────────────────────────┐   │
+│  │  NestJS Backend API                                                                            │   │
+│  │  • REST /api/* • Swagger /api/docs • JWT + OAuth (Google, GitHub) • API Keys                   │   │
+│  │  • Throttling • Validation • Exception Filters • Prometheus /api/metrics/prometheus.           │   │
+│  │  Port: 5566 (mapped from 3001)                                                                 │   │
+│  └────────────────────────────────────────────────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
                                           │
                                           ▼
-┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              CORE SERVICES (NestJS Modules)                                       │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ │
-│  │ Auth        │ │ Speech      │ │ Question    │ │ Write       │ │ Transcription│ │ NLP         │ │
-│  │ Users       │ │ Storage     │ │ Progress    │ │ Dataset     │ │ Scheduler    │ │ Search      │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └──────────────┘ └─────────────┘ │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ ┌─────────────┐ │
-│  │ Admin       │ │ Analytics   │ │ Metrics     │ │ Notifications│ │ Realtime    │ │ Gamification│ │
-│  │ Export      │ │ Quality     │ │ Community   │ │ Queue        │ │ Cache       │ │ Languages   │ │
-│  └─────────────┘ └─────────────┘ └─────────────┘ └──────────────┘ └─────────────┘ └─────────────┘ │
-└───────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              CORE SERVICES (NestJS Modules)                                           │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐     │
+│  │ Auth        │ │ Speech      │ │ Question    │ │ Write       │ │ Transcription│ │ NLP         │     │
+│  │ Users       │ │ Storage     │ │ Progress    │ │ Dataset     │ │ Scheduler    │ │ Search      │     │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └─────────────┘ └──────────────┘ └─────────────┘     │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐ ┌──────────────┐ ┌─────────────┐ ┌─────────────┐     │
+│  │ Admin       │ │ Analytics   │ │ Metrics     │ │ Notifications│ │ Realtime    │ │ Gamification│     │
+│  │ Export      │ │ Quality     │ │ Community   │ │ Queue        │ │ Cache       │ │ Languages   │     │
+│  └─────────────┘ └─────────────┘ └─────────────┘ └──────────────┘ └─────────────┘ └─────────────┘     │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
                                           │
                                           ▼
-┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
-│                              DATA & INFRASTRUCTURE LAYER                                           │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐              │
-│  │ YugaByteDB   │ │ Dragonfly    │ │ SeaweedFS   │ │ TimeScaleDB  │ │ Backup       │              │
-│  │ (Primary DB) │ │ (Cache/Queue)│ │ (Blob Store) │ │ (Time-series)│ │ (pg_dump)    │              │
-│  │ Port: 5433   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │              │
-│  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘              │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                                                │
-│  │ Prometheus   │ │ Grafana      │ │ Qdrant/Neo4j │  (Optional: vector/graph storage)              │
-│  │ Port: 9090   │ │ Port: 3001   │ │ Port: 6333   │                                                │
-│  └──────────────┘ └──────────────┘ └──────────────┘                                                │
-└────────────────────────────────────────────────────────────────────────────────────────────────────┘
+┌───────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DATA & INFRASTRUCTURE LAYER                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                 │
+│  │ YugaByteDB   │ │ Dragonfly    │ │ SeaweedFS    │ │ TimeScaleDB  │ │ Backup       │                 │
+│  │ (Primary DB) │ │ (Cache/Queue)│ │ (Blob Store) │ │ (Time-series)│ │ (pg_dump)    │                 │
+│  │ Port: 5433   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │                 │
+│  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘                 │
+│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                                                   │
+│  │ Prometheus   │ │ Grafana      │ │ Qdrant/Neo4j │  (Optional: vector/graph storage).                │
+│  │ Port: 9090   │ │ Port: 3001   │ │ Port: 6333   │                                                   │
+│  └──────────────┘ └──────────────┘ └──────────────┘                                                   │
+└───────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -241,7 +249,7 @@ flowchart LR
 | Store           | Purpose                                                      | Port                       |
 | --------------- | ------------------------------------------------------------ | -------------------------- |
 | **YugaByteDB**  | Primary relational data (users, sentences, recordings, etc.) | 5433                       |
-| **PostgreSQL**  | Alternative (commented out in compose; uncomment to use)    | 5432                       |
+| **PostgreSQL**  | Alternative (commented out in compose; uncomment to use)     | 5432                       |
 | **Dragonfly**   | Redis-compatible cache + BullMQ job queue                    | 6378                       |
 | **SeaweedFS**   | S3-compatible blob storage (audio, video, exports)           | 8333 (S3 API), 8888 (Filer)|
 | **TimeScaleDB** | Time-series analytics                                        | 5434                       |
@@ -375,21 +383,21 @@ erDiagram
 ## 9. Deployment Topology (Docker Compose)
 
 ```
-┌──────────────────────────────────────────────────────────────────────────────────┐
-│                         Docker Compose Stack                                     │
-├──────────────────────────────────────────────────────────────────────────────────┤
-│  yugabytedb    │ Primary database (ilhrf-yugabyte-node1); PostgreSQL commented   │
-│  dragonfly     │ Cache + BullMQ                                                  │
-│  seaweedfs     │ Blob storage                                                    │
-│  timescaledb   │ Time-series                                                     │
-│  qdrant        │ Vector (optional)                                               │
-│  neo4j         │ Graph (optional)                                                │
-│  prometheus    │ Metrics                                                         │
-│  grafana       │ Dashboards                                                      │
+┌───────────────────────────────────────────────────────────────────────────────────┐
+│                         Docker Compose Stack                                      │
+├───────────────────────────────────────────────────────────────────────────────────┤
+│  yugabytedb    │ Primary database (ilhrf-yugabyte-node1); PostgreSQL commented    │
+│  dragonfly     │ Cache + BullMQ                                                   │
+│  seaweedfs     │ Blob storage                                                     │
+│  timescaledb   │ Time-series                                                      │
+│  qdrant        │ Vector (optional)                                                │
+│  neo4j         │ Graph (optional)                                                 │
+│  prometheus    │ Metrics                                                          │
+│  grafana       │ Dashboards                                                       │
 │  backend       │ NestJS API (depends: yugabytedb, dragonfly, seaweedfs, timescale)│
-│  frontend      │ Next.js (depends: backend)                                      │
-│  backup        │ pg_dump daily (profile: backup)                                │
-└──────────────────────────────────────────────────────────────────────────────────┘
+│  frontend      │ Next.js (depends: backend)                                       │
+│  backup        │ pg_dump daily (profile: backup)                                  │
+└───────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---

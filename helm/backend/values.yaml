@@ -40,8 +40,8 @@ security:
   bcryptRounds: 12
   corsOrigins: ["http://localhost:3000"]
   rateLimit:
-    windowMs: 900000  # 15 minutes
-    max: 100  # limit each IP to 100 requests per windowMs
+    windowMs: 900000 # 15 minutes
+    max: 100 # limit each IP to 100 requests per windowMs
 
 # Monitoring configuration
 monitoring:
@@ -74,17 +74,27 @@ tolerations: []
 # Affinity
 affinity: {}
 
-# Ingress configuration
+# Ingress configuration (HTTP/2 enabled when TLS is used)
 ingress:
   enabled: false
-  className: ""
-  annotations: {}
+  className: nginx
+  annotations:
+    # HTTP/2 is default with TLS in nginx-ingress; explicit TLS protocols
+    nginx.ingress.kubernetes.io/ssl-protocols: "TLSv1.2 TLSv1.3"
+    # WebSocket support for Socket.IO
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "86400"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "86400"
   hosts:
     - host: voice-data-backend.local
       paths:
-        - path: /
+        - path: /api
           pathType: Prefix
-  tls: []
+        - path: /socket.io
+          pathType: Prefix
+  tls:
+    - hosts:
+        - voice-data-backend.local
+      secretName: ilhrf-tls
 
 # ConfigMap for environment variables
 configMap:

@@ -2,9 +2,9 @@ services:
   # PostgreSQL database (alternative - uncomment if you prefer PostgreSQL)
   # postgres:
   #   image: postgres:15
-  #   container_name: voice-data-postgres
+  #   container_name: ilhrf-data-postgres
   #   environment:
-  #     POSTGRES_DB: voice_data_collection
+  #     POSTGRES_DB: ilhrf_data_collection
   #     POSTGRES_USER: postgres
   #     POSTGRES_PASSWORD: postgres
   #   ports:
@@ -23,7 +23,7 @@ services:
   # Lua script execution with queue hashtags (see queue.module.ts)
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
-    container_name: voice-data-dragonfly
+    container_name: ilhrf-data-dragonfly
     command:
       [
         "--port=6379",
@@ -52,7 +52,7 @@ services:
   # SeaweedFS for blob storage (S3-compatible)
   seaweedfs-master:
     image: chrislusf/seaweedfs:latest
-    container_name: voice-data-seaweedfs-master
+    container_name: ilhrf-data-seaweedfs-master
     command: master -ip=seaweedfs-master -ip.bind=0.0.0.0 -port=9333
     ports:
       - "9333:9333"
@@ -69,10 +69,10 @@ services:
 
   seaweedfs-volume:
     image: chrislusf/seaweedfs:latest
-    container_name: voice-data-seaweedfs-volume
+    container_name: ilhrf-data-seaweedfs-volume
     command: volume -ip=seaweedfs-volume -master=seaweedfs-master:9333 -ip.bind=0.0.0.0 -port=8080 -dir=/data
     ports:
-      - "8080:8080"
+      - "8088:8080"
     volumes:
       - seaweedfs_volume_data:/data
     depends_on:
@@ -82,7 +82,7 @@ services:
 
   seaweedfs-filer:
     image: chrislusf/seaweedfs:latest
-    container_name: voice-data-seaweedfs-filer
+    container_name: ilhrf-data-seaweedfs-filer
     command: filer -ip=seaweedfs-filer -master=seaweedfs-master:9333 -ip.bind=0.0.0.0 -port=8888
     ports:
       - "8888:8888"
@@ -93,7 +93,7 @@ services:
 
   seaweedfs-s3:
     image: chrislusf/seaweedfs:latest
-    container_name: voice-data-seaweedfs-s3
+    container_name: ilhrf-data-seaweedfs-s3
     environment:
       AWS_ACCESS_KEY_ID: s3admin
       AWS_SECRET_ACCESS_KEY: s3secret
@@ -112,7 +112,7 @@ services:
   # TimeScaleDB for time-series data
   timescaledb:
     image: timescale/timescaledb:latest-pg15
-    container_name: voice-data-timescaledb
+    container_name: ilhrf-data-timescaledb
     environment:
       POSTGRES_DB: timescale
       POSTGRES_USER: timescale
@@ -128,54 +128,54 @@ services:
       timeout: 5s
       retries: 5
 
-  # QdrantDB for vector storage (if needed)
-  qdrant:
-    image: qdrant/qdrant:latest
-    container_name: voice-data-qdrant
-    ports:
-      - "6333:6333" # Qdrant API
-      - "6334:6334" # Qdrant gRPC
-    volumes:
-      - qdrant_data:/qdrant/storage
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # # QdrantDB for vector storage (if needed)
+  # qdrant:
+  #   image: qdrant/qdrant:latest
+  #   container_name: ilhrf-data-qdrant
+  #   ports:
+  #     - "6333:6333" # Qdrant API
+  #     - "6334:6334" # Qdrant gRPC
+  #   volumes:
+  #     - qdrant_data:/qdrant/storage
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
-  # Neo4j for graph storage (if needed)
-  neo4j:
-    image: neo4j:5-community
-    container_name: voice-data-neo4j
-    environment:
-      NEO4J_AUTH: neo4j/neo4jpassword
-      NEO4J_PLUGINS: '["apoc"]'
-    ports:
-      - "7474:7474" # HTTP
-      - "7687:7687" # Bolt
-    volumes:
-      - neo4j_data:/data
-      - neo4j_logs:/logs
-    restart: unless-stopped
-    healthcheck:
-      test:
-        [
-          "CMD",
-          "wget",
-          "--no-verbose",
-          "--tries=1",
-          "--spider",
-          "http://localhost:7474",
-        ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+  # # Neo4j for graph storage (if needed)
+  # neo4j:
+  #   image: neo4j:5-community
+  #   container_name: ilhrf-data-neo4j
+  #   environment:
+  #     NEO4J_AUTH: neo4j/neo4jpassword
+  #     NEO4J_PLUGINS: '["apoc"]'
+  #   ports:
+  #     - "7474:7474" # HTTP
+  #     - "7687:7687" # Bolt
+  #   volumes:
+  #     - neo4j_data:/data
+  #     - neo4j_logs:/logs
+  #   restart: unless-stopped
+  #   healthcheck:
+  #     test:
+  #       [
+  #         "CMD",
+  #         "wget",
+  #         "--no-verbose",
+  #         "--tries=1",
+  #         "--spider",
+  #         "http://localhost:7474",
+  #       ]
+  #     interval: 30s
+  #     timeout: 10s
+  #     retries: 3
 
   # Prometheus for metrics collection
   prometheus:
     image: prom/prometheus:latest
-    container_name: voice-data-prometheus
+    container_name: ilhrf-data-prometheus
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
@@ -202,7 +202,7 @@ services:
   # Grafana for monitoring dashboards
   grafana:
     image: grafana/grafana:latest
-    container_name: voice-data-grafana
+    container_name: ilhrf-data-grafana
     environment:
       GF_SECURITY_ADMIN_USER: admin
       GF_SECURITY_ADMIN_PASSWORD: admin
@@ -238,7 +238,7 @@ services:
     container_name: ilhrf-yugabyte-node1
     hostname: ilhrf-yugabyte-node1
     environment:
-      YSQL_DB: voice_data_collection
+      YSQL_DB: ilhrf_data_collection
       YSQL_USER: yugabyte
       YSQL_PASSWORD: yugabyte
     ports:
@@ -251,10 +251,12 @@ services:
       - yugabyte_data:/opt/yugabyte/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U yugabyte -h localhost -p 5433 || exit 1"]
+      test:
+        ["CMD-SHELL", "pg_isready -U yugabyte -h localhost -p 5433 || exit 1"]
       interval: 10s
       timeout: 5s
-      retries: 10
+      retries: 15
+      start_period: 90s
     command:
       ["bin/yugabyted", "start", "--background=false", "--listen=0.0.0.0"]
 
@@ -262,9 +264,9 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
-    container_name: voice-data-backend
+    container_name: ilhrf-data-backend
     environment:
-      DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb:5433/voice_data_collection?schema=public"
+      DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb:5433/ilhrf_data_collection?schema=public"
       REDIS_URL: "redis://dragonfly:6379"
       CACHE_URL: "redis://dragonfly:6379"
       JWT_SECRET: "${JWT_SECRET:-Ovc5Gigy1KBQiVsNr51tow1fTNojj8aQ2Fwv1JLn+uE=}"
@@ -275,7 +277,7 @@ services:
       SEAWEEDFS_S3_PORT: "8333"
       SEAWEEDFS_ACCESS_KEY: "s3admin"
       SEAWEEDFS_SECRET_KEY: "s3secret"
-      SEAWEEDFS_BUCKET: "voice-audio"
+      SEAWEEDFS_BUCKET: "ilhrf-audio"
       SEAWEEDFS_USE_SSL: "false"
       # TimeScaleDB configuration
       TIMESCALEDB_URL: "postgresql://timescale:timescale@timescaledb:5432/timescale"
@@ -339,13 +341,13 @@ services:
   # Daily database backup (YugaByteDB/PostgreSQL dump to local volume)
   backup:
     image: postgres:15
-    container_name: voice-data-backup
+    container_name: ilhrf-data-backup
     environment:
       PGHOST: yugabytedb
       PGPORT: 5433
       PGUSER: yugabyte
       PGPASSWORD: yugabyte
-      PGDATABASE: voice_data_collection
+      PGDATABASE: ilhrf_data_collection
       BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-7}"
     volumes:
       - ./backups:/backups
@@ -356,8 +358,8 @@ services:
         while true; do
           ts=$$(date +%Y%m%d_%H%M%S)
           echo "[$$(date)] Creating backup..."
-          pg_dump -h yugabytedb -p 5433 -U yugabyte voice_data_collection --no-owner --no-acl | gzip > /backups/voice_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
-          find /backups -name "voice_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
+          pg_dump -h yugabytedb -p 5433 -U yugabyte ilhrf_data_collection --no-owner --no-acl | gzip > /backups/ilhrf_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
+          find /backups -name "ilhrf_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
           sleep 86400
         done
     depends_on:
@@ -367,11 +369,46 @@ services:
     profiles:
       - backup # Run with: docker compose --profile backup up -d
 
+  # Nginx reverse proxy with HTTP/2 and TLS (opt-in via profile)
+  # Run: ./scripts/generate-dev-certs.sh && docker compose -f compose.yml -f compose-http2.yml --profile http2 up -d
+  # Then access https://localhost (accept self-signed cert in browser)
+  nginx:
+    image: nginx:alpine
+    container_name: ilhrf-data-nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./certs:/etc/nginx/certs:ro
+    depends_on:
+      backend:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - http2
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "-q",
+          "--spider",
+          "--no-check-certificate",
+          "https://localhost/",
+        ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    container_name: voice-data-frontend
+    container_name: ilhrf-data-frontend
     environment:
       NODE_ENV: development
       # Public API URL for client-side code (browser) - must use localhost with exposed port
@@ -403,8 +440,8 @@ volumes:
   seaweedfs_master_data:
   seaweedfs_volume_data:
   timescaledb_data:
-  qdrant_data:
-  neo4j_data:
-  neo4j_logs:
+  # qdrant_data:
+  # neo4j_data:
+  # neo4j_logs:
   prometheus_data:
   grafana_data:

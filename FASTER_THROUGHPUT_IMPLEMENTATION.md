@@ -1,7 +1,7 @@
 # Faster Throughput & 99.99% SLA Implementation Strategy
 
-**Document Version:** 1.3
-**Last Updated:** February 16, 2026
+**Document Version:** 1.4
+**Last Updated:** February 18, 2026
 
 ---
 
@@ -223,6 +223,7 @@ Frontend → Backend API (receives full buffer) → BullMQ (stores mediaBuffer i
 - [ ] Read replicas: YugaByteDB read replicas for analytics/search
 - [ ] Request tracing: OpenTelemetry for end-to-end latency
 - [ ] **Geo-scaling:** YugaByteDB multi-region; geo-partitioning by `languageCode`/region; read replicas per region (see Section 7.6)
+- [ ] **Additional optimizations:** See Section 9 (Fastify, response compression, WebSocket job status, single-flight cache, etc.)
 
 ### Additional Scaling Factors (Section 8)
 
@@ -708,11 +709,118 @@ These factors often interact (e.g. DB pressure from cache stampede, or queue dep
 
 ---
 
-## 9. Related Documentation
+## 9. Additional Throughput & Latency Optimizations (Critical Analysis)
+
+This section captures further improvements identified through critical analysis of the codebase. These complement the phased implementation plan and scaling factors above.
+
+---
+
+### 9.1 Backend / API Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Base64 elimination** | Frontend sends `audioFile` as base64 in JSON; backend receives full buffer before enqueue | Base64 inflates payload ~33%; doubles parse/serialize cost; blocks response until full body received | High (requires presigned flow) |
+| **Fastify adapter** | NestJS uses Express by default | Fastify typically 10–30% faster request handling; lower memory per connection | Medium |
+| **Response compression** | No gzip/brotli for API responses | Large JSON (languages list, search results, NER sentences) could be 60–80% smaller over the wire | Low (`compression` middleware) |
+| **JWT validation caching** | JWT verified on every request | Cache decoded payload for same token (short TTL, e.g. 5s) to avoid repeated crypto; or use edge auth | Medium |
+| **ValidationPipe tuning** | Global `forbidNonWhitelisted` on all routes | Selective validation; skip or relax for high-throughput endpoints (e.g. health, metrics) | Low |
+| **Export queue isolation** | Export runs in-process via `processExport().catch()` | Move to BullMQ; dedicated export workers; prevents CPU/memory contention with upload workers | Medium |
+
+---
+
+### 9.2 Frontend / Client Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Binary upload (pre-presigned)** | Base64 in JSON body | If presigned not yet available: use `FormData` + `Blob` instead of base64; avoids 33% inflation | Low |
+| **Prefetch / preconnect** | No explicit connection hints | `rel="preconnect"` to API; `dns-prefetch`; reduces first-request latency | Low |
+| **Prefetch next sentence** | Next sentence fetched after submit | Fetch next sentence while user records; overlap I/O with user activity | Medium |
+| **WebSocket for job status** | Polling `GET /recording/status/:jobId` | Use Socket.IO to push job completion; eliminates polling round-trips | Medium |
+| **Batch submission** | One recording per request | Allow submitting 3–5 recordings in one request; fewer round-trips for power users | Medium |
+| **Offline queue (IndexedDB)** | No offline support | Queue recordings locally; sync when online; improves perceived latency in poor connectivity | High |
+| **Service Worker caching** | No SW | Cache static assets, language list; reduce repeat loads | Medium |
+
+---
+
+### 9.3 Database & Query Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Bulk inserts** | Individual `create` for sentences, validations | Use `createMany` for bulk imports; batch size 100–500 | Low |
+| **Select only needed columns** | `findMany` often returns full rows | `select: { id, text, languageCode }` for list endpoints; reduces payload and memory | Low |
+| **Composite indexes** | May have single-column indexes only | Add composite indexes for common filters: `(languageCode, isActive, taskType)`, `(userId, createdAt)` | Low |
+| **Cursor-based pagination** | Offset pagination (`skip`/`take`) | Cursor-based for large tables; avoids expensive offset scans | Medium |
+| **Read replica routing** | All reads go to primary | Route analytics, search, exports to read replica; reduce primary load | Medium |
+
+---
+
+### 9.4 Cache & Queue Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Single-flight (request coalescing)** | Cache stampede mitigation mentioned | Implement: when N concurrent requests miss same key, only 1 fetches; others wait | Medium |
+| **L1 cache tuning** | Default 1000 entries, 60s TTL | Increase for hot keys (languages); decrease for volatile data; tune `CACHE_L1_MAX_SIZE`, `CACHE_L1_TTL_SECONDS` | Low |
+| **Queue job batching** | One job per recording | Batch metadata jobs: 5–10 recordings per job; fewer Redis round-trips | Medium |
+| **Per-language queues** | Single audio/video queue | Separate queues by `languageCode` for hotspots; isolate bursty languages | High |
+| **Throttler storage** | In-memory (default) | Redis-backed throttler for multi-pod deployments; consistent rate limits | Low |
+
+---
+
+### 9.5 Network & Transport Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **HTTP/2 for API** | Nginx terminates TLS; proxies HTTP/1.1 to backend | Ensure backend supports HTTP/2 or keep-alive; multiplexing reduces connection overhead | Low |
+| **gzip/brotli at proxy** | Nginx may not compress API responses | Enable `gzip on` for `application/json`; or compress in NestJS | Low |
+| **Connection pooling (client)** | Frontend fetch() creates new connections | Use `keep-alive`; browser does this by default; ensure server supports it | Low |
+| **TLS session tickets** | May not be configured | Enable session reuse; reduces handshake cost for repeat clients | Low |
+
+---
+
+### 9.6 Worker & Processing Layer
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Streaming SeaweedFS writes** | `putObject` with full buffer | Use `Upload` from stream when reading from staging; avoid loading full file in memory | Medium |
+| **Parallel validation** | Worker validates then uploads sequentially | Validate format in parallel with upload start; overlap I/O | Low |
+| **CPU affinity** | Workers share CPU with API | Pin worker processes to CPU cores; reduce context switches | Low (K8s) |
+| **Worker warm-up** | Cold workers slow first job | Pre-warm: process dummy job on startup; or keep minimum workers always active | Low |
+
+---
+
+### 9.7 Observability & Tuning
+
+| Optimization | Current State | Impact | Effort |
+| ------------ | ------------- | ------ | ------ |
+| **Latency percentiles** | May track only avg or histograms | Add p50, p95, p99 for upload, queue, DB; identify tail latency | Low |
+| **Slow query logging** | May not log | Log queries > 100ms; identify slow paths | Low |
+| **Trace sampling** | 100% tracing expensive | Sample 1–10%; head-based sampling for errors | Low |
+| **Request ID propagation** | May not propagate | Add `X-Request-ID`; propagate to workers, logs, traces for debugging | Low |
+
+---
+
+### 9.8 Implementation Priority (Additional Optimizations)
+
+| Priority | Optimization | Rationale |
+| -------- | ------------ | --------- |
+| **P0** | Base64 elimination (presigned flow) | Already in Phase 1; highest impact |
+| **P0** | Response compression | Low effort; immediate bandwidth reduction |
+| **P1** | Fastify adapter | 10–30% faster; medium effort |
+| **P1** | Export queue isolation | Prevents export from starving upload workers |
+| **P1** | WebSocket for job status | Eliminates polling; better UX |
+| **P2** | Single-flight cache | Prevents stampede on popular keys |
+| **P2** | Select only needed columns | Quick query wins |
+| **P2** | Prefetch next sentence | Overlaps I/O with user activity |
+| **P3** | Batch submission, offline queue | Nice-to-have for power users |
+
+---
+
+## 10. Related Documentation
 
 - `Architecture.md` — System overview
 - `REMAINING_FEATURES.md` — Scale requirements (7,100+ languages)
 - `backend/src/queue/WORKER_SCALING.md` — Worker concurrency config
+- `docs/HTTP2_TLS.md` — HTTP/2 and TLS configuration
 
 ---
 

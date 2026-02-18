@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-02-18)
+
+#### HTTP/2 Support
+
+- **Docker Compose**: Nginx reverse proxy with HTTP/2 and TLS (opt-in via `--profile http2`)
+  - `nginx/nginx.conf` — TLS termination, proxy to backend/frontend, WebSocket for Socket.IO
+  - `scripts/generate-dev-certs.sh` — Generate self-signed certs for dev (certs/cert.pem, key.pem)
+  - `compose-http2.yml` — Override with HTTPS URLs for OAuth, CORS, frontend
+  - Run: `./scripts/generate-dev-certs.sh && docker compose -f compose.yml -f compose-http2.yml --profile http2 up -d`
+- **Helm**: Ingress template with HTTP/2 and TLS
+  - `helm/backend/templates/ingress.yaml` — Paths for /api, /socket.io, TLS block
+  - `helm/backend/values.yaml` — ingress.className nginx, ssl-protocols, WebSocket timeouts
+- **Documentation**: `docs/HTTP2_TLS.md` — Dev certs, Let's Encrypt, Kubernetes, troubleshooting
+
 ### Changed (2026-02-18)
 
 #### Documentation

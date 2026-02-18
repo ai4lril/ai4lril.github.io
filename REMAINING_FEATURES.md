@@ -12,17 +12,6 @@ This document consolidates remaining gaps, critical issues, and areas for improv
 
 **Overall Assessment:** The platform has made significant progress. Critical testing, documentation (JSDoc), database optimization, file validation, error handling, RBAC, API documentation (Swagger), search/filter, review validation logic, and Chart.js optimization have been completed. Remaining items focus on OAuth error handling, optional API key entropy improvement, NLP integration, and nice-to-have features.
 
-**Completion Status (Implemented):**
-
-- ✅ API Documentation: Swagger/OpenAPI at `/api/docs`
-- ✅ RBAC: UserRole, RolesGuard, @Roles decorator
-- ✅ Error handling: AllExceptionsFilter, admin dashboard error state + retry
-- ✅ Audio duration: calculateMediaDuration in speak page with min/max validation
-- ✅ Search/Filter: SearchBar, FilterPanel in admin content-moderation
-- ✅ Review validation count: submitReview creates Validation, 25-threshold logic
-- ✅ API key rate limiting: ApiKeyRateLimitGuard, ThrottlerModule
-- ✅ Chart.js: Tree-shaking with specific module imports
-
 ---
 
 ## 1. Critical & Security Issues (Remaining)

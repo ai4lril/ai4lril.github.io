@@ -49,12 +49,12 @@ Based on the [Architecture](Architecture.md), the platform requires:
 
 The platform uses **YugaByteDB** (PostgreSQL-compatible). You can deploy it as:
 
-| Option | Tier 1 (2 vCPU, 50 GB) | Tier 2 (4 vCPU, 100 GB) | Notes |
-|--------|-------------------------|--------------------------|-------|
-| **YugaByteDB Aeon (managed)** | ~$255–595/mo | ~$510–1,225/mo | 3 nodes min, scale to 7. $125/vCPU/mo + $0.10/GB. [Yugabyte pricing](https://www.yugabyte.com/pricing) |
-| **YugaByteDB self-hosted (VMs)** | ~$210–360/mo | ~$210–840/mo | 3 nodes min, autoscale to 7. 5+ cores, 15 GB RAM, 100 GB SSD per node. |
-| **YugaByteDB on Kubernetes** | ~$80–140/mo | ~$220–520/mo | 3 nodes min, autoscale to 7. [Helm chart](https://charts.yugabyte.com). No licensing cost. See [Section 6.6](#66-yugabytedb-on-kubernetes). |
-| **PostgreSQL (managed)** | $37–90/mo | $100–120/mo | RDS, Cloud SQL, Azure PostgreSQL. Compatible alternative. |
+| Option | Tier 1 (2 vCPU, 50 GB)  | Tier 2 (4 vCPU, 100 GB) | Notes |
+|--------|-------------------------|-------------------------|-------|
+| **YugaByteDB Aeon (managed)**    | ~$255–595/mo    | ~$510–1,225/mo | 3 nodes min, scale to 7. $125/vCPU/mo + $0.10/GB. [Yugabyte pricing](https://www.yugabyte.com/pricing)                                    |
+| **YugaByteDB self-hosted (VMs)** | ~$210–360/mo    | ~$210–840/mo   | 3 nodes min, autoscale to 7. 5+ cores, 15 GB RAM, 100 GB SSD per node.                                                                    |
+| **YugaByteDB on Kubernetes**     | ~$80–140/mo     | ~$220–520/mo   | 3 nodes min, autoscale to 7. [Helm chart](https://charts.yugabyte.com). No licensing cost. See [Section 6.6](#66-yugabytedb-on-kubernetes). |
+| **PostgreSQL (managed)**         | $37–90/mo       | $100–120/mo    | RDS, Cloud SQL, Azure PostgreSQL. Compatible alternative.                                                                                 |
 
 **YugaByteDB Aeon (managed):**
 - Standard: $125/vCPU/month; Professional: $167/vCPU/month
@@ -84,7 +84,7 @@ The platform uses **YugaByteDB** (PostgreSQL-compatible). You can deploy it as:
 | Component                         | AWS      | GCP      | Azure    | Oracle   |
 | --------------------------------- | -------- | -------- | -------- | -------- |
 | Compute (2 vCPU, 4 GB)            | $35      | $30      | $35      | $25      |
-| Primary DB (2 vCPU, 50 GB)       | $55      | $50      | $45      | $45      |
+| Primary DB (2 vCPU, 50 GB)        | $55      | $50      | $45      | $45      |
 | Redis (2 GB)                      | $35      | $40      | $80      | $25\*\*  |
 | Blob Storage (100 GB)             | $2.30    | $2.00    | $1.80    | $2.55    |
 | TimeScaleDB / Time-series (20 GB) | $25      | $25      | $25      | $25      |
@@ -97,7 +97,7 @@ The platform uses **YugaByteDB** (PostgreSQL-compatible). You can deploy it as:
 | Component                         | AWS      | GCP      | Azure    | Oracle   |
 | --------------------------------- | -------- | -------- | -------- | -------- |
 | Compute (4 vCPU, 8 GB)            | $70      | $60      | $70      | $50      |
-| Primary DB (4 vCPU, 100 GB)      | $120     | $110     | $100     | $95      |
+| Primary DB (4 vCPU, 100 GB)       | $120     | $110     | $100     | $95      |
 | Redis (8 GB)                      | $100     | $110     | $160     | $50\*\*  |
 | Blob Storage (500 GB)             | $11.50   | $10.00   | $9.00    | $12.75   |
 | TimeScaleDB / Time-series (50 GB) | $40      | $40      | $40      | $40      |
