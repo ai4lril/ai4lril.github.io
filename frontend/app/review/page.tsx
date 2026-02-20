@@ -148,7 +148,7 @@ export default function Review() {
                 <div className="absolute inset-0 bg-linear-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
                     {/* Audio Player Section */}
-                    <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
+                    <div className="neu-raised rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
                         {/* Decorative circles */}
                         <div className="absolute -top-8 -left-8 w-24 h-24 sm:w-32 sm:h-32 bg-cyan-100/60 rounded-full opacity-60 pointer-events-none"></div>
                         <div className="absolute -bottom-10 -right-10 w-28 h-28 sm:w-36 sm:h-36 bg-indigo-100/50 rounded-full opacity-50 pointer-events-none"></div>
@@ -172,7 +172,7 @@ export default function Review() {
                         </div>
                     </div>
                     {/* Review Section */}
-                    <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col relative overflow-hidden">
+                    <div className="neu-raised rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col relative overflow-hidden">
                         {/* Decorative circles */}
                         <div className="absolute -top-8 -left-8 w-20 h-20 sm:w-28 sm:h-28 bg-amber-100/60 rounded-full opacity-60 pointer-events-none"></div>
                         <div className="absolute -bottom-10 -right-10 w-16 h-16 sm:w-24 sm:h-24 bg-blue-100/50 rounded-full opacity-50 pointer-events-none"></div>
@@ -233,7 +233,7 @@ export default function Review() {
                                 type="button"
                                 onClick={handleSkip}
                                 disabled={isSubmitting || submitted || skipped}
-                                className="group flex-1 bg-white/95 hover:bg-white shadow-lg hover:shadow-xl px-6 py-3 rounded-lg border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 font-medium flex items-center justify-center gap-2"
+                                className="group flex-1 neu-btn-secondary px-6 py-3 rounded-lg text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 font-medium flex items-center justify-center gap-2 min-h-[48px]"
                             >
                                 <span>Skip</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1">

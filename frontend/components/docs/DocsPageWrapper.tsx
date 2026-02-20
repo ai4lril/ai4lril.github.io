@@ -22,7 +22,7 @@ export default function DocsPageWrapper({
     children,
 }: DocsPageWrapperProps) {
     return (
-        <>
+        <div className="neu-raised rounded-2xl p-6 md:p-8">
             <Breadcrumbs items={breadcrumbs} />
             <div className="flex items-center gap-3 mb-4">
                 <HttpMethodBadge method={method} />
@@ -30,6 +30,6 @@ export default function DocsPageWrapper({
             </div>
             {children}
             <PageNavigation previous={previous} next={next} />
-        </>
+        </div>
     );
 }

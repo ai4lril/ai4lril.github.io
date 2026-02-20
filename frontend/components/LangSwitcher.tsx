@@ -55,7 +55,7 @@ export default function LangSwitcher() {
     return (
         <div ref={wrapperRef} className="relative inline-block text-left z-100">
             <button
-                className="group flex items-center justify-between gap-3 border border-gray-300 rounded-lg px-4 py-2.5 text-sm bg-white/95 hover:bg-white hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-300 hover:scale-105 backdrop-blur-sm"
+                className="group flex items-center justify-between gap-3 rounded-xl px-4 py-2.5 text-sm neu-btn-secondary focus:outline-none focus:ring-2 focus:ring-indigo-500/50 transition-all duration-300 hover:scale-105 min-h-[44px]"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-haspopup="listbox"
                 aria-expanded={isOpen}
@@ -85,7 +85,7 @@ export default function LangSwitcher() {
             </button>
 
             {isOpen && (
-                <div className="absolute z-100 mt-2 w-56 bg-white/95 backdrop-blur-sm border border-gray-200 rounded-xl shadow-2xl right-0 animate-in slide-in-from-top-2 duration-200">
+                <div className="absolute z-100 mt-2 w-56 neu-raised rounded-xl right-0 animate-in slide-in-from-top-2 duration-200">
                     <div className="p-2">
                         <div className="text-xs font-semibold text-gray-500 uppercase tracking-wide px-2 py-1">Select Language</div>
                     </div>

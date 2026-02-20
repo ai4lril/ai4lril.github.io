@@ -1,0 +1,31 @@
+replicaCount: 2
+
+image:
+  repository: frontend
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: crowdsourcing.ilhrf.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - crowdsourcing.ilhrf.org
+      secretName: ilhrf-tls
+
+env:
+  - name: NEXT_PUBLIC_API_URL
+    value: "https://ilhrf.org/api"
+  - name: NEXT_PUBLIC_FRONTEND_URL
+    value: "https://crowdsourcing.ilhrf.org"
+  - name: NEXT_PUBLIC_PORTFOLIO_URL
+    value: "https://ilhrf.org"

@@ -145,7 +145,7 @@ export default function DocsLayout({
 
             {/* Sidebar */}
             <aside
-                className={`fixed lg:sticky top-0 left-0 z-50 lg:z-auto w-64 border-r border-slate-200 bg-white/95 backdrop-blur-sm h-screen overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+                className={`fixed lg:sticky top-0 left-0 z-50 lg:z-auto w-64 border-r border-slate-200 neu-flat h-screen overflow-y-auto transition-transform duration-300 ${sidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
                     }`}
             >
                 <div className="p-4 flex items-center justify-between">

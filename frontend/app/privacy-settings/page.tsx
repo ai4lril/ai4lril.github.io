@@ -53,7 +53,7 @@ export default function PrivacySettingsPage() {
                         { step: "2", title: "Set data consents", detail: "Choose per audio/text/metadata" },
                         { step: "3", title: "Track requests", detail: "Open the Data Rights Portal" },
                     ].map((item) => (
-                        <div key={item.step} className="rounded-2xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+                        <div key={item.step} className="rounded-2xl border border-slate-200 neu-raised p-4">
                             <p className="text-xs uppercase text-slate-500">Step {item.step}</p>
                             <p className="font-semibold text-slate-800">{item.title}</p>
                             <p className="text-slate-600">{item.detail}</p>
@@ -64,7 +64,7 @@ export default function PrivacySettingsPage() {
 
             <div className="space-y-8">
                 {/* GDPR Consent Section */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="neu-raised rounded-xl p-6">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-4">Cookie & Consent Preferences</h2>
 
                     {consentPrefs ? (
@@ -123,7 +123,7 @@ export default function PrivacySettingsPage() {
                 </div>
 
                 {consentPrefs && (
-                    <section className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                    <section className="neu-raised rounded-xl p-6">
                         <h2 className="text-2xl font-semibold text-gray-900 mb-4">Consents by data type</h2>
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-700">
                             <div className="p-4 border border-gray-200 rounded-lg">
@@ -158,7 +158,7 @@ export default function PrivacySettingsPage() {
                 )}
 
                 {/* Accessibility Settings Section */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="neu-raised rounded-xl p-6">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-4">Accessibility Settings</h2>
 
                     {accessibilitySettings && (
@@ -245,7 +245,7 @@ export default function PrivacySettingsPage() {
                     )}
                 </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="neu-raised rounded-xl p-6">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-4">Accessibility documentation</h2>
                     <p className="text-gray-600 mb-3">Need help configuring screen reader modes, captions, or keyboard navigation?</p>
                     <ul className="list-disc ml-6 space-y-2 text-sm text-gray-700">
@@ -259,7 +259,7 @@ export default function PrivacySettingsPage() {
                 </div>
 
                 {/* Data Rights Section */}
-                <div className="bg-white rounded-lg shadow-md p-6 border border-gray-200">
+                <div className="neu-raised rounded-xl p-6">
                     <h2 className="text-2xl font-semibold text-gray-900 mb-4">Your Data Rights</h2>
 
                     <div className="space-y-4">
@@ -299,7 +299,7 @@ export default function PrivacySettingsPage() {
                                 <p className="text-sm text-gray-600 mb-3">
                                     Have questions about your data rights? Get in touch.
                                 </p>
-                                <a href="/contact" className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                <a href={`${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org'}/contact`} className="text-blue-600 hover:text-blue-800 text-sm font-medium">
                                     Contact Support
                                 </a>
                             </div>
@@ -318,7 +318,7 @@ export default function PrivacySettingsPage() {
                             Your privacy preferences are stored locally in your browser and are never transmitted to our servers without your explicit consent.
                         </p>
                         <p>
-                            For more information about how we handle your data, please review our <a href="/privacy" className="underline hover:text-blue-900">Privacy Policy</a>.
+                            For more information about how we handle your data, please review our <a href={`${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org'}/privacy`} className="underline hover:text-blue-900">Privacy Policy</a>.
                         </p>
                         <p>
                             Need to escalate or download data? Visit the <Link href="/data-rights" className="underline hover:text-blue-900">Data Rights Portal</Link>.

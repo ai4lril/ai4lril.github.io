@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added (2026-02-09)
+
+#### Three-Way Frontend Split
+
+- **Portfolio** (`frontend-portfolio`): Separate Next.js app at ilhrf.org
+  - Routes: `/`, `/about`, `/contact`, `/terms`, `/privacy`, `/cookies`, `/data-rights`
+  - Links to crowdsourcing and admin; public website for ILHRF foundation
+  - Port: 5579 (local)
+- **Crowdsourcing** (`frontend`): Main crowdsourcing app at crowdsourcing.ilhrf.org
+  - Routes: speak, listen, write, transcribe, translate, question, review, NLP tasks
+  - Port: 5577 (local)
+- **Admin** (`frontend-admin`): Separate Next.js app at admin.ilhrf.org
+  - Routes: `/dashboard`, `/users`, `/content-moderation`, `/analytics`, `/settings`, etc.
+  - Uses `NEXT_PUBLIC_API_URL` to call backend directly
+  - Port: 5578 (local)
+- **Backend**: Single NestJS API at ilhrf.org/api shared by all frontends
+  - `CORS_ORIGIN` and `FRONTEND_URL` include all three frontend origins (5577, 5578, 5579)
+- **Docker Compose**: `frontend-portfolio`, `frontend-admin` services added
+- **Architecture**: Multi-domain design reduces traffic/load on crowdsourcing site
+
+#### YugaByteDB Migration
+
+- **3-node cluster**: `ilhrf-yugabyte-node1`, `ilhrf-yugabyte-node2`, `ilhrf-yugabyte-node3`
+  - Node1: Primary (port 5433); Node2/3: Join cluster (ports 5434, 5435)
+  - Advisory locks: `yb_silence_advisory_locks_not_supported_error=on` for Prisma compatibility
+- **db-init service**: Creates `ilhrf_data_collection` database before backend migrations
+- **PostgreSQL**: Commented out in compose; YugaByteDB is default
+- **Backend**: `DATABASE_URL` points to `yugabytedb-node1:5433/ilhrf_data_collection`
+- **Helm**: Updated for YugaByteDB deployment
+
 ### Added (2026-02-18)
 
 #### HTTP/2 Support

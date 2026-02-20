@@ -153,7 +153,7 @@ export default function ApiKeysPage() {
                             Your new API key (shown only once)
                         </h2>
                         <div className="flex items-center gap-2 mb-4">
-                            <code className="flex-1 p-3 bg-white border border-yellow-300 rounded text-sm font-mono break-all">
+                            <code className="flex-1 p-3 neu-pressed border border-yellow-300/50 rounded text-sm font-mono break-all">
                                 {newKey.key}
                             </code>
                             <button
@@ -179,7 +179,7 @@ export default function ApiKeysPage() {
                 )}
 
                 {/* Create New Key Form */}
-                <div className="bg-white shadow rounded-lg p-6 mb-6">
+                <div className="neu-raised rounded-xl p-6 mb-6">
                     <h2 className="text-xl font-semibold text-gray-900 mb-4">Create New API Key</h2>
                     <div className="space-y-4">
                         <div>
@@ -192,7 +192,7 @@ export default function ApiKeysPage() {
                                 value={keyName}
                                 onChange={(e) => setKeyName(e.target.value)}
                                 placeholder="e.g., Production API Key"
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full px-3 py-2 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
                         <div>
@@ -204,7 +204,7 @@ export default function ApiKeysPage() {
                                 type="date"
                                 value={expiresAt}
                                 onChange={(e) => setExpiresAt(e.target.value)}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                                className="w-full px-3 py-2 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
                             />
                         </div>
                         <button
@@ -218,7 +218,7 @@ export default function ApiKeysPage() {
                 </div>
 
                 {/* API Keys List */}
-                <div className="bg-white shadow rounded-lg overflow-hidden">
+                <div className="neu-raised rounded-xl overflow-hidden">
                     <div className="px-6 py-4 border-b border-gray-200">
                         <h2 className="text-xl font-semibold text-gray-900">Your API Keys</h2>
                     </div>
@@ -283,13 +283,13 @@ export default function ApiKeysPage() {
                     <div className="space-y-2 text-sm">
                         <div>
                             <p className="font-medium text-blue-900">Header:</p>
-                            <code className="block mt-1 p-2 bg-white border border-blue-200 rounded text-xs">
+                            <code className="block mt-1 p-2 neu-pressed border border-blue-200/50 rounded text-xs">
                                 X-API-Key: your_api_key_here
                             </code>
                         </div>
                         <div>
                             <p className="font-medium text-blue-900">Query Parameter:</p>
-                            <code className="block mt-1 p-2 bg-white border border-blue-200 rounded text-xs">
+                            <code className="block mt-1 p-2 neu-pressed border border-blue-200/50 rounded text-xs">
                                 ?api_key=your_api_key_here
                             </code>
                         </div>

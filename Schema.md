@@ -1,5 +1,7 @@
 # ILHRF Data Collection Database Schema
 
+**Last Updated:** February 20, 2026
+
 ## Overview
 
 This document provides comprehensive documentation of the ILHRF Data Collection platform's database schema, designed for multilingual voice data collection, annotation, and NLP processing with strong emphasis on data privacy and security.
@@ -38,15 +40,15 @@ This document provides comprehensive documentation of the ILHRF Data Collection 
 | QuestionValidation      | question_validations       | Admin validation of questions             |
 | AudioMetadata           | audio_metadata             | Blob links, duration, demographics        |
 | TranscriptionReview     | transcription_reviews      | Transcription review linking              |
-| DatasetCategory         | dataset_categories.        | Training/eval/testing categorization      |
+| DatasetCategory         | dataset_categories         | Training/eval/testing categorization      |
 | UserProgress            | user_progress              | Per-feature completion tracking           |
-| Contribution            | contributions.             | User contributions (audio, text, etc.)    |
+| Contribution            | contributions              | User contributions (audio, text, etc.)    |
 | AdminUser               | admin_users                | Admin accounts for validation             |
 | SecurityEvent           | security_events            | Login attempts, suspicious activity       |
 | AuditLog                | audit_logs                 | Admin action audit trail                  |
 | UserActivity            | user_activities            | User action logging                       |
 | ApiKey                  | api_keys                   | Public API access keys                    |
-| OAuthAccount            | oauth_accounts.            | Multi-provider OAuth linking              |
+| OAuthAccount            | oauth_accounts             | Multi-provider OAuth linking              |
 | Notification            | notifications              | In-app notifications                      |
 | NotificationPreference  | notification_preferences   | Email/push preferences                    |
 | EmailQueue              | email_queue                | Async email sending                       |
@@ -337,8 +339,8 @@ This document provides comprehensive documentation of the ILHRF Data Collection 
 See [docs/BACKUP_RECOVERY.md](docs/BACKUP_RECOVERY.md) for YugaByteDB backup and restore procedures.
 
 ```bash
-# Manual backup (YugaByteDB)
-pg_dump -h yugabytedb -p 5433 -U yugabyte voice_data_collection --no-owner --no-acl | gzip > backup.sql.gz
+# Manual backup (YugaByteDB) — connect to node1
+pg_dump -h yugabytedb-node1 -p 5433 -U yugabyte ilhrf_data_collection --no-owner --no-acl | gzip > backup.sql.gz
 ```
 
 ---

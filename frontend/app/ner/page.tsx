@@ -254,7 +254,7 @@ export default function NerPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Sentence + tagging */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
                         <div className="absolute -right-8 -top-8 w-20 h-20 bg-indigo-100/50 rounded-full opacity-70 hidden sm:block"></div>
                         <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-blue-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
@@ -265,7 +265,7 @@ export default function NerPage() {
                             </span>
                         </h2>
 
-                        <div className="w-full p-4 rounded-md border border-slate-200 bg-white text-slate-800 mb-4">
+                        <div className="w-full p-4 neu-raised rounded-xl text-slate-800 mb-4">
                             {loading ? (
                                 <div className="flex items-center justify-center py-8">
                                     <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -284,7 +284,7 @@ export default function NerPage() {
 
                         {tokens.length > 0 && !loading && (
                             <form onSubmit={handleSubmit} className="relative z-10 space-y-4">
-                                <div className="card-wide rounded-xl border border-slate-200 bg-white shadow-sm p-2 md:p-4">
+                                <div className="card-wide neu-raised rounded-xl p-2 md:p-4">
                                     <div className="overflow-x-auto">
                                         <table className="w-full mx-auto text-sm">
                                             <thead>
@@ -327,7 +327,7 @@ export default function NerPage() {
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                                         </svg>
                                     </button>
-                                    <button type="button" onClick={nextSentence} className="group bg-white/95 hover:bg-white shadow-lg hover:shadow-xl rounded-lg px-6 py-3 font-semibold text-slate-700 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
+                                    <button type="button" onClick={nextSentence} className="group neu-btn-secondary rounded-lg px-6 py-3 font-semibold text-slate-700 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 min-h-[48px]">
                                         <span>Next sentence</span>
                                         <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -339,7 +339,7 @@ export default function NerPage() {
                     </div>
 
                     {/* Guidelines */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
                         <div className="absolute -right-6 -top-6 w-16 h-16 bg-amber-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">

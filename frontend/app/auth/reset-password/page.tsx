@@ -79,7 +79,7 @@ function ResetPasswordContent() {
   if (success) {
     return (
       <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-        <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md w-full text-center">
+        <div className="neu-raised rounded-3xl p-8 max-w-md w-full text-center">
           <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
             <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
@@ -94,7 +94,7 @@ function ResetPasswordContent() {
 
   return (
     <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-      <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md w-full">
+      <div className="neu-raised rounded-3xl p-8 max-w-md w-full">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Set new password</h1>
         <p className="text-gray-600 mb-6">
           Enter your new password below. It must be at least 8 characters and include uppercase, lowercase, and a number.
@@ -167,7 +167,7 @@ function ResetPasswordContent() {
 
 const ResetPasswordFallback = () => (
   <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center p-4">
-    <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 max-w-md w-full text-center">
+    <div className="neu-raised rounded-3xl p-8 max-w-md w-full text-center">
       <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-blue-100 flex items-center justify-center animate-pulse">
         <svg className="w-8 h-8 text-blue-600 animate-spin" fill="none" viewBox="0 0 24 24">
           <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />

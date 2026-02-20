@@ -116,7 +116,7 @@ export default function ProfileSettings() {
                 </div>
             )}
 
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 neu-raised rounded-2xl p-6 md:p-8">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -126,7 +126,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.occupation || ''}
                             onChange={(e) => setProfile({ ...profile, occupation: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -138,7 +138,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.education || ''}
                             onChange={(e) => setProfile({ ...profile, education: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -150,7 +150,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.birthplace_village_city || ''}
                             onChange={(e) => setProfile({ ...profile, birthplace_village_city: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -162,7 +162,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.birthplace_pincode || ''}
                             onChange={(e) => setProfile({ ...profile, birthplace_pincode: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -174,7 +174,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.current_residence_village_city || ''}
                             onChange={(e) => setProfile({ ...profile, current_residence_village_city: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -186,7 +186,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.current_residence_pincode || ''}
                             onChange={(e) => setProfile({ ...profile, current_residence_pincode: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -198,7 +198,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.workplace_college_village_city || ''}
                             onChange={(e) => setProfile({ ...profile, workplace_college_village_city: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -210,7 +210,7 @@ export default function ProfileSettings() {
                             type="text"
                             value={profile.workplace_college_pincode || ''}
                             onChange={(e) => setProfile({ ...profile, workplace_college_pincode: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
 
@@ -222,7 +222,7 @@ export default function ProfileSettings() {
                             type="tel"
                             value={profile.phone_number || ''}
                             onChange={(e) => setProfile({ ...profile, phone_number: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            className="w-full px-4 py-2 neu-pressed rounded-xl focus:ring-2 focus:ring-indigo-500"
                         />
                     </div>
                 </div>

@@ -111,7 +111,7 @@ export default function TranslateReviewPage() {
                             setTarget(val);
                             setPreferredTargetLanguage(val);
                         }}
-                        className={`w-full px-4 py-3 border-2 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.sourceLang
+                        className={`w-full px-4 py-3 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.sourceLang
                             ? 'border-red-300 bg-red-50'
                             : 'border-gray-200 hover:border-gray-300'
                             }`}
@@ -146,7 +146,7 @@ export default function TranslateReviewPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Source + candidate card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
                         <div className="absolute -right-8 -top-8 w-20 h-20 bg-indigo-100/50 rounded-full opacity-70 hidden sm:block"></div>
                         <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-blue-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
@@ -160,13 +160,13 @@ export default function TranslateReviewPage() {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                             <div>
                                 <div className="text-xs text-slate-500 mb-1">Source ({codeToLabel(current.sourceLang)})</div>
-                                <div className="w-full p-3 rounded-md border border-slate-200 bg-white text-slate-800 mb-2">
+                                <div className="w-full p-3 neu-raised rounded-xl text-slate-800 mb-2">
                                     {current.sourceText}
                                 </div>
                             </div>
                             <div>
                                 <div className="text-xs text-slate-500 mb-1">Target ({codeToLabel(current.targetLang)})</div>
-                                <div className="w-full p-3 rounded-md border border-slate-200 bg-white text-slate-800 mb-2">
+                                <div className="w-full p-3 neu-raised rounded-xl text-slate-800 mb-2">
                                     {current.candidate}
                                 </div>
                             </div>
@@ -185,7 +185,7 @@ export default function TranslateReviewPage() {
                                 </svg>
                                 <span>Incorrect</span>
                             </button>
-                            <button onClick={nextItem} className="group bg-white/95 hover:bg-white shadow-lg hover:shadow-xl rounded-lg px-6 py-3 font-semibold text-slate-700 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
+                            <button onClick={nextItem} className="group neu-btn-secondary rounded-lg px-6 py-3 font-semibold text-slate-700 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 min-h-[48px]">
                                 <span>Skip</span>
                                 <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -195,7 +195,7 @@ export default function TranslateReviewPage() {
                     </div>
 
                     {/* Tips card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
                         <div className="absolute -right-6 -top-6 w-16 h-16 bg-amber-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">

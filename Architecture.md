@@ -1,14 +1,14 @@
 # ILHRF Data Collection Platform — Architecture
 
-**Document Version:** 1.2
+**Document Version:** 1.3
 
-**Last Updated:** February 16, 2026
+**Last Updated:** February 20, 2026
 
 ---
 
 ## Executive Summary
 
-The ILHRF Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across 23+ Indian languages. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, YugaByteDB (default, PostgreSQL-compatible), Dragonfly (Redis-compatible cache/queue), SeaweedFS, and optional analytics stores.
+The ILHRF Data Collection Platform is a **crowdsourcing web application** for collecting and processing linguistic voice data across **7,100+ languages globally**. Contributors record speech, transcribe audio, translate text, and perform NLP annotations. The system uses a modern microservices-oriented stack with NestJS, Next.js, YugaByteDB (default, PostgreSQL-compatible), Dragonfly (Redis-compatible cache/queue), SeaweedFS, and optional analytics stores. The platform is split into three frontends: Portfolio (ilhrf.org), Crowdsourcing (crowdsourcing.ilhrf.org), and Admin (admin.ilhrf.org), all sharing a single backend API at ilhrf.org/api.
 
 ---
 
@@ -71,16 +71,16 @@ The ILHRF Data Collection Platform is a **crowdsourcing web application** for co
 │  │ (Primary DB) │ │ (Cache/Queue)│ │ (Blob Store) │ │ (Time-series)│ │ (pg_dump)    │                 │
 │  │ Port: 5433   │ │ Port: 6378   │ │ Port: 8333   │ │ Port: 5434   │ │ Profile      │                 │
 │  └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘ └──────────────┘                 │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐                                                   │
-│  │ Prometheus   │ │ Grafana      │ │ Qdrant/Neo4j │  (Optional: vector/graph storage).                │
-│  │ Port: 9090   │ │ Port: 3001   │ │ Port: 6333   │                                                   │
-│  └──────────────┘ └──────────────┘ └──────────────┘                                                   │
+│  ┌──────────────┐ ┌──────────────┐                                                                    │
+│  │ Prometheus   │ │ Grafana      │                                                                    │
+│  │ Port: 9090   │ │ Port: 3001   │                                                                    │
+│  └──────────────┘ └──────────────┘                                                                    │
 └───────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. Detailed Architecture Diagram (Mermaid)
+## 2. Detailed Architecture Diagram
 
 ```mermaid
 flowchart TB
@@ -136,6 +136,61 @@ flowchart TB
     Modules --> SeaweedFS
     Modules --> TS
 ```
+
+---
+
+## 2.5 Multi-Domain Architecture
+
+The platform is split into three frontend applications, each deployed on its own subdomain:
+
+```mermaid
+flowchart TB
+    subgraph Domains
+        Portfolio[ilhrf.org - Portfolio]
+        API[ilhrf.org/api - Backend APIs]
+        Crowdsourcing[crowdsourcing.ilhrf.org - Crowdsourcing]
+        Admin[admin.ilhrf.org - Admin]
+    end
+
+    subgraph Backend
+        NestJS[NestJS API]
+    end
+
+    subgraph Frontends
+        PortfolioApp[Next.js Portfolio]
+        CrowdsourcingApp[Next.js Crowdsourcing]
+        AdminApp[Next.js Admin]
+    end
+
+    Portfolio --> API
+    Crowdsourcing --> API
+    Admin --> API
+    API --> NestJS
+    PortfolioApp --> Portfolio
+    CrowdsourcingApp --> Crowdsourcing
+    AdminApp --> Admin
+```
+
+| Domain | App | Purpose |
+|--------|-----|---------|
+| **ilhrf.org** | `frontend-portfolio` | Public website: home, about, contact, terms, privacy |
+| **crowdsourcing.ilhrf.org** | `frontend` | Crowdsourcing tasks: speak, listen, write, translate, NLP |
+| **admin.ilhrf.org** | `frontend-admin` | Admin dashboard, users, moderation, analytics |
+| **ilhrf.org/api** | `backend` | REST API and Socket.IO (shared by all frontends) |
+
+### Environment Variables by Frontend
+
+| Frontend | Env Var | Purpose |
+|----------|---------|---------|
+| **Portfolio** | `NEXT_PUBLIC_FRONTEND_URL` | Base URL for portfolio (e.g. https://ilhrf.org) |
+| **Portfolio** | `NEXT_PUBLIC_CROWDSOURCING_URL` | Link to crowdsourcing app (e.g. https://crowdsourcing.ilhrf.org) |
+| **Crowdsourcing** | `NEXT_PUBLIC_FRONTEND_URL` | Base URL for crowdsourcing app |
+| **Crowdsourcing** | `NEXT_PUBLIC_API_URL` | Backend API URL (e.g. https://ilhrf.org/api) |
+| **Crowdsourcing** | `NEXT_PUBLIC_PORTFOLIO_URL` | Link to portfolio (e.g. https://ilhrf.org) |
+| **Admin** | `NEXT_PUBLIC_FRONTEND_URL` | Base URL for admin app |
+| **Admin** | `NEXT_PUBLIC_API_URL` | Backend API URL |
+| **Backend** | `CORS_ORIGIN` | Comma-separated allowed origins |
+| **Backend** | `FRONTEND_URL` | Comma-separated origins for Socket.IO CORS (crowdsourcing + admin) |
 
 ---
 
@@ -197,13 +252,16 @@ flowchart LR
 | NLP            | `/ner`, `/pos`, `/sentiment`, `/emotion` | NLP annotation tasks                        |
 | Questions      | `/question/*`                            | Q&A crowdsourcing                           |
 | Write          | `/write`                                 | Sentence submission                         |
-| Admin          | `/admin/*`                               | Dashboard, users, moderation, analytics     |
 | Auth           | `/login`, `/auth/*`                      | Login, OAuth callback, password reset       |
 | Docs           | `/docs/*`                                | API documentation                           |
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 **Tech Stack:** React 19, Tailwind CSS, Next.js App Router, i18n support.
+
+**Admin** (`frontend-admin`): Separate Next.js app at admin.ilhrf.org. Routes: `/dashboard`, `/users`, `/content-moderation`, `/analytics`, `/settings`, etc. Uses `NEXT_PUBLIC_API_URL` to call backend directly.
+
+**Portfolio** (`frontend-portfolio`): Separate Next.js app at ilhrf.org. Routes: `/`, `/about`, `/contact`, `/terms`, `/privacy`, `/cookies`, `/data-rights`. Links to crowdsourcing and admin for login/contributing.
 
 ---
 
@@ -253,8 +311,6 @@ flowchart LR
 | **Dragonfly**   | Redis-compatible cache + BullMQ job queue                    | 6378                       |
 | **SeaweedFS**   | S3-compatible blob storage (audio, video, exports)           | 8333 (S3 API), 8888 (Filer)|
 | **TimeScaleDB** | Time-series analytics                                        | 5434                       |
-| **Qdrant**      | Vector storage (optional)                                    | 6333                       |
-| **Neo4j**       | Graph storage (optional)                                     | 7474, 7687                 |
 └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -386,17 +442,19 @@ erDiagram
 ┌───────────────────────────────────────────────────────────────────────────────────┐
 │                         Docker Compose Stack                                      │
 ├───────────────────────────────────────────────────────────────────────────────────┤
-│  yugabytedb    │ Primary database (ilhrf-yugabyte-node1); PostgreSQL commented    │
-│  dragonfly     │ Cache + BullMQ                                                   │
-│  seaweedfs     │ Blob storage                                                     │
-│  timescaledb   │ Time-series                                                      │
-│  qdrant        │ Vector (optional)                                                │
-│  neo4j         │ Graph (optional)                                                 │
-│  prometheus    │ Metrics                                                          │
-│  grafana       │ Dashboards                                                       │
-│  backend       │ NestJS API (depends: yugabytedb, dragonfly, seaweedfs, timescale)│
-│  frontend      │ Next.js (depends: backend)                                       │
-│  backup        │ pg_dump daily (profile: backup)                                  │
+│  yugabytedb-node1/2/3 │ 3-node YugaByteDB cluster (ilhrf-yugabyte-node*); PostgreSQL commented │
+│  db-init              │ Creates ilhrf_data_collection DB before backend migrations │
+│  dragonfly            │ Cache + BullMQ                                                   │
+│  seaweedfs-*           │ Blob storage (master, volume, filer, s3)                         │
+│  timescaledb          │ Time-series                                                      │
+│  prometheus           │ Metrics                                                          │
+│  grafana              │ Dashboards                                                       │
+│  backend              │ NestJS API (depends: db-init, yugabytedb-node1, dragonfly, seaweedfs-s3, timescaledb) │
+│  frontend             │ Crowdsourcing Next.js (port 5577, depends: backend)               │
+│  frontend-portfolio   │ Portfolio Next.js (port 5579)                                    │
+│  frontend-admin       │ Admin Next.js (port 5578, depends: backend)                        │
+│  nginx                │ HTTP/2 reverse proxy (profile: http2)                              │
+│  backup               │ pg_dump daily (profile: backup, commented)                       │
 └───────────────────────────────────────────────────────────────────────────────────┘
 ```
 

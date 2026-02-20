@@ -22,7 +22,7 @@ export default function CodeBlock({ children, language = 'bash', filename }: Cod
     };
 
     return (
-        <div className="relative group my-4">
+        <div className="relative group my-4 neu-raised rounded-2xl overflow-hidden">
             {filename && (
                 <div className="bg-slate-800 text-slate-300 text-xs px-4 py-2 rounded-t-lg border-b border-slate-700">
                     {filename}

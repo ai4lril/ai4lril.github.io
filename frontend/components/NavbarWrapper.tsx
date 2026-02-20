@@ -11,10 +11,5 @@ export default function NavbarWrapper() {
         return null;
     }
 
-    // Don't show navbar on admin pages (they have their own layout)
-    if (pathname && pathname.startsWith('/admin')) {
-        return null;
-    }
-
     return <Navbar />;
 }

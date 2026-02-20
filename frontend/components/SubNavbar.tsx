@@ -14,14 +14,14 @@ export default function SubNavbar({ modes, rightSlot }: { modes: Mode[]; rightSl
     if (!isVisible) return null;
 
     return (
-        <div className="relative border-t border-gray-200/70 bg-white/60 backdrop-blur z-30 overflow-visible">
+        <div className="relative border-t border-gray-200/70 neu-flat z-30 overflow-visible overflow-x-auto scrollbar-hide">
             <div className="container mx-auto relative">
-                <ul className="flex flex-wrap w-full justify-center gap-3 py-2.5">
+                <ul className="flex flex-wrap w-full justify-center gap-3 py-2.5 min-w-max px-2">
                     {modes.map(m => {
                         const active = matches(m.href);
                         return (
                             <li key={m.href}>
-                                <Link href={m.href} className={`px-4 py-2 rounded-full text-sm transition-all duration-200 ${active ? 'bg-indigo-600 text-white' : 'bg-white/80 text-gray-700 hover:bg-indigo-50 hover:text-indigo-700 border border-slate-200'}`}>{m.name}</Link>
+                                <Link href={m.href} className={`px-4 py-2 rounded-full text-sm transition-all duration-200 min-h-[44px] flex items-center min-w-[120px] justify-center ${active ? 'bg-linear-to-r from-indigo-600 to-indigo-700 text-white shadow-md shadow-indigo-500/20' : 'neu-btn-secondary'}`}>{m.name}</Link>
                             </li>
                         );
                     })}

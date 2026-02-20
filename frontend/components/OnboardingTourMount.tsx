@@ -40,7 +40,7 @@ export default function OnboardingTourMount() {
   }, []);
 
   // Don't show on docs or admin pages
-  if (pathname?.startsWith("/docs") || pathname?.startsWith("/admin")) {
+  if (pathname?.startsWith("/docs")) {
     return null;
   }
 

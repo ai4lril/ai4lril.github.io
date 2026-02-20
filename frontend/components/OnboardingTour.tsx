@@ -89,7 +89,7 @@ export default function OnboardingTour({ visible, onComplete }: OnboardingTourPr
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         aria-hidden="true"
       />
-      <div className="relative z-10 mx-4 w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <div className="relative z-10 mx-4 w-full max-w-md rounded-xl neu-raised p-6">
         <h2 className="text-xl font-semibold text-gray-900">{current.title}</h2>
         <div className="mt-3 text-gray-600">
           {typeof current.body === "string" ? current.body : current.body}

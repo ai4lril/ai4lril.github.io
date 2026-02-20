@@ -15,7 +15,9 @@ import { getErrorMessage } from '../common/error-utils';
 
 @WebSocketGateway({
   cors: {
-    origin: process.env.FRONTEND_URL || 'http://localhost:5577',
+    origin: process.env.FRONTEND_URL
+      ? process.env.FRONTEND_URL.split(',').map((o) => o.trim())
+      : ['http://localhost:5577'],
     credentials: true,
   },
   namespace: '/realtime',

@@ -156,9 +156,9 @@ export default function DocsIntroPage() {
                 <h3 className="text-lg font-semibold text-blue-900 mb-2">Need Help?</h3>
                 <p className="text-blue-800 text-sm">
                     If you encounter any issues or have questions, please{' '}
-                    <Link href="/contact" className="text-blue-600 hover:text-blue-700 underline">
+                    <a href={`${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org'}/contact`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 underline">
                         contact us
-                    </Link>
+                    </a>
                     {' '}or check the{' '}
                     <Link href="/docs/authentication" className="text-blue-600 hover:text-blue-700 underline">
                         authentication guide

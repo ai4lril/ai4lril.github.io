@@ -1,23 +1,4 @@
 services:
-  # PostgreSQL database (alternative - uncomment if you prefer PostgreSQL)
-  # postgres:
-  #   image: postgres:15
-  #   container_name: ilhrf-data-postgres
-  #   environment:
-  #     POSTGRES_DB: ilhrf_data_collection
-  #     POSTGRES_USER: postgres
-  #     POSTGRES_PASSWORD: postgres
-  #   ports:
-  #     - "5432:5432"
-  #   volumes:
-  #     - postgres_data:/var/lib/postgresql/data
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U postgres"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
   # Dragonfly Cache (High-performance Redis alternative)
   # BullMQ compatibility: --cluster_mode=emulated --lock_on_hashtags enables
   # Lua script execution with queue hashtags (see queue.module.ts)
@@ -48,6 +29,8 @@ services:
           memory: 64GB
         reservations:
           memory: 32GB
+    networks:
+      - ilhrf-data-network
 
   # SeaweedFS for blob storage (S3-compatible)
   seaweedfs-master:
@@ -66,6 +49,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - ilhrf-data-network
 
   seaweedfs-volume:
     image: chrislusf/seaweedfs:latest
@@ -79,6 +64,8 @@ services:
       seaweedfs-master:
         condition: service_healthy
     restart: unless-stopped
+    networks:
+      - ilhrf-data-network
 
   seaweedfs-filer:
     image: chrislusf/seaweedfs:latest
@@ -90,6 +77,8 @@ services:
       - seaweedfs-master
       - seaweedfs-volume
     restart: unless-stopped
+    networks:
+      - ilhrf-data-network
 
   seaweedfs-s3:
     image: chrislusf/seaweedfs:latest
@@ -108,6 +97,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 3
+    networks:
+      - ilhrf-data-network
 
   # TimeScaleDB for time-series data
   timescaledb:
@@ -118,7 +109,7 @@ services:
       POSTGRES_USER: timescale
       POSTGRES_PASSWORD: timescale
     ports:
-      - "5434:5432"
+      - "5436:5432"
     volumes:
       - timescaledb_data:/var/lib/postgresql/data
     restart: unless-stopped
@@ -127,50 +118,8 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
-  # # QdrantDB for vector storage (if needed)
-  # qdrant:
-  #   image: qdrant/qdrant:latest
-  #   container_name: ilhrf-data-qdrant
-  #   ports:
-  #     - "6333:6333" # Qdrant API
-  #     - "6334:6334" # Qdrant gRPC
-  #   volumes:
-  #     - qdrant_data:/qdrant/storage
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD", "curl", "-f", "http://localhost:6333/health"]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
-
-  # # Neo4j for graph storage (if needed)
-  # neo4j:
-  #   image: neo4j:5-community
-  #   container_name: ilhrf-data-neo4j
-  #   environment:
-  #     NEO4J_AUTH: neo4j/neo4jpassword
-  #     NEO4J_PLUGINS: '["apoc"]'
-  #   ports:
-  #     - "7474:7474" # HTTP
-  #     - "7687:7687" # Bolt
-  #   volumes:
-  #     - neo4j_data:/data
-  #     - neo4j_logs:/logs
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test:
-  #       [
-  #         "CMD",
-  #         "wget",
-  #         "--no-verbose",
-  #         "--tries=1",
-  #         "--spider",
-  #         "http://localhost:7474",
-  #       ]
-  #     interval: 30s
-  #     timeout: 10s
-  #     retries: 3
+    networks:
+      - ilhrf-data-network
 
   # Prometheus for metrics collection
   prometheus:
@@ -198,6 +147,8 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - ilhrf-data-network
 
   # Grafana for monitoring dashboards
   grafana:
@@ -231,42 +182,120 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
+    networks:
+      - ilhrf-data-network
 
   # YugaByteDB (default database)
-  yugabytedb:
+  yugabytedb-node1:
     image: yugabytedb/yugabyte:latest
     container_name: ilhrf-yugabyte-node1
     hostname: ilhrf-yugabyte-node1
-    environment:
-      YSQL_DB: ilhrf_data_collection
-      YSQL_USER: yugabyte
-      YSQL_PASSWORD: yugabyte
+    command: >
+      yugabyted start
+      --advertise_address=ilhrf-yugabyte-node1
+      --base_dir=/home/yugabyte/yb_data
+      --tserver_flags=ysql_pg_conf_csv="yb_silence_advisory_locks_not_supported_error=on"
+      --background=false
     ports:
       - "5433:5433" # YSQL port
       - "9042:9042" # YCQL port
       - "6379:6379" # YEDIS port
       - "7001:7000" # Master HTTP
       - "9000:9000" # tserver HTTP
+      - "15433:15433" # YugabyteDB UI
     volumes:
-      - yugabyte_data:/opt/yugabyte/data
+      - yugabyte_data_node1:/home/yugabyte/yb_data
     restart: unless-stopped
-    healthcheck:
-      test:
-        ["CMD-SHELL", "pg_isready -U yugabyte -h localhost -p 5433 || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 15
-      start_period: 90s
+    networks:
+      - ilhrf-data-network
+
+  # Ensures ilhrf_data_collection database exists before backend runs migrations
+  db-init:
+    image: yugabytedb/yugabyte:latest
+    container_name: ilhrf-data-db-init
+    environment:
+      PGPASSWORD: yugabyte
+    entrypoint: ["/bin/bash", "-c"]
     command:
-      ["bin/yugabyted", "start", "--background=false", "--listen=0.0.0.0"]
+      - |
+        for i in $$(seq 1 30); do
+          bin/ysqlsh -h yugabytedb-node1 -U yugabyte -d yugabyte -c "SELECT 1 FROM pg_database WHERE datname='ilhrf_data_collection'" -t 2>/dev/null | grep -q 1 && echo "Database exists" && break
+          bin/ysqlsh -h yugabytedb-node1 -U yugabyte -d yugabyte -c "CREATE DATABASE ilhrf_data_collection" 2>/dev/null && echo "Database created" && break
+          echo "Waiting for YugaByteDB... $$i/30"; sleep 2
+        done
+        bin/ysqlsh -h yugabytedb-node1 -U yugabyte -d yugabyte -c "SELECT 1 FROM pg_database WHERE datname='ilhrf_data_collection'" -t 2>/dev/null | grep -q 1 || (echo "Failed to create database"; exit 1)
+        bin/ysqlsh -h yugabytedb-node1 -U yugabyte -d yugabyte -c "ALTER DATABASE ilhrf_data_collection SET yb_silence_advisory_locks_not_supported_error=on" 2>/dev/null && echo "Advisory locks GUC set" || true
+        exit 0
+    depends_on:
+      yugabytedb-node1:
+        condition: service_started
+    networks:
+      - ilhrf-data-network
+    restart: "no"
+
+  yugabytedb-node2:
+    image: yugabytedb/yugabyte:latest
+    container_name: ilhrf-yugabyte-node2
+    hostname: ilhrf-yugabyte-node2
+    command: >
+      yugabyted start
+      --advertise_address=ilhrf-yugabyte-node2
+      --join=ilhrf-yugabyte-node1
+      --base_dir=/home/yugabyte/yb_data
+      --tserver_flags=ysql_pg_conf_csv="yb_silence_advisory_locks_not_supported_error=on"
+      --background=false
+    ports:
+      - "5434:5433" # optional external YSQL for node2
+    volumes:
+      - yugabyte_data_node2:/home/yugabyte/yb_data
+    restart: unless-stopped
+    networks:
+      - ilhrf-data-network
+
+  yugabytedb-node3:
+    image: yugabytedb/yugabyte:latest
+    container_name: ilhrf-yugabyte-node3
+    hostname: ilhrf-yugabyte-node3
+    command: >
+      yugabyted start
+      --advertise_address=ilhrf-yugabyte-node3
+      --join=ilhrf-yugabyte-node1
+      --base_dir=/home/yugabyte/yb_data
+      --tserver_flags=ysql_pg_conf_csv="yb_silence_advisory_locks_not_supported_error=on"
+      --background=false
+    ports:
+      - "5435:5433" # optional external YSQL for node3
+    volumes:
+      - yugabyte_data_node3:/home/yugabyte/yb_data
+    restart: unless-stopped
+    networks:
+      - ilhrf-data-network
+
+  puppygraph:
+    image: puppygraph/puppygraph:stable
+    pull_policy: always
+    container_name: ilhrf-data-puppygraph
+    environment:
+      - PUPPYGRAPH_USERNAME=ilhrf
+      - PUPPYGRAPH_PASSWORD=puppygraph123
+    networks:
+      - ilhrf-data-network
+    ports:
+      - "8081:8081"
+      - "8182:8182"
+      - "7687:7687"
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile.dev
     container_name: ilhrf-data-backend
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     environment:
-      DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb:5433/ilhrf_data_collection?schema=public"
+      CI: "true"
+      # Default user: yugabyte/yugabyte; DB created by scripts/yugabytedb-init/
+      DATABASE_URL: "postgresql://yugabyte:yugabyte@yugabytedb-node1:5433/ilhrf_data_collection?schema=public&connect_timeout=30"
       REDIS_URL: "redis://dragonfly:6379"
       CACHE_URL: "redis://dragonfly:6379"
       JWT_SECRET: "${JWT_SECRET:-Ovc5Gigy1KBQiVsNr51tow1fTNojj8aQ2Fwv1JLn+uE=}"
@@ -296,8 +325,8 @@ services:
       GITHUB_CLIENT_ID: "${GITHUB_CLIENT_ID:-dummy-github-id}"
       GITHUB_CLIENT_SECRET: "${GITHUB_CLIENT_SECRET:-dummy-github-secret}"
       GITHUB_CALLBACK_URL: "${GITHUB_CALLBACK_URL:-http://localhost:5566/api/auth/github/callback}"
-      FRONTEND_URL: "${FRONTEND_URL:-http://localhost:5577}"
-      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:5577}"
+      FRONTEND_URL: "${FRONTEND_URL:-http://localhost:5577,http://localhost:5578}"
+      CORS_ORIGIN: "${CORS_ORIGIN:-http://localhost:5577,http://localhost:5578,http://localhost:5579}"
       # Email configuration
       SMTP_HOST: "${SMTP_HOST:-smtp.gmail.com}"
       SMTP_PORT: "${SMTP_PORT:-587}"
@@ -313,8 +342,10 @@ services:
     ports:
       - "5566:3001"
     depends_on:
-      yugabytedb:
-        condition: service_healthy
+      db-init:
+        condition: service_completed_successfully
+      yugabytedb-node1:
+        condition: service_started
       dragonfly:
         condition: service_started
       seaweedfs-s3:
@@ -330,48 +361,23 @@ services:
       [
         "sh",
         "-c",
-        "pnpm install && pnpm prisma generate && pnpm exec prisma migrate deploy && pnpm run start:dev",
+        'pnpm install && pnpm prisma generate && (for i in $$(seq 1 30); do pnpm exec prisma migrate deploy && exit 0; echo "DB not ready, retry $$i/30 in 3s..."; sleep 3; done; exit 1) && pnpm run start:dev',
       ]
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://backend:3001/api"]
-      interval: 30s
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3001/api"]
+      interval: 15s
       timeout: 10s
-      retries: 5
-
-  # Daily database backup (YugaByteDB/PostgreSQL dump to local volume)
-  backup:
-    image: postgres:15
-    container_name: ilhrf-data-backup
-    environment:
-      PGHOST: yugabytedb
-      PGPORT: 5433
-      PGUSER: yugabyte
-      PGPASSWORD: yugabyte
-      PGDATABASE: ilhrf_data_collection
-      BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-7}"
-    volumes:
-      - ./backups:/backups
-    entrypoint: ["/bin/bash", "-c"]
-    command:
-      - |
-        echo "Backup service started. Running backup every 24 hours."
-        while true; do
-          ts=$$(date +%Y%m%d_%H%M%S)
-          echo "[$$(date)] Creating backup..."
-          pg_dump -h yugabytedb -p 5433 -U yugabyte ilhrf_data_collection --no-owner --no-acl | gzip > /backups/ilhrf_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
-          find /backups -name "ilhrf_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
-          sleep 86400
-        done
-    depends_on:
-      yugabytedb:
-        condition: service_healthy
-    restart: unless-stopped
-    profiles:
-      - backup # Run with: docker compose --profile backup up -d
+      retries: 10
+      start_period: 120s
+    networks:
+      - ilhrf-data-network
 
   # Nginx reverse proxy with HTTP/2 and TLS (opt-in via profile)
   # Run: ./scripts/generate-dev-certs.sh && docker compose -f compose.yml -f compose-http2.yml --profile http2 up -d
   # Then access https://localhost (accept self-signed cert in browser)
+  # Note: Use `host.docker.internal` in DATABASE_URL for backend to access YugaByteDB
+  # when both YugaByteDB and backend run in Docker; use service name only when DB runs outside compose
+
   nginx:
     image: nginx:alpine
     container_name: ilhrf-data-nginx
@@ -383,9 +389,9 @@ services:
       - ./certs:/etc/nginx/certs:ro
     depends_on:
       backend:
-        condition: service_healthy
+        condition: service_started
       frontend:
-        condition: service_healthy
+        condition: service_started
     restart: unless-stopped
     profiles:
       - http2
@@ -403,6 +409,8 @@ services:
       timeout: 5s
       retries: 3
       start_period: 5s
+    networks:
+      - ilhrf-data-network
 
   frontend:
     build:
@@ -427,15 +435,85 @@ services:
       - /app/.next
     working_dir: /app
     command: ["npm", "run", "dev"]
+    networks:
+      - ilhrf-data-network
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:3000"]
-      interval: 30s
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
+      interval: 15s
       timeout: 10s
-      retries: 5
+      retries: 10
+      start_period: 90s
+
+  frontend-portfolio:
+    build:
+      context: ./frontend-portfolio
+      dockerfile: Dockerfile
+    container_name: ilhrf-data-frontend-portfolio
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_FRONTEND_URL: "http://localhost:5579"
+      NEXT_PUBLIC_CROWDSOURCING_URL: "http://localhost:5577"
+    ports:
+      - "5579:3000"
+    command: ["npm", "run", "dev"]
+    networks:
+      - ilhrf-data-network
+
+  frontend-admin:
+    build:
+      context: ./frontend-admin
+      dockerfile: Dockerfile
+    container_name: ilhrf-data-frontend-admin
+    environment:
+      NODE_ENV: development
+      NEXT_PUBLIC_API_URL: "http://localhost:5566/api"
+      NEXT_PUBLIC_FRONTEND_URL: "http://localhost:5578"
+    ports:
+      - "5578:3000"
+    depends_on:
+      - backend
+    command: ["npm", "run", "dev"]
+    networks:
+      - ilhrf-data-network
+
+  # # Daily database backup (YugaByteDB/PostgreSQL dump to local volume)
+  # backup:
+  #   image: postgres:15
+  #   container_name: ilhrf-data-backup
+  #   environment:
+  #     PGHOST: yugabytedb
+  #     PGPORT: 5433
+  #     PGUSER: yugabyte
+  #     PGPASSWORD: yugabyte
+  #     PGDATABASE: ilhrf_data_collection
+  #     BACKUP_RETENTION_DAYS: "${BACKUP_RETENTION_DAYS:-7}"
+  #   volumes:
+  #     - ./backups:/backups
+  #   entrypoint: ["/bin/bash", "-c"]
+  #   command:
+  #     - |
+  #       echo "Backup service started. Running backup every 24 hours."
+  #       while true; do
+  #         ts=$$(date +%Y%m%d_%H%M%S)
+  #         echo "[$$(date)] Creating backup..."
+  #         pg_dump -h yugabytedb -p 5433 -U yugabyte ilhrf_data_collection --no-owner --no-acl | gzip > /backups/ilhrf_data_collection_$$ts.sql.gz && echo "[$$(date)] Backup created" || echo "[$$(date)] Backup failed"
+  #         find /backups -name "ilhrf_data_collection_*.sql.gz" -mtime +$${BACKUP_RETENTION_DAYS:-7} -delete 2>/dev/null || true
+  #         sleep 86400
+  #       done
+  #   depends_on:
+  #     yugabyte_data_node2:
+  #       condition: service_healthy
+  #   restart: unless-stopped
+  #   profiles:
+  #     - backup # Run with: docker compose --profile backup up -d
+  #   networks:
+  #     - ilhrf-data-network
 
 volumes:
   # postgres_data:  # Uncomment if using PostgreSQL
-  yugabyte_data:
+  yugabyte_data_node1:
+  yugabyte_data_node2:
+  yugabyte_data_node3:
   dragonfly_data:
   seaweedfs_master_data:
   seaweedfs_volume_data:
@@ -445,3 +523,7 @@ volumes:
   # neo4j_logs:
   prometheus_data:
   grafana_data:
+
+networks:
+  ilhrf-data-network:
+    driver: bridge

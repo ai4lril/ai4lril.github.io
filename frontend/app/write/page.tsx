@@ -135,7 +135,7 @@ export default function AddSentence() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-8 w-full">
                 {/* Form Section */}
-                <form onSubmit={handleSubmit} className="glass rounded-md md:rounded-lg p-6 shadow-md border border-gray-100 flex flex-col gap-6">
+                <form onSubmit={handleSubmit} className="neu-raised rounded-md md:rounded-lg p-6 shadow-md border border-gray-100 flex flex-col gap-6">
                     <div className="space-y-2">
                         <label className="block font-semibold text-gray-800" htmlFor="sentence">
                             Sentence
@@ -258,7 +258,7 @@ export default function AddSentence() {
                     </button>
                 </form>
                 {/* Guidelines Section */}
-                <div className="glass rounded-md md:rounded-lg p-6 shadow-md border border-gray-100 flex flex-col">
+                <div className="neu-raised rounded-md md:rounded-lg p-6 shadow-md border border-gray-100 flex flex-col">
                     <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800">What sentences can I add?</h2>
                     <ul className="text-sm text-gray-700 space-y-2 list-disc list-inside">
                         <li>Must be in the public domain (no copyright restrictions)</li>

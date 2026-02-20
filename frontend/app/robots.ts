@@ -10,7 +10,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: [
           '/api/',
           '/_next/',
-          '/admin/',
           '/auth/',
           '/node_modules/',
           '/.git/',

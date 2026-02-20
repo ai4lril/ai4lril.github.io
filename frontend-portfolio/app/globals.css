@@ -1,0 +1,502 @@
+@import "tailwindcss";
+
+:root {
+  /* Warmer neumorphic base - soft blue-grey tint */
+  --neu-bg: #eef2f7;
+  --neu-bg-alt: #f4f7fb;
+  --background: #eef2f7;
+  --foreground: #1e293b;
+  --brand-900: #1e1b4b;
+  --brand-700: #3730a3;
+  --brand-600: #4f46e5;
+  --brand-500: #6366f1;
+  /* Softer shadow colors for neumorphism */
+  --neu-shadow-dark: #cbd5e1;
+  --neu-shadow-light: #ffffff;
+  /* Neumorphic shadow presets - softer */
+  --neu-shadow-raised: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+  --neu-shadow-raised-sm: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+  --neu-shadow-pressed: inset 4px 4px 8px var(--neu-shadow-dark), inset -4px -4px 8px var(--neu-shadow-light);
+  --neu-shadow-pressed-sm: inset 2px 2px 4px var(--neu-shadow-dark), inset -2px -2px 4px var(--neu-shadow-light);
+  --neu-shadow-flat: 2px 2px 4px var(--neu-shadow-dark), -2px -2px 4px var(--neu-shadow-light);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition:
+    background-color 200ms ease,
+    color 200ms ease;
+}
+
+h1,
+h2,
+h3 {
+  color: var(--brand-900);
+}
+
+/* Anchor UX: keep room under sticky nav and highlight targets */
+section:target {
+  scroll-margin-top: 96px;
+}
+
+section:target h2 {
+  color: var(--brand-700);
+  transition: color 200ms ease;
+}
+
+/* Enhance rendering and interactions */
+html,
+body {
+  scroll-behavior: smooth;
+}
+
+body {
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: rgba(59, 130, 246, 0.25);
+  color: #0f172a;
+}
+
+/* Neumorphic utilities */
+.neu-raised {
+  background: var(--neu-bg);
+  border-radius: 1rem;
+  box-shadow: var(--neu-shadow-raised);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  transition: box-shadow 0.2s ease, transform 0.15s ease;
+}
+
+.neu-raised:hover {
+  box-shadow: 8px 8px 16px var(--neu-shadow-dark), -8px -8px 16px var(--neu-shadow-light);
+}
+
+.neu-raised-sm {
+  background: var(--neu-bg);
+  border-radius: 0.75rem;
+  box-shadow: var(--neu-shadow-raised-sm);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.neu-pressed {
+  background: var(--neu-bg);
+  border-radius: 1rem;
+  box-shadow: var(--neu-shadow-pressed);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: box-shadow 0.2s ease;
+}
+
+.neu-pressed:focus {
+  outline: 2px solid var(--brand-600);
+  outline-offset: 2px;
+}
+
+.neu-pressed-sm {
+  background: var(--neu-bg);
+  border-radius: 0.75rem;
+  box-shadow: var(--neu-shadow-pressed-sm);
+}
+
+.neu-flat {
+  background: var(--neu-bg);
+  border-radius: 1rem;
+  box-shadow: var(--neu-shadow-flat);
+  border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.hover\:neu-raised-sm:hover {
+  background: var(--neu-bg);
+  border-radius: 0.75rem;
+  box-shadow: var(--neu-shadow-raised-sm);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.active\:neu-pressed:active {
+  background: var(--neu-bg);
+  border-radius: 1rem;
+  box-shadow: var(--neu-shadow-pressed);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* Backward compatibility: map glass and card to neumorphic */
+.glass {
+  background: var(--neu-bg);
+  box-shadow: var(--neu-shadow-raised-sm);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1rem;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.card {
+  background: var(--neu-bg);
+  box-shadow: var(--neu-shadow-raised);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 1rem;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.card-wide {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+  background: var(--neu-bg);
+  box-shadow: var(--neu-shadow-raised);
+  border-radius: 1rem;
+}
+
+/* Enhanced secondary buttons - light indigo tint instead of grey */
+.neu-btn-secondary {
+  background: linear-gradient(135deg, #f5f7ff 0%, #eef2ff 100%);
+  box-shadow: 4px 4px 8px var(--neu-shadow-dark), -4px -4px 8px var(--neu-shadow-light);
+  border: 1px solid rgba(99, 102, 241, 0.2);
+  color: var(--brand-700);
+  border-radius: 0.75rem;
+  transition: all 0.2s ease;
+}
+
+.neu-btn-secondary:hover {
+  background: linear-gradient(135deg, #eef2ff 0%, #e0e7ff 100%);
+  box-shadow: 6px 6px 12px var(--neu-shadow-dark), -6px -6px 12px var(--neu-shadow-light);
+  color: var(--brand-700);
+  border-color: rgba(99, 102, 241, 0.35);
+}
+
+/* Enhanced animations and micro-interactions */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Documentation specific styles */
+.prose {
+  max-width: none;
+}
+
+.prose h1 {
+  font-size: 2.25em;
+  font-weight: 800;
+  margin-top: 0;
+  margin-bottom: 0.8888889em;
+  line-height: 1.1111111;
+}
+
+.prose h2 {
+  font-size: 1.5em;
+  font-weight: 700;
+  margin-top: 2em;
+  margin-bottom: 1em;
+  line-height: 1.3333333;
+  scroll-margin-top: 6rem;
+}
+
+.prose h3 {
+  font-size: 1.25em;
+  font-weight: 600;
+  margin-top: 1.6em;
+  margin-bottom: 0.6em;
+  line-height: 1.6;
+  scroll-margin-top: 6rem;
+}
+
+.prose code {
+  background-color: rgba(148, 163, 184, 0.1);
+  padding: 0.125rem 0.375rem;
+  border-radius: 0.25rem;
+  font-size: 0.875em;
+  font-weight: 500;
+}
+
+.prose pre {
+  background-color: #1e293b;
+  color: #e2e8f0;
+  overflow-x: auto;
+  font-weight: 400;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+  margin-top: 1.7142857em;
+  margin-bottom: 1.7142857em;
+  border-radius: 0.375rem;
+  padding-top: 0.8571429em;
+  padding-right: 1.1428571em;
+  padding-bottom: 0.8571429em;
+  padding-left: 1.1428571em;
+}
+
+.prose pre code {
+  background-color: transparent;
+  border-width: 0;
+  border-radius: 0;
+  padding: 0;
+  font-weight: inherit;
+  color: inherit;
+  font-size: inherit;
+  font-family: inherit;
+  line-height: inherit;
+}
+
+.prose table {
+  width: 100%;
+  table-layout: auto;
+  text-align: left;
+  margin-top: 2em;
+  margin-bottom: 2em;
+  font-size: 0.875em;
+  line-height: 1.7142857;
+}
+
+.prose thead {
+  border-bottom-width: 1px;
+  border-bottom-color: rgb(226 232 240);
+}
+
+.prose thead th {
+  color: rgb(15 23 42);
+  font-weight: 600;
+  vertical-align: bottom;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose tbody tr {
+  border-bottom-width: 1px;
+  border-bottom-color: rgb(226 232 240);
+}
+
+.prose tbody td {
+  vertical-align: baseline;
+  padding-top: 0.5714286em;
+  padding-right: 0.5714286em;
+  padding-bottom: 0.5714286em;
+  padding-left: 0.5714286em;
+}
+
+.prose a {
+  color: rgb(79 70 229);
+  text-decoration: underline;
+  font-weight: 500;
+}
+
+.prose a:hover {
+  color: rgb(67 56 202);
+}
+
+.prose strong {
+  font-weight: 600;
+  color: rgb(15 23 42);
+}
+
+.prose ul,
+.prose ol {
+  margin-top: 1.25em;
+  margin-bottom: 1.25em;
+  padding-left: 1.625em;
+}
+
+.prose li {
+  margin-top: 0.5em;
+  margin-bottom: 0.5em;
+}
+
+.prose blockquote {
+  font-weight: 500;
+  font-style: italic;
+  color: rgb(15 23 42);
+  border-left-width: 0.25rem;
+  border-left-color: rgb(226 232 240);
+  quotes: "\201C" "\201D" "\2018" "\2019";
+  margin-top: 1.6em;
+  margin-bottom: 1.6em;
+  padding-left: 1em;
+}
+
+@keyframes slideInFromTop {
+  from {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes bounceIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.3);
+  }
+
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+
+  70% {
+    transform: scale(0.9);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.6s ease-out forwards;
+}
+
+.animate-slide-in-left {
+  animation: slideInFromLeft 0.6s ease-out forwards;
+}
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.6s ease-out forwards;
+}
+
+.animate-slide-in-from-top {
+  animation: slideInFromTop 0.3s ease-out forwards;
+}
+
+.animate-bounce-in {
+  animation: bounceIn 0.8s ease-out forwards;
+}
+
+/* Stagger animations for multiple elements */
+.animate-delay-100 {
+  animation-delay: 0.1s;
+}
+
+.animate-delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-delay-400 {
+  animation-delay: 0.4s;
+}
+
+.animate-delay-500 {
+  animation-delay: 0.5s;
+}
+
+/* Smooth transitions for interactive elements */
+* {
+  transition-property:
+    color, background-color, border-color, text-decoration-color, fill, stroke,
+    opacity, box-shadow, transform, filter, backdrop-filter;
+  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  transition-duration: 200ms;
+}
+
+/* Enhanced focus states for accessibility */
+.focus-enhanced:focus {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+}
+
+/* Subtle hover effects */
+.hover-lift:hover {
+  transform: translateY(-2px);
+  transition-duration: 300ms;
+}
+
+.hover-glow:hover {
+  box-shadow: 0 0 20px rgba(59, 130, 246, 0.15);
+  transition-duration: 300ms;
+}
+
+/* Loading spinner */
+.loading-spinner {
+  border: 2px solid #f3f3f3;
+  border-top: 2px solid #3b82f6;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+/* Hide scrollbar for horizontal scroll areas */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+/* Mobile neumorphic shadow overrides */
+@media (max-width: 640px) {
+  :root {
+    --neu-shadow-raised: 5px 5px 10px var(--neu-shadow-dark), -5px -5px 10px var(--neu-shadow-light);
+    --neu-shadow-pressed: inset 3px 3px 6px var(--neu-shadow-dark), inset -3px -3px 6px var(--neu-shadow-light);
+  }
+
+  .neu-raised,
+  .card {
+    border-radius: 1rem;
+  }
+}

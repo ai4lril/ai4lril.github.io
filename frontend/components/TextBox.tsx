@@ -32,7 +32,7 @@ export default function TextBox({
         <div className="h-full w-full">
             <form className="w-full h-full" onSubmit={handleSubmit}>
                 <textarea
-                    className="w-full h-full p-4 rounded-xl border border-slate-200 bg-white/90 focus:border-blue-600 focus:ring-2 focus:ring-blue-200 outline-none resize-none placeholder:text-slate-400 text-slate-800 shadow-sm disabled:bg-gray-100 disabled:cursor-not-allowed"
+                    className="w-full h-full p-4 rounded-xl neu-pressed focus:ring-2 focus:ring-blue-500 outline-none resize-none placeholder:text-slate-400 text-slate-800 disabled:opacity-60 disabled:cursor-not-allowed"
                     placeholder={placeholder}
                     value={text}
                     onChange={(e) => setText(e.target.value)}

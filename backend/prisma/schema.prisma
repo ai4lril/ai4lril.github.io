@@ -32,7 +32,7 @@ model User {
   birth_date                DateTime?
   gender                    String?
   religion                  String?
-  mother                    String?
+  mother_tongue             String?
   first_language            String?
   second_language           String?
   third_language            String?

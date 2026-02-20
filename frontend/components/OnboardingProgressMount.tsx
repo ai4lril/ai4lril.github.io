@@ -32,7 +32,7 @@ export default function OnboardingProgressMount() {
       .catch(() => setShowProgress(false));
   }, []);
 
-  if (pathname?.startsWith("/docs") || pathname?.startsWith("/admin")) {
+  if (pathname?.startsWith("/docs")) {
     return null;
   }
 

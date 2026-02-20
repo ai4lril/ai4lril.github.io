@@ -186,7 +186,7 @@ export default function Answer() {
                 <div className="absolute inset-0 bg-linear-to-b from-blue-50/30 to-indigo-50/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="flex-1 min-h-[40vh] max-h-fit p-6 sm:p-8
                       flex flex-col items-center justify-around 
-                      glass rounded-md md:rounded-lg shadow-md relative z-20 border border-gray-100">
+                      neu-raised rounded-md md:rounded-lg shadow-md relative z-20 border border-gray-100">
                     <div className="absolute -right-8 -top-8 w-20 h-20 bg-indigo-100/50 rounded-full opacity-70 hidden sm:block"></div>
                     <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-blue-100/50 rounded-full opacity-70 hidden sm:block"></div>
                     <div className="flex flex-col items-center">

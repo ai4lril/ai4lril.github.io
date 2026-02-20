@@ -66,7 +66,7 @@ export class SignupDto {
 
   @IsOptional()
   @IsString()
-  mother?: string;
+  mother_tongue?: string;
 
   @IsOptional()
   @IsString()

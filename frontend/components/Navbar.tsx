@@ -32,7 +32,7 @@ export default function Navbar() {
 
     return (
         <nav className='sticky top-0 z-50' role="navigation" aria-label="Primary">
-            <div className="py-3 md:py-4 glass shadow-sm overflow-visible relative z-70">
+            <div className="py-3 md:py-4 neu-raised shadow-sm overflow-visible relative z-70 rounded-b-2xl md:rounded-2xl">
                 <div className="container mx-auto px-4 flex justify-between items-center">
                     <div className="logo">
                         <Link href="/" className="text-2xl font-bold" style={{ color: 'var(--brand-900)' }}>
@@ -57,11 +57,11 @@ export default function Navbar() {
                                             <Link
                                                 href={item.path}
                                                 aria-current={isActive ? 'page' : undefined}
-                                                className={`relative pb-1 text-center transition-colors duration-300
+                                                className={`relative pb-1 text-center transition-colors duration-300 min-h-[44px] min-w-[44px] flex items-center justify-center
                                                     ${isActive ? 'text-indigo-700' : 'text-gray-700 hover:text-indigo-600'}
                                                     after:absolute after:left-0 after:bottom-0 after:w-0 after:h-[2px] after:bg-indigo-600 after:rounded-full
                                                     after:transition-all after:duration-300 hover:after:w-full`}
-                                                style={{ display: "inline-block" }}
+                                                style={{ display: "inline-flex" }}
                                             >
                                                 {item.name}
                                             </Link>
@@ -74,7 +74,7 @@ export default function Navbar() {
                         <div className="flex justify-center items-center gap-3">
                             <Link
                                 href="/login"
-                                className="ml-8 hidden sm:block bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2 rounded-full shadow transition-all duration-200 border-0 outline-none focus:ring-2 focus:ring-slate-300"
+                                className="ml-8 hidden sm:block bg-linear-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 text-white font-semibold px-6 py-2 rounded-full shadow-md shadow-indigo-500/20 transition-all duration-200 border-0 outline-none focus:ring-2 focus:ring-indigo-500/50 min-h-[44px] flex items-center"
                                 onClick={() => setIsMenuOpen(false)}
                             >
                                 Login
@@ -92,7 +92,7 @@ export default function Navbar() {
                                 aria-label="Toggle menu"
                                 aria-controls="mobile-menu"
                                 aria-expanded={isMenuOpen}
-                                className="focus:outline-none rounded-full p-2 hover:bg-gray-100 transition-colors duration-300"
+                                className="focus:outline-none rounded-full p-2 hover:bg-gray-100 transition-colors duration-300 min-h-[44px] min-w-[44px] flex items-center justify-center"
                                 type="button"
                             >
                                 <svg className="w-6 h-6 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -109,7 +109,7 @@ export default function Navbar() {
                 {/* Mobile menu */}
                 <div
                     id="mobile-menu"
-                    className={`md:hidden fixed w-screen rounded-b-2xl mt-4 glass border-t border-gray-100 shadow-xl/20 z-50
+                    className={`md:hidden fixed w-screen rounded-b-2xl mt-4 neu-raised border-t border-gray-100 shadow-xl/20 z-50
                         transition-transform duration-500 ease-in-out
                         ${isMenuOpen ? "translate-y-0 opacity-100 pointer-events-auto" : "-translate-y-10 opacity-0 pointer-events-none"}`}
                     style={{ willChange: "transform, opacity" }}
@@ -123,7 +123,7 @@ export default function Navbar() {
                                     <Link
                                         href={item.path}
                                         aria-current={isActive ? 'page' : undefined}
-                                        className={`relative px-4 py-2 flex justify-center transition-colors duration-300
+                                        className={`relative px-4 py-4 flex justify-center transition-colors duration-300 min-h-[44px] items-center
                                             ${isActive ? 'text-indigo-700' : 'text-gray-700 hover:text-indigo-600'}
                                             after:absolute after:left-1/2 after:-translate-x-1/2 after:bottom-1 after:w-0 after:h-[2px] after:bg-indigo-600 after:rounded-full
                                             after:transition-all after:duration-300 hover:after:w-3/4`}
@@ -139,7 +139,7 @@ export default function Navbar() {
                             <div className="flex justify-center items-center">
                                 <Link
                                     href="/login"
-                                    className="sm:hidden border border-slate-400 text-gray-700 bg-white hover:bg-blue-50 px-5 py-2 text-sm rounded-full transition-colors duration-200 shadow-sm"
+                                    className="sm:hidden neu-btn-secondary px-5 py-2 text-sm rounded-full transition-colors duration-200 min-h-[44px] flex items-center justify-center"
                                     onClick={() => setIsMenuOpen(false)}
                                 >
                                     Login

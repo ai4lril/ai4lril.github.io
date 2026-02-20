@@ -148,7 +148,7 @@ export default function TranscribePage() {
                 <div className="absolute inset-0 bg-linear-to-br from-cyan-50/40 to-indigo-100/30 -z-10 rounded-xl blur-xl hidden md:block"></div>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full card-wide">
                     {/* Audio Player Section */}
-                    <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
+                    <div className="neu-raised rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col items-center justify-center min-h-[220px] sm:min-h-[260px] md:min-h-[340px] relative overflow-hidden">
                         {/* Decorative circles */}
                         <div className="absolute -top-4 -left-4 w-16 h-16 sm:-top-8 sm:-left-8 sm:w-24 sm:h-24 bg-cyan-100/60 rounded-full opacity-70 pointer-events-none"></div>
                         <div className="absolute -bottom-6 -right-6 w-20 h-20 sm:-bottom-10 sm:-right-10 sm:w-28 sm:h-28 bg-indigo-100/50 rounded-full opacity-60 pointer-events-none"></div>
@@ -172,7 +172,7 @@ export default function TranscribePage() {
                         </div>
                     </div>
                     {/* Transcription Section */}
-                    <div className="glass rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col relative overflow-hidden">
+                    <div className="neu-raised rounded-xl p-3 sm:p-4 md:p-6 shadow-lg border border-gray-100 flex flex-col relative overflow-hidden">
                         {/* Decorative circles */}
                         <div className="absolute -top-4 -right-4 w-12 h-12 sm:-top-8 sm:-right-8 sm:w-20 sm:h-20 bg-amber-100/60 rounded-full opacity-70 pointer-events-none"></div>
                         <div className="absolute -bottom-4 -left-4 w-10 h-10 sm:-bottom-8 sm:-left-8 sm:w-16 sm:h-16 bg-blue-100/50 rounded-full opacity-60 pointer-events-none"></div>
@@ -188,10 +188,10 @@ export default function TranscribePage() {
                                 onClick={() => document.forms[0].requestSubmit()}
                                 disabled={isSubmitting || submitted || !currentAudio}
                                 className={`group flex-1 px-6 py-3 rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl border-2 ${isSubmitting
-                                        ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
-                                        : submitted
-                                            ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
-                                            : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
+                                    ? "bg-gray-100 border-gray-200 text-gray-400 cursor-not-allowed"
+                                    : submitted
+                                        ? "bg-linear-to-r from-green-500 to-emerald-600 border-green-400 text-white"
+                                        : "bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 border-blue-400 text-white hover:scale-[1.02] active:scale-[0.98]"
                                     }`}
                             >
                                 <span className="flex items-center justify-center gap-2">
@@ -224,7 +224,7 @@ export default function TranscribePage() {
                                 type="button"
                                 onClick={handleSkip}
                                 disabled={isSubmitting || submitted || skipped}
-                                className="group flex-1 bg-white/95 hover:bg-white shadow-lg hover:shadow-xl px-6 py-3 rounded-lg border border-gray-200 hover:border-gray-300 text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 font-medium flex items-center justify-center gap-2"
+                                className="group flex-1 neu-btn-secondary px-6 py-3 rounded-lg text-gray-600 hover:text-gray-800 transition-all duration-300 hover:scale-105 active:scale-95 font-medium flex items-center justify-center gap-2 min-h-[48px]"
                             >
                                 <span>Skip</span>
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1">

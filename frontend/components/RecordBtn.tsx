@@ -262,16 +262,9 @@ export default function RecordBtn({ mode = 'audio', onAudioRecorded }: RecordBtn
             >
                 <button
                     onClick={isRecording ? stopRecording : startRecording}
-                    className={`relative rounded-full size-24 flex items-center justify-center transition-all duration-500 m-3 bg-white border-2
-                        ${isRecording
-                            ? 'bg-red-50 shadow-2xl shadow-red-500/40 ring-4 ring-red-400/50 hover:shadow-red-600/50 hover:ring-red-500/60 border-red-300'
-                            : 'shadow-xl shadow-blue-400/30 ring-4 ring-blue-400/40 hover:shadow-blue-500/40 hover:ring-blue-500/50 hover:bg-blue-50 border-blue-300'}`}
+                    className={`relative rounded-full size-24 min-w-[56px] min-h-[56px] flex items-center justify-center transition-all duration-500 m-3
+                        ${isRecording ? 'neu-pressed border-red-300' : 'neu-raised border-blue-300'}`}
                     aria-label={isRecording ? "Stop recording" : `Start ${isVideo ? 'video' : 'audio'} recording`}
-                    style={{
-                        boxShadow: isRecording
-                            ? '0 0 40px 12px rgba(239, 68, 68, 0.3), 0 4px 12px 0 rgba(239, 68, 68, 0.15), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                            : '0 0 32px 8px rgba(59, 130, 246, 0.2), 0 4px 12px 0 rgba(59, 130, 246, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.1)'
-                    }}
                 >
                     {/* Outer ripple effect */}
                     <span className={`absolute inset-0 rounded-full ${isRecording ? 'animate-ping bg-red-400/20' : 'bg-blue-400/10'} opacity-0 group-hover:opacity-100`}></span>

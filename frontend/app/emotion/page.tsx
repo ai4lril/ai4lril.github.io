@@ -117,7 +117,7 @@ export default function EmotionPage() {
     if (!current) {
         return (
             <div className="container mx-auto py-12 px-4 max-w-2xl animate-fade-in-up">
-                <div className="glass rounded-2xl p-8 border border-slate-100 animate-bounce-in text-center">
+                <div className="neu-raised rounded-2xl p-8 border border-slate-100 animate-bounce-in text-center">
                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
                     <p className="text-slate-600">Loading sentences...</p>
                 </div>
@@ -142,7 +142,7 @@ export default function EmotionPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Source + emotion selection card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
                         <div className="absolute -right-8 -top-8 w-20 h-20 bg-purple-100/50 rounded-full opacity-70 hidden sm:block"></div>
                         <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-violet-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
@@ -153,7 +153,7 @@ export default function EmotionPage() {
                             </span>
                         </h2>
 
-                        <div className="w-full p-4 rounded-md border border-slate-200 bg-white text-slate-800 mb-4">
+                        <div className="w-full p-4 neu-raised rounded-xl text-slate-800 mb-4">
                             {current.text}
                         </div>
 
@@ -188,7 +188,7 @@ export default function EmotionPage() {
                                             setEmotion(e.target.value);
                                             setError('');
                                         }}
-                                        className={`w-full px-4 py-3 border-2 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-200 ${!emotion
+                                        className={`w-full px-4 py-3 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-400 focus:border-purple-400 transition-all duration-200 ${!emotion
                                             ? 'border-red-300 bg-red-50'
                                             : 'border-gray-200 hover:border-gray-300'
                                             }`}
@@ -229,7 +229,7 @@ export default function EmotionPage() {
                                         </svg>
                                     )}
                                 </button>
-                                <button type="button" onClick={skipItem} className="group bg-white/95 hover:bg-white shadow-lg hover:shadow-xl rounded-lg px-6 py-3 font-semibold text-slate-700 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
+                                <button type="button" onClick={skipItem} className="group neu-btn-secondary rounded-lg px-6 py-3 font-semibold text-slate-700 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 min-h-[48px]">
                                     <span>Skip & Next</span>
                                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -240,7 +240,7 @@ export default function EmotionPage() {
                     </div>
 
                     {/* Guidelines card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
                         <div className="absolute -right-6 -top-6 w-16 h-16 bg-purple-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">

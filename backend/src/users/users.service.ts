@@ -20,7 +20,7 @@ export class UsersService {
         birth_date: true,
         gender: true,
         religion: true,
-        mother: true,
+        mother_tongue: true,
         first_language: true,
         second_language: true,
         third_language: true,

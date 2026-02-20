@@ -28,7 +28,7 @@ interface UserCreateData {
   birth_date?: Date | null;
   gender?: string | null;
   religion?: string;
-  mother?: string;
+  mother_tongue?: string;
   first_language?: string | null;
   second_language?: string;
   third_language?: string;
@@ -145,7 +145,7 @@ export class AuthService {
         birth_date: true,
         gender: true,
         religion: true,
-        mother: true,
+        mother_tongue: true,
         first_language: true,
         second_language: true,
         third_language: true,
@@ -240,7 +240,7 @@ export class AuthService {
         birth_date: user.birth_date,
         gender: user.gender,
         religion: user.religion,
-        mother: user.mother,
+        mother_tongue: user.mother_tongue,
         first_language: user.first_language,
         second_language: user.second_language,
         third_language: user.third_language,
@@ -454,7 +454,7 @@ export class AuthService {
             birth_date: user.birth_date,
             gender: user.gender,
             religion: user.religion,
-            mother: user.mother,
+            mother_tongue: user.mother_tongue,
             first_language: user.first_language,
             second_language: user.second_language,
             third_language: user.third_language,
@@ -741,7 +741,7 @@ export class AuthService {
             birth_date: user.birth_date,
             gender: user.gender,
             religion: user.religion,
-            mother: user.mother,
+            mother_tongue: user.mother_tongue,
             first_language: user.first_language,
             second_language: user.second_language,
             third_language: user.third_language,
@@ -934,7 +934,7 @@ export class AuthService {
         birth_date: true,
         gender: true,
         religion: true,
-        mother: true,
+        mother_tongue: true,
         first_language: true,
         second_language: true,
         third_language: true,

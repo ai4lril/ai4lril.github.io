@@ -171,6 +171,10 @@ volumeMounts:
 
 # Environment variables
 env:
+  - name: CORS_ORIGIN
+    value: "https://ilhrf.org,https://crowdsourcing.ilhrf.org,https://admin.ilhrf.org"
+  - name: FRONTEND_URL
+    value: "https://crowdsourcing.ilhrf.org,https://admin.ilhrf.org"
   - name: DATABASE_URL
     valueFrom:
       secretKeyRef:

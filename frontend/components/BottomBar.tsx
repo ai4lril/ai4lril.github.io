@@ -29,11 +29,11 @@ export default function BottomBar({ audioSrc, mediaType = 'audio', onSkip, onSub
     };
 
     return (
-        <div className="sm:mt-10 bg-linear-to-r from-blue-50/80 via-indigo-50/70 to-purple-50/80 sm:bg-white/90 sm:rounded-full rounded-xl w-full max-w-2xl mx-auto px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:shadow-xl border border-indigo-100/50 backdrop-blur-sm flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300 hover:shadow-2xl">
+        <div className="sm:mt-10 neu-raised rounded-2xl w-full max-w-2xl mx-auto px-4 py-4 pb-[max(1rem,env(safe-area-inset-bottom))] flex flex-col sm:flex-row items-center justify-between gap-4 sm:gap-6 transition-all duration-300">
             {/* Skip Button */}
             <button
                 onClick={onSkip}
-                className="group bg-white/95 hover:bg-white shadow-lg hover:shadow-xl w-[60vw] sm:w-[220px] min-w-[140px] px-6 py-3 sm:py-3 rounded-full text-gray-600 hover:text-gray-800 border border-gray-200 hover:border-gray-300 transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95"
+                className="group neu-btn-secondary w-[60vw] sm:w-[220px] min-w-[140px] px-6 py-3 sm:py-3 rounded-full transition-all duration-300 flex items-center justify-center gap-2 hover:scale-105 active:scale-95 min-h-[48px]"
             >
                 <span>Skip</span>
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 transition-transform group-hover:translate-x-1">
@@ -44,7 +44,7 @@ export default function BottomBar({ audioSrc, mediaType = 'audio', onSkip, onSub
             {/* Audio/Video + Submit Group */}
             <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 w-full sm:w-auto justify-end">
                 {/* Media Player */}
-                <div className="bg-white/90 hover:bg-white shadow-lg hover:shadow-xl border border-gray-200 flex items-center justify-center space-x-4 px-6 sm:px-8 w-full sm:w-auto py-3 rounded-full transition-all duration-300 hover:scale-105">
+                <div className="neu-btn-secondary flex items-center justify-center space-x-4 px-6 sm:px-8 w-full sm:w-auto py-3 rounded-full transition-all duration-300 hover:scale-105 min-h-[48px]">
                     <button
                         onClick={handlePlayPause}
                         className="text-blue-600 hover:text-blue-700 focus:outline-none transition-all duration-200 hover:scale-110 p-1 rounded-full hover:bg-blue-50"
@@ -104,9 +104,9 @@ export default function BottomBar({ audioSrc, mediaType = 'audio', onSkip, onSub
                 <button
                     onClick={onSubmit}
                     disabled={disabled || !audioSrc}
-                    className={`group w-[40vw] sm:w-auto min-w-[110px] px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center font-semibold shadow-lg hover:shadow-xl border-2 ${audioSrc
-                        ? 'bg-linear-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white border-green-400 hover:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-300 hover:scale-105 active:scale-95'
-                        : 'bg-gray-300 border-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+                    className={`group w-[40vw] sm:w-auto min-w-[110px] px-6 py-3 rounded-full transition-all duration-300 flex items-center justify-center font-semibold border-2 ${audioSrc
+                        ? 'bg-linear-to-r from-emerald-500 to-green-600 hover:from-emerald-600 hover:to-green-700 text-white border-emerald-400/50 shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/25 focus:outline-none focus:ring-2 focus:ring-emerald-300 hover:scale-105 active:scale-95'
+                        : 'bg-slate-200/80 border-slate-200 text-slate-500 cursor-not-allowed opacity-60'
                         }`}
                 >
                     <span className="flex items-center gap-2">

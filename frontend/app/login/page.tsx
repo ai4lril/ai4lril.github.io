@@ -135,13 +135,8 @@ export default function LoginPage() {
     }
 
     return (
-        <div className="min-h-screen bg-linear-to-br from-blue-50 via-indigo-50 to-purple-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="min-h-screen bg-(--neu-bg) flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Background decorative elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-linear-to-br from-blue-200/30 to-purple-200/30 rounded-full blur-3xl animate-pulse"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-linear-to-tr from-indigo-200/30 to-pink-200/30 rounded-full blur-3xl animate-pulse delay-1000"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-linear-to-r from-cyan-100/20 to-blue-100/20 rounded-full blur-3xl animate-pulse delay-500"></div>
-            </div>
 
             <div className="relative w-full max-w-md">
                 {/* Header Section */}
@@ -161,13 +156,13 @@ export default function LoginPage() {
                 </div>
 
                 {/* Main Card */}
-                <div className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl border border-white/20 p-8 animate-fade-in-up delay-300">
+                <div className="neu-raised rounded-3xl p-8 animate-fade-in-up delay-300">
                     {/* Toggle Buttons */}
-                    <div className="flex rounded-2xl bg-gray-100 p-1 mb-8 animate-fade-in-up delay-400">
+                    <div className="flex rounded-2xl neu-pressed p-1 mb-8 animate-fade-in-up delay-400">
                         <button
                             onClick={() => setIsSignIn(true)}
                             className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${isSignIn
-                                ? 'bg-white shadow-lg text-gray-900 scale-105'
+                                ? 'neu-raised-sm text-gray-900 scale-105'
                                 : 'text-gray-600 hover:text-gray-900'
                                 }`}
                         >
@@ -175,7 +170,7 @@ export default function LoginPage() {
                         </button>
                         <button
                             onClick={() => setIsSignIn(false)}
-                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${isSignIn ? 'text-gray-600 hover:text-gray-900' : 'bg-white shadow-lg text-gray-900 scale-105'}`}
+                            className={`flex-1 py-3 px-4 rounded-xl text-sm font-semibold transition-all duration-300 ${isSignIn ? 'text-gray-600 hover:text-gray-900' : 'neu-raised-sm text-gray-900 scale-105'}`}
                         >
                             Sign Up
                         </button>
@@ -230,7 +225,7 @@ export default function LoginPage() {
                                         required={!isSignIn}
                                         value={name}
                                         onChange={(e) => setName(e.target.value)}
-                                        className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/50 hover:bg-white hover:border-gray-300 placeholder-gray-400 text-gray-900"
+                                        className="block w-full pl-12 pr-4 py-4 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-400 text-gray-900"
                                         placeholder="Enter your full name"
                                     />
                                 </div>
@@ -256,7 +251,7 @@ export default function LoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="block w-full pl-12 pr-4 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/50 hover:bg-white hover:border-gray-300 placeholder-gray-400 text-gray-900"
+                                    className="block w-full pl-12 pr-4 py-4 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-400 text-gray-900"
                                     placeholder="Enter your email address"
                                 />
                             </div>
@@ -281,7 +276,7 @@ export default function LoginPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="block w-full pl-12 pr-12 py-4 border-2 border-gray-200 rounded-2xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 bg-white/50 hover:bg-white hover:border-gray-300 placeholder-gray-400 text-gray-900"
+                                    className="block w-full pl-12 pr-12 py-4 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all duration-300 placeholder-gray-400 text-gray-900"
                                     placeholder="Enter your password"
                                 />
                                 <button
@@ -324,7 +319,7 @@ export default function LoginPage() {
                         <button
                             type="submit"
                             disabled={loading}
-                            className="w-full bg-linear-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-400 disabled:to-gray-500 text-white font-semibold py-4 px-6 rounded-2xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed shadow-lg hover:shadow-xl animate-fade-in-up delay-900"
+                            className="w-full bg-linear-to-r from-indigo-600 to-indigo-700 hover:from-indigo-700 hover:to-indigo-800 disabled:from-slate-400 disabled:to-slate-400 text-white font-semibold py-4 px-6 rounded-2xl shadow-lg shadow-indigo-500/25 transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:transform-none disabled:cursor-not-allowed animate-fade-in-up delay-900"
                         >
                             {loading ? (
                                 <div className="flex items-center justify-center gap-3">
@@ -346,7 +341,7 @@ export default function LoginPage() {
                                 <div className="w-full border-t border-gray-200" />
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-4 bg-white text-gray-500 font-medium">Or continue with</span>
+                                <span className="px-4 bg-(--neu-bg) text-gray-500 font-medium">Or continue with</span>
                             </div>
                         </div>
 
@@ -356,7 +351,7 @@ export default function LoginPage() {
                                 onClick={() => {
                                     window.location.href = `${API_BASE_URL}/auth/google`;
                                 }}
-                                className="w-full flex items-center justify-center gap-4 px-6 py-4 border-2 border-gray-200 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
+                                className="w-full flex items-center justify-center gap-4 px-6 py-4 neu-btn-secondary rounded-xl transition-all duration-300 min-h-[44px]"
                             >
                                 <svg className="w-6 h-6" viewBox="0 0 24 24">
                                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -371,7 +366,7 @@ export default function LoginPage() {
                                 onClick={() => {
                                     window.location.href = `${API_BASE_URL}/auth/github`;
                                 }}
-                                className="w-full flex items-center justify-center gap-4 px-6 py-4 border-2 border-gray-200 rounded-2xl hover:border-gray-300 hover:bg-gray-50 transition-all duration-300 bg-white/80 backdrop-blur-sm shadow-sm hover:shadow-md"
+                                className="w-full flex items-center justify-center gap-4 px-6 py-4 neu-btn-secondary rounded-xl transition-all duration-300 min-h-[44px]"
                             >
                                 <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                                     <path fillRule="evenodd" d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z" clipRule="evenodd" />
@@ -386,13 +381,13 @@ export default function LoginPage() {
                 <div className="text-center mt-8 animate-fade-in-up delay-1100">
                     <p className="text-sm text-gray-600">
                         By continuing, you agree to our{" "}
-                        <Link href="/terms" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                        <a href={`${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org'}/terms`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
                             Terms of Service
-                        </Link>{" "}
+                        </a>{" "}
                         and{" "}
-                        <Link href="/privacy" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
+                        <a href={`${process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org'}/privacy`} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700 font-medium transition-colors duration-200">
                             Privacy Policy
-                        </Link>
+                        </a>
                     </p>
                 </div>
             </div>

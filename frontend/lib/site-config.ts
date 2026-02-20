@@ -1,6 +1,9 @@
 export const SITE_URL =
   process.env.NEXT_PUBLIC_FRONTEND_URL || 'http://localhost:5577';
 
+export const PORTFOLIO_URL =
+  process.env.NEXT_PUBLIC_PORTFOLIO_URL || 'https://ilhrf.org';
+
 // Foundation branding for SEO and metadata
 export const ORG_NAME =
   'International Linguistic Heritage Research Foundation';

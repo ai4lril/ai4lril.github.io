@@ -184,7 +184,7 @@ export default function TranslatePage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-[2fr_1fr] gap-4 w-full">
                     {/* Source + translation card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden flex flex-col">
                         <div className="absolute -right-8 -top-8 w-20 h-20 bg-indigo-100/50 rounded-full opacity-70 hidden sm:block"></div>
                         <div className="absolute -left-6 -bottom-6 w-16 h-16 bg-blue-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
@@ -195,7 +195,7 @@ export default function TranslatePage() {
                             </span>
                         </h2>
 
-                        <div className="w-full p-4 rounded-md border border-slate-200 bg-white text-slate-800 mb-4 min-h-[80px] flex items-center">
+                        <div className="w-full p-4 neu-raised rounded-xl text-slate-800 mb-4 min-h-[80px] flex items-center">
                             {loading ? (
                                 <div className="flex items-center space-x-2 text-slate-500">
                                     <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-slate-500"></div>
@@ -226,7 +226,7 @@ export default function TranslatePage() {
                                         setTarget(val);
                                         setPreferredTargetLanguage(val);
                                     }}
-                                    className={`w-full px-4 py-3 border-2 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.languageCode
+                                    className={`w-full px-4 py-3 neu-pressed rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition-all duration-200 ${!target || target === current?.languageCode
                                         ? 'border-red-300 bg-red-50'
                                         : 'border-gray-200 hover:border-gray-300'
                                         }`}
@@ -278,7 +278,7 @@ export default function TranslatePage() {
                                         </svg>
                                     )}
                                 </button>
-                                <button type="button" onClick={nextItem} className="group bg-white/95 hover:bg-white shadow-lg hover:shadow-xl rounded-lg px-6 py-3 font-semibold text-slate-700 border border-gray-200 hover:border-gray-300 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2">
+                                <button type="button" onClick={nextItem} className="group neu-btn-secondary rounded-lg px-6 py-3 font-semibold text-slate-700 transition-all duration-300 hover:scale-105 active:scale-95 flex items-center gap-2 min-h-[48px]">
                                     <span>Next text</span>
                                     <svg className="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -289,7 +289,7 @@ export default function TranslatePage() {
                     </div>
 
                     {/* Guidelines card */}
-                    <div className="glass rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
+                    <div className="neu-raised rounded-md md:rounded-lg p-4 shadow-md border border-gray-100 relative overflow-hidden mt-4 md:mt-0 flex flex-col">
                         <div className="absolute -right-6 -top-6 w-16 h-16 bg-amber-100/50 rounded-full opacity-70 hidden sm:block"></div>
 
                         <h2 className="text-md md:text-lg font-semibold mb-3 text-gray-800 relative">

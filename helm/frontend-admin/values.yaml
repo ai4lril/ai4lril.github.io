@@ -1,0 +1,29 @@
+replicaCount: 1
+
+image:
+  repository: frontend-admin
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 3000
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: admin.ilhrf.org
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - admin.ilhrf.org
+      secretName: ilhrf-tls
+
+env:
+  - name: NEXT_PUBLIC_API_URL
+    value: "https://ilhrf.org/api"
+  - name: NEXT_PUBLIC_FRONTEND_URL
+    value: "https://admin.ilhrf.org"

@@ -3,7 +3,7 @@
 **ILHRF Data Collection Platform** — Comparative cloud cost analysis across AWS, GCP, Azure, and Oracle Cloud.
 
 **Document Version:** 1.5
-**Last Updated:** February 2026  
+**Last Updated:** February 20, 2026  
 **Currency:** USD  
 **Region:** US (us-east-1 / us-central1 / East US equivalent)
 
@@ -13,9 +13,9 @@
 
 Based on the [Architecture](Architecture.md), the platform requires:
 
-| Component             | Purpose                               | Tier 1 (Small)          | Tier 2 (Medium)           |
-| --------------------- | ------------------------------------- | ----------------------- | ------------------------- |
-| **Compute**           | Backend (NestJS) + Frontend (Next.js) | 2 vCPU, 4 GB RAM        | 4 vCPU, 8 GB RAM          |
+| Component             | Purpose                                                               | Tier 1 (Small)          | Tier 2 (Medium)           |
+| --------------------- | --------------------------------------------------------------------- | ----------------------- | ------------------------- |
+| **Compute**           | Backend (NestJS) + 3 frontends (Portfolio, Crowdsourcing, Admin)      | 2 vCPU, 4 GB RAM        | 4 vCPU, 8 GB RAM          |
 | **Primary DB**        | YugaByteDB (PostgreSQL-compatible)    | 2 vCPU, 4 GB RAM, 50 GB | 4 vCPU, 16 GB RAM, 100 GB |
 | **Redis**             | Cache + BullMQ queue                  | 2 GB                    | 8 GB                      |
 | **Blob Storage (S3)** | Audio, video, exports                 | 100 GB                  | 500 GB                    |
